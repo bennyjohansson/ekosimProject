@@ -111,6 +111,7 @@ public:
     double produce();
     void sell_to_market();
     void pay_employees(); 
+    void pay_employees_individual(); 
     void pay_interest();
     void repay_to_bank();
     double pay_dividends();

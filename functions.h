@@ -22,7 +22,8 @@ double get_prod(Consumer *, double);
 double change_motivation();
 double get_consumer_loan(double, double, double);
 double get_consumer_borrow(double, double, double);
-
+void log_transaction(string, double, string, double);
+void log_transaction_full(string, string, double, string, double);
 
 double capacity_increase(double, double);
 double item_cost(double);

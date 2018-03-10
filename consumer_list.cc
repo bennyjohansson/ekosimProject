@@ -512,8 +512,9 @@ void Consumer_list::get_and_pay_interest() {
   Element_consumer * p;
   
   for(p = list_; p; p = p -> next_){
-    (p -> get_consumer()) -> get_interest();
-    (p -> get_consumer()) -> pay_interest();
+  	Consumer * consumer = p -> get_consumer();
+    consumer -> get_interest();
+    consumer -> pay_interest();
   }
 }
 
@@ -529,6 +530,24 @@ void Consumer_list::pay_employees(double wage) {
 
 }
 
+void Consumer_list::pay_employees_individual(double wage_sum, double skill_sum, double motivation_sum, string employer) {
+  
+  Element_consumer * p;
+  double skill = 0;
+  double my_wage = 0;
+  
+  for(p = list_; p; p = p -> next_) {
+    Consumer * consumer = p -> get_consumer();
+    skill = consumer -> get_skill();
+    my_wage = wage_sum*skill/skill_sum;
+    consumer -> change_capital(my_wage);
+    consumer -> set_income(my_wage);
+    
+    log_transaction_full(employer, consumer -> get_name(), my_wage, "Salary", consumer ->  get_time());
+  }
+
+}
+
 void Consumer_list::pay_dividends(double amount) {
 
   Element_consumer * p;
@@ -539,6 +558,17 @@ void Consumer_list::pay_dividends(double amount) {
   }
 }
 
+
+void Consumer_list::pay_dividends_log(double amount, string party_pay) {
+
+  Element_consumer * p;
+
+  for(p = list_; p; p = p -> next_) {
+    Consumer * consumer = p -> get_consumer();
+    consumer -> change_capital(amount);
+    log_transaction_full(party_pay, consumer -> get_name(), amount, "Dividends", consumer ->  get_time());
+  }
+}
 
 
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -40,8 +41,8 @@ void normalize(double & value) {
 double get_prod(double sk_sum, double sk, double mot_sum, 
                 double mot, double employees, double capacity) {
     
-    double rate1 =10;
-    double rate2 = 100;
+    double rate1 =0.10;
+    double rate2 = 0.0500;
     double prod = 0;
     
     int prod_function = 1;
@@ -49,12 +50,14 @@ double get_prod(double sk_sum, double sk, double mot_sum,
     switch (prod_function) {
             
         case 1:
-            prod = 200*capacity*atan(((rate1*sk_sum*sk) + (rate1*mot_sum*mot)));
+            prod = capacity*atan(((rate1*sk_sum*sk) + (rate1*mot_sum*mot)));
             break;
             
         case 2:
             prod = 2*capacity*log((rate2*sk_sum*sk) + (rate2*mot_sum*mot)+1);
             break;
+            
+        
             
         default:
             prod = 0;
@@ -138,7 +141,7 @@ double capacity_increase(double items, double capacity) {
             break;
             
         case 2:
-            increase = 3000*log(items*0.008 + 1);
+            increase = 30*log(items*0.003 + 1);
             break;
             
             
@@ -165,7 +168,7 @@ double item_cost(double production) {
 double get_consumer_loan(double loanwill, double capital, double interest) {
     
     double amount = 0;
-    int function_select = 2;
+    int function_select = 1;
     
     switch (function_select) {
         case 1:
@@ -221,6 +224,29 @@ double get_consumer_borrow(double borrowwill, double capital, double interest) {
             break;
     }
     return amount;
+}
+
+
+void log_transaction(string party, double amount, string type, double time) {
+
+
+	ofstream  file1 ("transactions.txt", ios::app);
+	
+    file1 << time << " " << party << " " << amount << " " << type << endl;
+    
+    file1.close();
+
+}
+
+void log_transaction_full(string party_pay, string party_receive, double amount, string type, double time) {
+
+
+	ofstream  file1 ("transactions_full.txt", ios::app);
+	
+    file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << endl;
+    
+    file1.close();
+
 }
 
 

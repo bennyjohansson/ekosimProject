@@ -48,6 +48,7 @@ class Consumer {
       double get_borrow();
       bool get_employment_status();
       bool get_trustworthy();
+      string get_name();
       /*
        *Functions to set consumer parameters
        */
@@ -61,6 +62,7 @@ class Consumer {
       void set_items(double);
       void set_loans(double);
       void set_debts(double);
+      void set_name(string);
       /*
        *Functions to change consumer parameters
        */
@@ -98,8 +100,10 @@ class Consumer {
       void pay_interest();
       void pay_and_get_interest();
       double get_expected_net_flow_to_bank();
+      double get_time();
    private:
       
+      string name_;
       double motivation_;
       double skill_;
       double capital_;
