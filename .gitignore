@@ -1,0 +1,6 @@
+#Ignore all object files
+*.o
+
+#Ignore logs
+transactions_full.txt
+transactions.txt
