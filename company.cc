@@ -55,7 +55,7 @@ wage_change_limit_(1),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
-decay_(0.05),
+decay_(0.002),
 market_(market),
 bank_(bank),
 clock_(clock),
@@ -611,11 +611,10 @@ void Company::remove_usless_employees() {
         Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
         
         while(contribution_removing(bad_empl) > 0.1) {
-            cout << "hej i comp rem usless" << endl;
             remove_employee(bad_empl);
-            cout << "hej i comp rem usless2" << endl;
+            
             bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
-        	cout << "hej i comp rem usless3" << endl;
+        	
         }
     }
     catch(std:: exception b) {
@@ -673,7 +672,7 @@ double Company::contribution_adding(Consumer * consumer) {
     
     contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
     
-    cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
+    //cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     
     return contribution;
 }
@@ -707,7 +706,7 @@ double Company::contribution_removing(Consumer * consumer) {
     if (size != 0) {
         wage = get_total_wages()/size;
         contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
-        cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
+        //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     }
     else {
         contribution = 0;

@@ -82,6 +82,7 @@ class City {
       void negotiate_market_price();
       void update_consumer_list();
       void update_interest_rate();
+      void update_interest_rate2();
       void update_companies();
       void update_employees();
  

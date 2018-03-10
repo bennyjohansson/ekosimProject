@@ -467,6 +467,71 @@ void City::update_companies() {
 
 
 void City::update_interest_rate() {
+
+	int counter = 0;
+	
+	double interest = 0.05;
+	double prev_interest = 0.05;
+    double ir_change_factor = 0.3;
+    double est_ir_change = 0.005;
+    
+    double consumer_sum = 0;
+    double company_sum = 0;
+    double bank_sum = 0;
+    
+    double diff_limit = 50;
+    double sum_flows_to_bank = 0;
+        
+    double delta_sum = 0;
+    double d_sum_di = 1;
+    
+    interest = bank_ -> get_interest();
+    prev_interest = interest;
+    
+    
+    consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    bank_sum = (bank_ -> get_sum_to_borrow());
+    
+    
+   //Getting estimated flows to the bank
+    sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
+    
+    //Updating interest rate
+    bank_ -> change_interest(est_ir_change);
+    interest = bank_ -> get_interest();
+    
+    
+    
+    while(abs(sum_flows_to_bank) > diff_limit && counter < 20 && interest < 10) {
+    
+    	
+    	
+    	//Getting cash-flows
+    	consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    	company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    	bank_sum = (bank_ -> get_sum_to_borrow());
+    	
+    	//Calculating deltas
+    	delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
+    	d_sum_di = delta_sum/(prev_interest - interest);
+    	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
+    	
+    	est_ir_change = sum_flows_to_bank/d_sum_di;
+    	
+    	//Changint interest rate
+    	prev_interest = interest;
+    	bank_ -> change_interest(est_ir_change*ir_change_factor);
+    	interest = bank_ -> get_interest();
+    	
+    	cout << "I city update interest rate " << "Rate: " << interest << "Total cashflow to bank: " << sum_flows_to_bank << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
+    	counter = counter + 1;
+    }
+
+
+
+}
+void City::update_interest_rate2() {
     
     double interest = 0.01;
     double factor = 0.005;

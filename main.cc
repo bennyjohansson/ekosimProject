@@ -101,7 +101,7 @@ int main() {
   int flashtime = 60;
 
 
-  for(int j = 0; j < 50; j++) {
+  for(int j = 0; j < 300; j++) {
     double time_year = bennyland.get_time();
     cout << time_year << endl;
 
@@ -135,7 +135,7 @@ int main() {
     bennyland.invest(invest);
     bennyland.save_flash(flashtime);    
     
-    if(time_year >= 30) {
+    if(time_year >= 10) {
       invest = true;
     }
 

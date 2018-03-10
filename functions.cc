@@ -41,8 +41,8 @@ void normalize(double & value) {
 double get_prod(double sk_sum, double sk, double mot_sum, 
                 double mot, double employees, double capacity) {
     
-    double rate1 =0.10;
-    double rate2 = 0.0500;
+    double rate1 =0.00020;
+    double rate2 = 0.000100;
     double prod = 0;
     
     int prod_function = 1;
