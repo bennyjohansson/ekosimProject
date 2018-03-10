@@ -18,7 +18,8 @@ motivation_(0),
 skill_(0),
 capital_(0),
 spendwill_(0),
-employed_(false)
+employed_(false),
+name_("")
 //city_(0)
 {}
 
@@ -29,7 +30,8 @@ spendwill_(spe),
 employed_(false),
 capital_(cap),
 income_(0),
-items_(0)
+items_(0),
+name_("")
 {}
 
 Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, Market * m, Bank *b, Clock * c) :
@@ -46,7 +48,8 @@ loans_(0),
 market_(m),
 bank_(b),
 clock_(c),
-trustworthy_(true)
+trustworthy_(true), 
+name_("")
 {}
 
 /*
@@ -144,6 +147,15 @@ double Consumer::get_loans() {
 double Consumer::get_debts() {
     return debts_;
 }
+
+string Consumer::get_name() {
+	return name_;
+}
+
+double Consumer::get_time() {
+
+	return clock_ -> get_time();
+} 
 
 double Consumer::get_desired_loans() {
     double amount = 0;
@@ -248,6 +260,10 @@ void Consumer::set_loans(double loans) {
 
 void Consumer::set_debts(double debts) {
     debts_ = debts;
+}
+
+void Consumer::set_name(string name) {
+    name_ = name;
 }
 
 
@@ -413,6 +429,9 @@ double Consumer::buy() {
         change_capital(-amount);
         market_ -> change_items(-quantity);
         
+        log_transaction_full(name_, "Market", amount, "Purchase", get_time());
+        log_transaction(name_, amount, "Purchase", get_time());
+        
     }
     
     
@@ -438,6 +457,9 @@ void Consumer::deposit_and_borrow_from_bank() {
         change_capital(sum_to_borrow);
         change_debts(sum_to_borrow);
         bank_ -> change_loans(sum_to_borrow);
+        
+        log_transaction_full(name_, "Bank", sum_to_deposit, "Deposit", get_time());
+        log_transaction_full(name_, "Bank", sum_to_borrow, "Loan", get_time());
     }
     
     
@@ -499,6 +521,8 @@ void Consumer::repay_to_bank() {
         change_debts(-amount);
         //  bank_ -> change_assets(amount);
         bank_ -> change_loans(-amount);
+        
+        log_transaction_full(name_, "Bank", amount, "Amortization", get_time());
     }
 }
 
@@ -522,6 +546,9 @@ void Consumer::get_repayment_from_bank() {
         
         change_capital(amount);
         change_loans(-amount);
+        
+        log_transaction_full("Bank", name_, amount, "Amortization", get_time());
+        
         //bank_ -> change_assets(-amount);
         bank_ -> change_deposits(-amount);
     }
@@ -552,6 +579,8 @@ void Consumer::get_interest() {
         
         change_capital(amount);
         bank_ -> change_assets(-amount);
+        
+        log_transaction_full("Bank", name_, amount, "Interest", get_time());
     }
 }
 
@@ -579,6 +608,8 @@ void Consumer::pay_interest() {
         
         change_capital(-amount);
         bank_ -> change_assets(amount);
+        
+        log_transaction_full(name_, "Bank", amount, "Interest", get_time());
     }
 }
 

@@ -43,12 +43,12 @@ int main() {
   //City * land = 0;  
   //land = &bennyland;
   //init_companies(land);
-  bennyland.load_company("bempa AB");
-  bennyland.load_company("bempa co");
-  bennyland.load_company("benny inc.");
-  bennyland.load_company("limpan AB");
-  bennyland.load_company("benny enterprises");
-  bennyland.load_company("johansson och johansson");
+  bennyland.load_company("bempa_AB");
+  bennyland.load_company("bempa_co");
+  bennyland.load_company("benny_inc");
+  bennyland.load_company("limpan_AB");
+  bennyland.load_company("benny_enterprises");
+  bennyland.load_company("johansson_och_johansson");
 
   
   bennyland.print_company_list(); 
@@ -60,6 +60,7 @@ int main() {
 
   for(int i = 0; i < 1000; i++) {    
     Consumer * benny = random_consumer(bennyland.get_market(), bennyland.get_bank(), bennyland.get_clock());
+    benny -> set_name("Consumer" + std::to_string(i));
     bennyland.add_consumer(benny);    
   }
 
@@ -81,6 +82,14 @@ int main() {
   ofstream empty_flash("flash.txt");
   empty_flash << " " << endl;
   empty_flash.close();
+  
+  ofstream empty_transactions("transactions.txt");
+  empty_transactions << " " << endl;
+  empty_transactions.close();
+  
+   ofstream empty_transactions_full("transactions_full.txt");
+  empty_transactions_full << " " << endl;
+  empty_transactions_full.close();
 
   ofstream  file2 ("money_test.txt");
    file2 << "bank_capital" << " " << "bank_loans"  << " " << "bank_debts"  << " " << "consumer_capital"  << " "
@@ -92,7 +101,7 @@ int main() {
   int flashtime = 60;
 
 
-  for(int j = 0; j < 250; j++) {
+  for(int j = 0; j < 50; j++) {
     double time_year = bennyland.get_time();
     cout << time_year << endl;
 

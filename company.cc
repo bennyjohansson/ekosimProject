@@ -55,7 +55,7 @@ wage_change_limit_(1),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
-decay_(0.1),
+decay_(0.05),
 market_(market),
 bank_(bank),
 clock_(clock),
@@ -608,13 +608,14 @@ bool Company::update_employees(Consumer * opt) {
 
 void Company::remove_usless_employees() {
     try {
-        //    cout << "hej i comp list update_empl2" << endl;   
         Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
         
-        while(contribution_removing(bad_empl) > 1) {
-            //cout << "hej i comp rem usless" << endl;
+        while(contribution_removing(bad_empl) > 0.1) {
+            cout << "hej i comp rem usless" << endl;
             remove_employee(bad_empl);
+            cout << "hej i comp rem usless2" << endl;
             bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
+        	cout << "hej i comp rem usless3" << endl;
         }
     }
     catch(std:: exception b) {
@@ -672,7 +673,7 @@ double Company::contribution_adding(Consumer * consumer) {
     
     contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
     
-    // cout << "I comp contrib adding" << endl << "Prod bef: " << prod_before << "  Prod after: " << prod_after << endl << "Wages: " << wage << "  Contribution: " << contribution << endl;
+    cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     
     return contribution;
 }
@@ -704,8 +705,9 @@ double Company::contribution_removing(Consumer * consumer) {
     prod_after = get_prod(skill_sum - skill, prod_const_skill_, mot_sum - mot, prod_const_motivation_, size - 1, capacity_); 
     
     if (size != 0) {
-        //wage = get_total_wages()/size;
+        wage = get_total_wages()/size;
         contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
+        cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     }
     else {
         contribution = 0;
@@ -812,9 +814,13 @@ double Company::invest() {
     
     bank_ -> change_loans(loans);
     
+    log_transaction_full(name_, "Bank", loans, "Loan", clock_ ->  get_time());
+    
     change_stock(items);
     market_ -> change_capital(capital + loans);
     market_ -> change_items(-items);
+    
+    log_transaction_full(name_, "Market", capital + loans, "Investment", clock_ ->  get_time());
     
     cout << "I company invest," << name_ << " orig cap " << capacity_;
     capacity_change = capacity_increase(items, capacity_);
@@ -886,15 +892,51 @@ double Company::get_estimated_wages(double production) {
     return wages;
 }
 
+void Company::pay_employees_individual() {
+    double size = 0;
+    double wage_tot = 0;
+    double wage = 0;
+    double price = 0;
+    double sum_after = 0;
+	double skill_sum = 0;
+	double motivation_sum = 0;
+    
+    price = market_ -> get_price_in();
+    size = employees_ -> get_size();
+    
+    skill_sum = employees_ -> get_skill_sum(); 
+    motivation_sum = employees_ -> get_motivation_sum();
+    
+    wage_tot = get_total_wages();
+    //cout << name_ << "I company pay wage employ1" << endl;  
+    
+    if (size) {
+        wage = wage_tot/size;
+        employees_ -> pay_employees_individual(wage_tot, skill_sum, motivation_sum, name_);
+        capital_ -= wage_tot;
+		//log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
+    }
+    
+    
+    //  cout << name_ << "    "  << "     I company pay wage employ2: " << wage << endl;  
+    wages_.push_front(wage);
+    employees_no_.push_front(size);
+    
+    //cout << "I company pay employ23" << endl;  
+} 
+
 void Company::pay_employees() {
     double size = 0;
     double wage_tot = 0;
     double wage = 0;
     double price = 0;
     double sum_after = 0;
+	
     
     price = market_ -> get_price_in();
     size = employees_ -> get_size();
+    
+   
     
     wage_tot = get_total_wages();
     //cout << name_ << "I company pay wage employ1" << endl;  
@@ -903,6 +945,7 @@ void Company::pay_employees() {
         wage = wage_tot/size;
         employees_ -> pay_employees(wage);
         capital_ -= wage_tot;
+		log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
     
     
@@ -923,6 +966,8 @@ void Company::pay_interest() {
     
     change_capital(-amount);
     bank_-> change_assets(amount);
+
+	log_transaction_full(name_, "Bank", amount, "Interest", clock_ ->  get_time());
 }
 
 void Company::repay_to_bank() {
@@ -942,6 +987,8 @@ void Company::repay_to_bank() {
     //  bank_ -> change_assets(amount);
     bank_ -> change_loans(-amount);
     
+    log_transaction_full(name_, "Bank", amount, "Amortization", clock_ ->  get_time());
+    
 }
 
 double Company::pay_dividends() {
@@ -955,6 +1002,8 @@ double Company::pay_dividends() {
     else {
         capital = 0;
     }
+    
+    log_transaction(name_, -capital, "Dividend", clock_ ->  get_time());
     
     return capital;
     
@@ -975,6 +1024,8 @@ void Company::buy_items_for_production() {
     
     market_ -> change_capital(amount);
     market_ -> change_items(-items);
+    
+    log_transaction_full(name_, "Market", amount, "Inventory", clock_ ->  get_time());
     
 }
 

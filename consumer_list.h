@@ -82,8 +82,10 @@ class Consumer_list {
       void get_repayment_from_bank();
       void get_and_pay_interest();
       void pay_employees(double);
+      void pay_employees_individual(double, double, double, string); 
       void pay_dividends(double);
-
+	void pay_dividends_log(double, string);
+	
    protected:
 
       string name_;

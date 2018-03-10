@@ -325,9 +325,11 @@ void Company_list::produce() {
     Element_company * p;
     double sum = 0;
     cout << "I company list, items needed for production: (items): " <<get_items_for_production_sum() << endl;
+    
     for(p = list_; p; p = p -> next_) {
         sum += (p -> get_company()) -> produce();
     }
+    
     cout << "I company list, actual production (items): " << sum << endl;
 }
 
@@ -345,7 +347,7 @@ void Company_list::pay_employees() {
     Element_company * p;
     
     for(p = list_; p; p = p -> next_) {
-        (p -> get_company()) -> pay_employees();
+        (p -> get_company()) -> pay_employees_individual();
     }
 }
 

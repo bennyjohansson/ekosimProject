@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <fstream>
+#include <cmath>
 
 //#include "consumer.h"
 #include "functions.h"
@@ -114,7 +115,7 @@ void City::print_GDP() {
     Growth = growth_.begin();
     Investments = investments_.begin();
     Demand = demand_.begin();
-    Wages = (company_list_ -> get_company("bempa AB"))->wages_.begin();
+    Wages = (company_list_ -> get_company("bempa_AB"))->wages_.begin();
     Price_out = price_out_.begin();
     Employed = employed_.begin();
     Consumer_capital = consumer_capital_.begin();
@@ -164,7 +165,7 @@ void City::print_GDP() {
     Investments = investments_.begin();
     Growth = growth_.begin();
     Demand = demand_.begin();
-    Wages = (company_list_ -> get_company("bempa AB"))->wages_.begin();
+    Wages = (company_list_ -> get_company("bempa_AB"))->wages_.begin();
     Price_out = price_out_.begin();
     Employed = employed_.begin();
     Interest_rate = interest_rate_.begin();
@@ -464,6 +465,7 @@ void City::update_companies() {
     company_list_ -> update_companies();
 }
 
+
 void City::update_interest_rate() {
     
     double interest = 0.01;
@@ -475,6 +477,7 @@ void City::update_interest_rate() {
     int diff_limit = 50;
     int sum = 0;
     double bank_safety = 0;
+    double delta_sum = 0;
     
     interest = bank_ -> get_interest();
     bank_safety = bank_ -> get_safety();
@@ -487,15 +490,18 @@ void City::update_interest_rate() {
     bank_sum = (bank_ -> get_sum_to_borrow());
     //cout << "cu after  get company  to bank cashflow" << endl;
     
+    
+    //Checking direction of interest change
     sum = consumer_sum + company_sum + bank_sum;
     
-    cout << "I city calc interest rate, sum: " << sum << " interest: " << interest << endl;
-    
+
+     cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
+
     if(sum <= 0) {
-        for(int i = 0; i < 10 && abs(sum) > diff_limit ; i++) {
-            while(counter*sum < 0 && abs(sum) > diff_limit && interest < 10) { //&&interest > 0.0000001  && 
+        for(int i = 0; i < 5 && abs(sum) > diff_limit ; i++) {
+            while(counter*sum < 0 && abs(sum) > diff_limit && interest < 5) { //&&interest > 0.0000001  && 
                 cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
-                
+                //cout << "I city calculate interest  " << "Delta sum: " << delta_sum << endl;
                 bank_ -> change_interest(counter*factor);
                 interest = bank_ -> get_interest();
                 
@@ -503,7 +509,10 @@ void City::update_interest_rate() {
                 company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
                 bank_sum = (bank_ -> get_sum_to_borrow());
                 
-                sum = consumer_sum + company_sum + bank_sum; //+ banksum  
+                delta_sum = (consumer_sum + company_sum + bank_sum) - sum;
+                
+                sum = consumer_sum + company_sum + bank_sum; 
+                
             }
             counter = - counter;
             factor = factor/4;
@@ -538,6 +547,108 @@ void City::update_interest_rate() {
     //   bank_ -> set_interest(interest);
     
 }
+
+// void City::update_interest_rate() {
+//     
+//     double interest = 0.01;
+//     double factor = 0.05;
+//     double counter = 1;
+//     double consumer_sum = 0;
+//     double company_sum = 0;
+//     double bank_sum = 0;
+//     double d_sum = 1000;
+//     double interest_change = 0.001;
+//     double diff_limit = 1000;
+//     double sum = 0;
+//     double bank_safety = 0;
+//     
+//     interest = bank_ -> get_interest();
+//     bank_safety = bank_ -> get_safety();
+//     
+//     //   cout << "cu i city interest" << endl << "before get consumer to bank cashflow" << endl;
+//     consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//     //cout << "cu  after get consumer to bank cashflow" << endl;
+//     company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//     //cout << "cu before  get company  to bank cashflow" << endl;
+//     bank_sum = (bank_ -> get_sum_to_borrow());
+//    
+//     
+//     
+//     sum = consumer_sum + company_sum + bank_sum;
+//     
+//     cout << "I city calc interest rate, sum: " << sum << " interest: " << interest << endl;
+//     
+//     
+//     
+//     
+//     if(sum <= 0) {
+//         for(int i = 0; i < 10 && abs(sum) > diff_limit ; i++) {
+//             while(abs(sum) > diff_limit && interest < 10 && abs(d_sum) > 100) { //&&interest > 0.0000001  && counter*sum < 0 &&
+//                 
+//                 cout << "I city calculate interest 1 " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
+//                 
+//                 //cout << "interest change: " << interest_change << endl;
+//                 bank_ -> change_interest(interest_change);
+//                 interest = bank_ -> get_interest();
+//                 
+//                 consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//                 company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//                 bank_sum = (bank_ -> get_sum_to_borrow());
+//                 
+// 				//cout << "I city calculate interest 2 " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
+//                 
+// 
+//                 d_sum = (sum - (consumer_sum + company_sum + bank_sum))/(interest_change);
+//                 
+//                 cout << "d_sum in city calculate interest: " <<  d_sum << endl ;
+//                 interest_change = (consumer_sum + company_sum + bank_sum)/(4*d_sum);
+//                 cout << "expected interest change " << interest_change << endl;
+// 
+//                 
+//                 sum = consumer_sum + company_sum + bank_sum; //+ banksum  
+//                 
+//             }
+//             counter = - counter;
+//             factor = factor/4;
+//         }
+//     }
+//     
+//     else if(sum > 0) {
+//         counter = 1;
+//         factor = 0.05; 
+//         d_sum = 1;
+//         for(int i = 0; i < 10 && abs(sum) > diff_limit ; i++) {
+//             while(counter*sum > 0 && abs(sum) > diff_limit && interest > 0.00001) {
+//                 cout << "Sum: " << sum << "  Summa for sum > 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
+//                 
+//                 bank_ -> change_interest(interest_change);
+//                 interest = bank_ -> get_interest();
+//                 
+//                 // cout << "cd i city interest" << endl << "before get consumer to bank cashflow" << endl;
+//                 consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//                 //    cout << "cd  after get consumer to bank cashflow" << endl;
+//                 company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//                 //cout << "cd before  get company  to bank cashflow" << endl;
+//                 bank_sum = (bank_ -> get_sum_to_borrow());
+//                 //cout << "cd after  get company  to bank cashflow" << endl;
+//                 
+//                 d_sum = (sum - (consumer_sum + company_sum + bank_sum))/(interest_change);
+//                 cout << "d_sum in city calculate interest: " <<  d_sum << endl ;
+//                 interest_change = sum/(4*d_sum);
+//                 cout << "expected interest change " << interest_change << endl;
+//                 
+//                 sum = consumer_sum + company_sum + bank_sum; // + bank_sum  
+//                 
+//             }
+//             counter = - counter;
+//             factor = factor/4; 
+//         }
+// 		}
+// 
+//     cout << "I city update interest trustworthy " << consumers_ -> get_trustworthy() << endl; 
+//     //   bank_ -> set_interest(interest);
+    
+//}
 
 // void City::update_interest_rate() {
 
@@ -656,7 +767,7 @@ void City::save_data() {
     employed = consumers_ -> get_employed();
     unemployed = consumers_ -> get_unemployed();
     unemployment = unemployed/size;
-    wages = *((company_list_ -> get_company("bempa AB"))-> wages_.begin());
+    wages = *((company_list_ -> get_company("bempa_AB"))-> wages_.begin());
     nominal_gdp = price_out*item;
     GDP = GDP_.begin();
     
@@ -812,7 +923,7 @@ void City::adjust_money() {
     
     Price_out = price_out_.begin();
     Items = GDP_.begin();
-    Wages = ((company_list_ -> get_company("bempa AB"))-> wages_.begin());    
+    Wages = ((company_list_ -> get_company("bempa_AB"))-> wages_.begin());    
     
     total_money = get_capital_sum();
     bank_money = bank_ -> get_assets();
@@ -849,7 +960,7 @@ void City::adjust_money() {
     //Function 3
     
     wages_a = *Wages;
-    Wages = ((company_list_ -> get_company("bempa AB"))-> wages_.begin());    
+    Wages = ((company_list_ -> get_company("bempa_AB"))-> wages_.begin());    
     
     sum = 0;
     for(i = 0; i < 4; i++) {
@@ -970,8 +1081,11 @@ void City::company_pay_dividends() {
     total_profit_b = bank_ -> pay_dividends();
     total_profit_m = market_-> pay_dividends();
     
-    amount = (total_profit_m + total_profit_c+ total_profit_b)/size;
-    consumers_ -> pay_dividends(amount);
+    //amount = (total_profit_m + total_profit_c+ total_profit_b)/size;
+    
+    consumers_ -> pay_dividends_log(total_profit_c/size, "Company");
+    consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
+    consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
     
 }
 
