@@ -290,7 +290,24 @@ Consumer * Consumer_list::get_random_consumer() {
   for(int i = 0; i < nr; i++) {
     p = p -> next_;
   }
+  
   return p -> get_consumer();
+}
+
+Consumer * Consumer_list::get_consumer(string name) {
+    Element_consumer * p;
+    
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            if (p -> get_consumer() -> get_name() == name) {
+                return p -> get_consumer() ;
+            }
+        }
+        throw no_return_error("Cant find the consumer");
+    }
+    else {
+        throw no_return_error("no list"); 
+    } 
 }
 
 bool Consumer_list::is_consumer(Consumer * consumer) {

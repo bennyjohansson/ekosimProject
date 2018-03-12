@@ -49,6 +49,7 @@ class Consumer_list {
       Consumer * get_random_consumer();
       Consumer * get_optimal_consumer(double, double, double);
       Consumer * get_usless_employee(double, double, double);
+      Consumer * get_consumer(string);
 
 
       /*

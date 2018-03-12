@@ -57,17 +57,25 @@ name_("")
  */
 
 void Consumer::info() {
-    cout << "Motivation: " << get_motivation() << endl 
-    << "Skill: " <<  get_skill() << endl
-    << "Capital: " << get_capital() << endl
-    << "Spendwill: " << get_spendwill() << endl
-    << "Employed: ";
+
+    cout << "Name: " << name_ << endl;
+    
+    cout << "Motivation: " << get_motivation() << endl;
+    cout << "Skill: " <<  get_skill() << endl;
+    cout << "Capital: " << get_capital() << endl;
+    cout << "Spendwill: " << get_spendwill() << endl;
+    cout << "Employed: ";
+    
     if (employed_) {
         cout << "yes" << endl;
     }
     else {
         cout << "no" << endl;
     }
+    
+    cout << "Money: " << capital_ << endl;
+    cout << "Items: " << items_ << endl; 
+    
 }
 
 
@@ -519,7 +527,7 @@ void Consumer::repay_to_bank() {
         
         change_capital(-amount);
         change_debts(-amount);
-        //  bank_ -> change_assets(amount);
+        //bank_ -> change_assets(amount);
         bank_ -> change_loans(-amount);
         
         log_transaction_full(name_, "Bank", amount, "Amortization", get_time());

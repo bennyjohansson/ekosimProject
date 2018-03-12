@@ -34,6 +34,7 @@ int main() {
    */ 
 
   City bennyland("Bennyland");
+  
 
   /*
    * The functions init_companies(land) adds some companies to bennyland. 
@@ -96,12 +97,17 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
+	double simulation_years = 200;
   double counter = 0;
   bool invest = false;
   int flashtime = 60;
+  string theThiefString = "";
+  double time_to_steal = 50;
+  string theFraudCompanyString = "benny_enterprises";
+  double amount_to_launder = 0;
 
 
-  for(int j = 0; j < 300; j++) {
+  for(int j = 0; j < simulation_years; j++) {
     double time_year = bennyland.get_time();
     cout << time_year << endl;
 
@@ -123,6 +129,28 @@ int main() {
 
     bennyland.consumers_buy();
     bennyland.save_flash(flashtime);
+    
+    
+    //Initiating theft
+    if(time_year == time_to_steal || time_year == time_to_steal*2 || time_year == time_to_steal*3) {
+    
+    	
+    	//Step 1 steal money (steal from bank or someone with more money)
+    	//Set spendwill to small
+    	theThiefString = bennyland.steal_money();
+    	cout << "I main steal: " << theThiefString << endl << endl;
+    }
+    
+    //Launder money
+    if(time_year == time_to_steal + 2 || time_year == time_to_steal*2 + 2 || time_year == time_to_steal*3 + 2) {
+    
+    	//Step 2.1 buy stuff from the market in small batches from our insider but no goods
+    	//Step 2.2 move money from market to company
+    	amount_to_launder = bennyland.launder_money(theThiefString, theFraudCompanyString);
+    	cout << "I main launder money: " << amount_to_launder << endl;
+    	
+    }
+    
 
     bennyland.pay_company_employees();
     bennyland.save_flash(flashtime);
@@ -142,7 +170,9 @@ int main() {
     if(invest) {
       bennyland.consumer_get_and_pay_interest();
     }
-    bennyland.save_flash(flashtime);    
+    bennyland.save_flash(flashtime); 
+    
+    
 
     if(invest) {
     
@@ -164,6 +194,14 @@ int main() {
       bennyland.consumers_deposit_and_borrow_from_bank();
     }
  
+	//Pay stolen dividends
+ 	if(time_year == time_to_steal + 2 || time_year == time_to_steal*2 + 2 || time_year == time_to_steal*3 + 2) {
+    
+    	//Step 3 generate dividend payment in small batches to our thief
+    	bennyland.company_pay_dividends(theFraudCompanyString, theThiefString, amount_to_launder);
+    	
+    }
+    	
 
     bennyland.company_pay_dividends();
     

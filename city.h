@@ -85,6 +85,10 @@ class City {
       void update_interest_rate2();
       void update_companies();
       void update_employees();
+      string steal_money();
+      string steal_money(string);
+      double launder_money(string, string);
+      
  
       void tick(); 
       void save_data();
@@ -102,6 +106,7 @@ class City {
 
       void pay_company_employees();
       void company_pay_dividends();
+      void company_pay_dividends(string, string, double);
       void company_pay_interest();
       void company_repay_to_bank();
       void consumer_bank_business();

@@ -1154,6 +1154,36 @@ void City::company_pay_dividends() {
     
 }
 
+
+void City::company_pay_dividends(string theCompanyString, string theConsumerString, double amount) {
+
+	Consumer * theConsumer = consumers_ -> get_consumer(theConsumerString);
+	Company * theCompany = company_list_ -> get_company(theCompanyString);
+	
+	
+	cout << "I city company_pay_dividends" << endl;
+	theConsumer -> info();
+	
+	theCompany -> change_capital(-amount/4);
+	theConsumer -> change_capital(amount/4);
+	log_transaction_full(theCompanyString, theConsumerString, amount/4, "Dividend", get_time());
+	
+	theCompany -> change_capital(-amount/4);
+	theConsumer -> change_capital(amount/4);
+	log_transaction_full(theCompanyString, theConsumerString, amount/4, "Dividend", get_time());
+	
+	theCompany -> change_capital(-amount/4);
+	theConsumer -> change_capital(amount/4);
+	log_transaction_full(theCompanyString, theConsumerString, amount/4, "Dividend", get_time());
+	
+	theCompany -> change_capital(-amount/4);
+	theConsumer -> change_capital(amount/4);
+	log_transaction_full(theCompanyString, theConsumerString, amount/4, "Dividend", get_time());
+	
+	theConsumer -> info();	
+
+}
+
 void City::consumers_deposit_and_borrow_from_bank() {
     consumers_ -> deposit_and_borrow_from_bank();
     
@@ -1174,8 +1204,82 @@ void City::consumers_deposit_to_bank() {
 
 void City::consumers_borrow_from_bank() {
     consumers_ -> borrow_money_from_bank();
+    
+    
 }
 
+string City::steal_money() {
+
+	Consumer * theThief = consumers_ -> get_random_consumer();
+	
+	return steal_money(theThief -> get_name());
+
+}
+
+string City::steal_money(string theThiefString) {
+
+	double capital_to_steal = 0;
+	
+	Consumer * theThief = consumers_ -> get_consumer(theThiefString);
+	
+	cout << endl << "Consumer: " << theThief -> get_name() << " is the Thief in City steal" << endl;
+	cout << "Thief money before:" << theThief -> get_capital() << endl;
+	
+	Company * theCompany = company_list_ -> get_company("johansson_och_johansson");// -> get_company();
+	//bank_ -> info();
+	
+	capital_to_steal = theCompany -> get_capital()*0.6;
+	
+	theCompany -> change_capital(-capital_to_steal);
+	theThief -> change_capital(capital_to_steal);
+	
+	theThief -> set_spedwill(0);
+	
+	cout << "Thief money after:" << theThief -> get_capital() << endl;
+	cout << "SOMETHING IS FISHY IN THE BANK CONCERNING ASSETS, LOANS, DEBTS AND DEPOSITS" << endl << endl;
+	
+	return theThief -> get_name();
+
+} 
+
+
+double City::launder_money(string theThiefString, string theFraudCompanyString) {
+
+
+	double money_to_launder = 0;
+	double laundry_factor = 0.95;
+	Consumer * theThief = consumers_ -> get_consumer(theThiefString);
+	
+	money_to_launder = (theThief -> get_capital())*laundry_factor;
+	
+	//cout << "I city launder money" << endl;
+	//theThief -> info();
+	
+	market_ -> change_capital(money_to_launder/4);
+	theThief -> change_capital(-money_to_launder/4);
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	
+	market_ -> change_capital(money_to_launder/4);
+	theThief -> change_capital(-money_to_launder/4);
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+
+	market_ -> change_capital(money_to_launder/4);
+	theThief -> change_capital(-money_to_launder/4);
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	
+	market_ -> change_capital(money_to_launder/4);
+	theThief -> change_capital(-money_to_launder/4);
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+
+	Company * theFraudCompany = company_list_ -> get_company(theFraudCompanyString);
+	
+	market_ -> change_capital(-money_to_launder);
+	theFraudCompany -> change_capital(money_to_launder);
+	log_transaction_full("Market", theFraudCompanyString, money_to_launder, "Inventory", get_time());
+	
+	return money_to_launder;
+
+}
 
 
 

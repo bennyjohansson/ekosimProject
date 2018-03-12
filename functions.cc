@@ -109,7 +109,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double mot = 0.6;
     double sk = 0.5;
     double cap = 70; 
-    double spe = 0.4;
+    double spe = 0.5;
     double save = 0.05; //1-spe;
     double borrow = 0.080;
     

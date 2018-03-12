@@ -746,6 +746,8 @@ void Company::sell_to_market() {
     market_ -> change_items(stock_);
     change_stock(-stock_);
     
+    log_transaction_full(name_, "market", price*stock_, "Inventory", clock_ ->  get_time());
+    
 }
 
 
