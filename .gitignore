@@ -8,9 +8,13 @@ transactions.txt
 #Ignore .eps files
 *.eps
 
+#Ignoring .tar.gz
+*.tar.gz
+
 #Ignore folders
 /diagram/*
 /gnuplot_example/*
 /old/*
 /test/*
 /working/*
+/backup/*
