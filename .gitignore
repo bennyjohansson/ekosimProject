@@ -4,3 +4,6 @@
 #Ignore logs
 transactions_full.txt
 transactions.txt
+
+#Ignore .eps files
+*.eps
