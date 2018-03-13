@@ -524,7 +524,7 @@ void City::update_interest_rate() {
     	bank_ -> change_interest(est_ir_change*ir_change_factor);
     	interest = bank_ -> get_interest();
     	
-    	cout << "I city update interest rate " << "Rate: " << interest << "Total cashflow to bank: " << sum_flows_to_bank << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
+    	cout << "I city update interest rate " << "Rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
     	counter = counter + 1;
     }
 
@@ -1078,7 +1078,7 @@ void City::adjust_money() {
     money_change = total_money*money_change_factor;
     
     
-    cout << "I city adjust money, mone increase factor: " << money_change/total_money << " Total money " << total_money << " Money change " << money_change <<  endl;
+    //cout << "I city adjust money, mone increase factor: " << money_change/total_money << " Total money " << total_money << " Money change " << money_change <<  endl;
     //money_change = (1-average_items/items_a)*total_money;
     
     //if(price_a > average_price) {

@@ -97,7 +97,7 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
-	double simulation_years = 200;
+	double simulation_years = 60;
   double counter = 0;
   bool invest = false;
   int flashtime = 60;
@@ -107,7 +107,9 @@ int main() {
   double amount_to_launder = 0;
 
 
+
   for(int j = 0; j < simulation_years; j++) {
+
     double time_year = bennyland.get_time();
     cout << time_year << endl;
 

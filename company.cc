@@ -55,7 +55,8 @@ wage_change_limit_(1),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
-decay_(0.002),
+
+decay_(0.005),
 market_(market),
 bank_(bank),
 clock_(clock),
@@ -611,10 +612,12 @@ void Company::remove_usless_employees() {
         Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
         
         while(contribution_removing(bad_empl) > 0.1) {
+
             remove_employee(bad_empl);
             
             bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
         	
+
         }
     }
     catch(std:: exception b) {
@@ -706,6 +709,8 @@ double Company::contribution_removing(Consumer * consumer) {
     if (size != 0) {
         wage = get_total_wages()/size;
         contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
+
+        //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
         //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     }
     else {
@@ -823,14 +828,14 @@ double Company::invest() {
     
     log_transaction_full(name_, "Market", capital + loans, "Investment", clock_ ->  get_time());
     
-    cout << "I company invest," << name_ << " orig cap " << capacity_;
+    //cout << "I company invest," << name_ << " orig cap " << capacity_;
     capacity_change = capacity_increase(items, capacity_);
     change_capacity(capacity_change);  
     prod_const_skill_ += capacity_change/100;
     
     prod_const_motivation_ += capacity_change/100;
     
-    cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
     //  cout << "I company invest  " << name_ << "     items: " << items << "    " << "Cost: " << cost << "   Capac ch: " << capacity_change << "  Capital before: " << capital_old << "  Available capital: " << available_capital << "    Desired loans: " << loans << "   Max items  " << max_items << endl;
     
     investments_.push_front(cost);
