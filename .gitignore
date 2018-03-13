@@ -7,3 +7,10 @@ transactions.txt
 
 #Ignore .eps files
 *.eps
+
+#Ignore folders
+/diagram/*
+/gnuplot_example/*
+/old/*
+/test/*
+/working/*
