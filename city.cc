@@ -524,11 +524,11 @@ void City::update_interest_rate() {
     	bank_ -> change_interest(est_ir_change*ir_change_factor);
     	interest = bank_ -> get_interest();
     	
-    	cout << "I city update interest rate " << "Rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
+    	
     	counter = counter + 1;
     }
 
-
+	cout << "I city update interest rate " << "Rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
 }
 void City::update_interest_rate2() {

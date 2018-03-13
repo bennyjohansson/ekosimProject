@@ -37,7 +37,6 @@
       set size 1,1
       set key right
       set title "GDP & stuff in Bennyland" font "Helvetica,24"
-#      set title '{/Symbol=18 \\362@_{/=9.6 0}^{/=16 x}} {/Helvetica e^{-{/Symbol m}^2/2} d}{/Symbol m}'
       set ylabel "GDP / $BJ" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
       plot "gdp_test.txt" using 1:2 title "Real GDP / items" with lines ls 1
@@ -51,7 +50,6 @@
 	 set size 1,1
 	 set key right
 	 set title "GDP & stuff in Bennyland" font "Helvetica,24"
-#      set title '	{/Symbol=18 \\362@_{/=9.6 0}^{/=16 x}} {/Helvetica e^{-{/Symbol m}^2/2} d}{/Symbol m}'
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
       set xlabel "time" font "He	lvetica,18"
 	 plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:10 title "GDP" with lines ls 8
@@ -59,14 +57,13 @@
 	    set nomultiplot
 	    set output "diverse.eps"
 	    set xrange [*:*]
-	    set yrange [*:2000]
+	    set yrange [*:1100]
 	    
 	    set size 1,1
 	    set key right
 	    set title "Prices, wages & stuff in Bennyland" font "Helvetica,24"
-#      set title '{/S	ymbol=18 \\362@_{/=9.6 0}^{/=16 x}} {/Helvetica e^{-{/Symbol m}^2/2} d}{/Symbol m}'
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
-      set xlabel "time" font "He	lvetica,18"
+      set xlabel "time" font "Helvetica,18"
 	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:7 title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "1000*Interest rate" with lines ls 7,  "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
 	       
  
