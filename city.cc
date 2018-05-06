@@ -1228,7 +1228,7 @@ string City::steal_money(string theThiefString) {
 	Company * theCompany = company_list_ -> get_company("johansson_och_johansson");// -> get_company();
 	//bank_ -> info();
 	
-	capital_to_steal = theCompany -> get_capital()*0.6;
+	capital_to_steal = theCompany -> get_capital()*0.2;
 	
 	theCompany -> change_capital(-capital_to_steal);
 	theThief -> change_capital(capital_to_steal);
@@ -1257,25 +1257,25 @@ double City::launder_money(string theThiefString, string theFraudCompanyString) 
 	
 	market_ -> change_capital(money_to_launder/4);
 	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
 	
 	market_ -> change_capital(money_to_launder/4);
 	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
 
 	market_ -> change_capital(money_to_launder/4);
 	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
 	
 	market_ -> change_capital(money_to_launder/4);
 	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time());
+	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
 
 	Company * theFraudCompany = company_list_ -> get_company(theFraudCompanyString);
 	
 	market_ -> change_capital(-money_to_launder);
 	theFraudCompany -> change_capital(money_to_launder);
-	log_transaction_full("Market", theFraudCompanyString, money_to_launder, "Inventory", get_time());
+	log_transaction_full("Market", theFraudCompanyString, money_to_launder, "Inventory", get_time(), 1);
 	
 	return money_to_launder;
 

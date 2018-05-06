@@ -243,12 +243,12 @@ void log_transaction(string party, double amount, string type, double time) {
 
 }
 
-void log_transaction_full(string party_pay, string party_receive, double amount, string type, double time) {
+void log_transaction_full(string party_pay, string party_receive, double amount, string type, double time, int fraud /* = 42 */) {
 
 
 	ofstream  file1 ("transactions_full.txt", ios::app);
 	
-    file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << endl;
+    file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << " " << fraud << endl;
     
     file1.close();
 
