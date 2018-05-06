@@ -102,7 +102,7 @@ int main() {
   bool invest = false;
   int flashtime = 60;
   string theThiefString = "";
-  double time_to_steal = 50;
+  double time_to_steal = 5;
   string theFraudCompanyString = "benny_enterprises";
   double amount_to_launder = 0;
 
@@ -134,17 +134,17 @@ int main() {
     
     
     //Initiating theft
-    if(time_year == time_to_steal || time_year == time_to_steal*2 || time_year == time_to_steal*3) {
+    if(fmod(time_year,time_to_steal) == 0) {
     
     	
     	//Step 1 steal money (steal from bank or someone with more money)
     	//Set spendwill to small
     	theThiefString = bennyland.steal_money();
-    	cout << "I main steal: " << theThiefString << endl << endl;
+    	cout << "Year: " << j << " i main steal: " << theThiefString << endl << endl;
     }
     
     //Launder money
-    if(time_year == time_to_steal + 2 || time_year == time_to_steal*2 + 2 || time_year == time_to_steal*3 + 2) {
+    if(fmod(time_year-2,time_to_steal) == 0) {
     
     	//Step 2.1 buy stuff from the market in small batches from our insider but no goods
     	//Step 2.2 move money from market to company
@@ -197,7 +197,7 @@ int main() {
     }
  
 	//Pay stolen dividends
- 	if(time_year == time_to_steal + 2 || time_year == time_to_steal*2 + 2 || time_year == time_to_steal*3 + 2) {
+ 	if(fmod(time_year-2,time_to_steal) == 0) {
     
     	//Step 3 generate dividend payment in small batches to our thief
     	bennyland.company_pay_dividends(theFraudCompanyString, theThiefString, amount_to_launder);
