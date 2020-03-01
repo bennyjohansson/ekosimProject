@@ -42,7 +42,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
                 double mot, double employees, double capacity) {
     
 
-    double rate1 =0.00020;
+    double rate1 =0.000000010;
     double rate2 = 0.000100;
 //    double rate1 =0.10;
 //    double rate2 = 0.0500;
@@ -50,8 +50,8 @@ double get_prod(double sk_sum, double sk, double mot_sum,
 
     double prod = 0;
     
-    int prod_function = 1;
-    
+    int prod_function = 3;
+    //cout << "in functins get prod " << capacity << endl;
     switch (prod_function) {
             
         case 1:
@@ -62,6 +62,9 @@ double get_prod(double sk_sum, double sk, double mot_sum,
             prod = 2*capacity*log((rate2*sk_sum*sk) + (rate2*mot_sum*mot)+1);
             break;
             
+        case 3:
+            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate1*capacity);
+            break;    
         
             
         default:
@@ -79,6 +82,30 @@ double get_prod(Consumer * consumer, double capacity) {
     //  cout << "Hej i functions get_prod(Consumer) " << endl;
     return get_prod(skill, skill, mot, mot, 1, capacity);
     //THE 150 ABOVE SHOLUD NOT BE; IS THIS IN USE; TESTING
+}
+
+double capacity_increase(double items, double capacity) {
+    
+    double increase = 0;
+    int function_select = 2;
+    
+    
+    switch (function_select) {
+        case 1:
+            increase = 30000/capacity*log(items*50/capacity + 1);
+            break;
+            
+        case 2:
+            increase = 40*log(items*0.1 + 1);
+            break;
+            
+            
+        default:
+            increase = 0;
+            break;
+    }
+    
+    return increase;
 }
 
 double get_price(double excess) {
@@ -113,10 +140,10 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     
     double mot = 0.6;
     double sk = 0.5;
-    double cap = 70; 
-    double spe = 0.5;
+    double cap = 100; 
+    double spe = 0.7;
     double save = 0.05; //1-spe;
-    double borrow = 0.080;
+    double borrow = 0.020;
     
     
     randomize(mot, 0.7);
@@ -134,29 +161,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
 }
 
 
-double capacity_increase(double items, double capacity) {
-    
-    double increase = 0;
-    int function_select = 2;
-    
-    
-    switch (function_select) {
-        case 1:
-            increase = 30000/capacity*log(items*50/capacity + 1);
-            break;
-            
-        case 2:
-            increase = 30*log(items*0.003 + 1);
-            break;
-            
-            
-        default:
-            increase = 0;
-            break;
-    }
-    
-    return increase;
-}
+
 
 double item_cost(double production) {
     
@@ -206,7 +211,7 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
 double get_consumer_borrow(double borrowwill, double capital, double interest) {
     
     double amount = 0;
-    double factor = 5;
+    //double factor = 5;
     
     int function_select = 2;
     
@@ -249,6 +254,17 @@ void log_transaction_full(string party_pay, string party_receive, double amount,
 	ofstream  file1 ("transactions_full.txt", ios::app);
 	
     file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << " " << fraud << endl;
+    
+    file1.close();
+
+}
+
+void log_launder_parameters(double shareToSteal, double laundry_factor, int no_years_laundry, int time_to_steal) {
+
+
+	ofstream  file1 ("launder_data.txt", ios::app);
+	
+    file1 << shareToSteal << " "  << laundry_factor << " " << no_years_laundry << " "  << time_to_steal << endl;
     
     file1.close();
 

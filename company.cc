@@ -831,9 +831,9 @@ double Company::invest() {
     //cout << "I company invest," << name_ << " orig cap " << capacity_;
     capacity_change = capacity_increase(items, capacity_);
     change_capacity(capacity_change);  
-    prod_const_skill_ += capacity_change/100;
     
-    prod_const_motivation_ += capacity_change/100;
+    //prod_const_skill_ += capacity_change/1000;
+    //prod_const_motivation_ += capacity_change/1000;
     
     //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
     //  cout << "I company invest  " << name_ << "     items: " << items << "    " << "Cost: " << cost << "   Capac ch: " << capacity_change << "  Capital before: " << capital_old << "  Available capital: " << available_capital << "    Desired loans: " << loans << "   Max items  " << max_items << endl;

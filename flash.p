@@ -5,7 +5,7 @@
    set nomultiplot
    set terminal postscript eps color enhanced solid
    set output "flash.eps"
-   set xrange[0:*]
+   set xrange[*:*]
    set yrange[*:*]
    set size 1,1
    set key right

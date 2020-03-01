@@ -5,7 +5,7 @@
    set terminal postscript eps color enhanced solid
    set output "money_test.eps"
    set xrange[*:*]
-   set yrange[*:4e+7]
+   set yrange[*:7e+6]
    set size 1,1
    set key right
    set title "Money in Bennyland" font "Helvetica,24"
@@ -51,13 +51,13 @@
 	 set key right
 	 set title "GDP & stuff in Bennyland" font "Helvetica,24"
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
-      set xlabel "time" font "He	lvetica,18"
+      set xlabel "time" font "Helvetica,18"
 	 plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:10 title "GDP" with lines ls 8
 	    
 	    set nomultiplot
 	    set output "diverse.eps"
 	    set xrange [*:*]
-	    set yrange [*:1100]
+	    set yrange [*:100]
 	    
 	    set size 1,1
 	    set key right

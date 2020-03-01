@@ -5,6 +5,7 @@
 #include <list>
 #include <fstream>
 #include <cmath>
+#include <random>
 
 //#include "consumer.h"
 #include "functions.h"
@@ -34,7 +35,11 @@ labour_market_(new Consumer_list("LABOUR MARKET")),
 market_(new Market()),
 bank_(new Bank("BENNYBANK", 0.05, 3)),
 clock_(new Clock()),
-flash_counter_(0)
+flash_counter_(0), 
+shareToSteal_(0.95),
+laundry_factor_(0.95),
+no_years_laundry_(4),
+time_to_steal_(10000) 
 {}
 
 
@@ -141,7 +146,7 @@ void City::print_GDP() {
         << *Demand << setw(SPACE) << *Wages << setw(SPACE) 
         << *Price_out << setw(SPACE) << *Employed << setw(SPACE + 4)
         << *Consumer_capital << setw(SPACE + 4) << *Company_capital << setw(SPACE) 
-        << *Investments << setw(SPACE) << *Bank_capital << endl;
+        << *Investments/(*Price_out) << setw(SPACE) << *Bank_capital << endl;
         
         Time++;
         Demand++;
@@ -276,6 +281,24 @@ Consumer * City::get_optimal_consumer(double mot_we, double skill_we) {
     
 }
 
+
+double City::get_shareToSteal() {
+    return shareToSteal_;
+}
+
+double City::get_laundry_factor() {
+    return laundry_factor_;
+}
+
+int City::get_no_years_laundry() {
+    return no_years_laundry_;
+}
+
+int City::get_time_to_steal() {
+    return time_to_steal_;
+}
+
+
 /*
  * Set-functions
  */
@@ -285,6 +308,22 @@ void City::set_consumers(Consumer_list * consumer_list) {
 }
 void City::set_companies(Company_list * company_list) {
     company_list_ = company_list;
+}
+
+void City::set_shareToSteal(double share) {
+    shareToSteal_ = share;
+}
+
+void City::set_laundry_factor(double factor) {
+    laundry_factor_ = factor;
+}
+
+void City::set_no_years_laundry(int years) {
+    no_years_laundry_ = years;
+}
+
+void City::set_time_to_steal(int years) {
+    time_to_steal_ = years;
 }
 
 
@@ -386,6 +425,57 @@ void City::load_company(string nameactual) {
     add_company(new Company(nameactual, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
     
 } 
+
+
+void City::load_launder_parameters() {
+
+    double shareToSteal;
+   	double laundry_factor;
+    double no_years_laundry;
+   	double time_to_steal; 
+    
+    string nameactual = "launder_parameters.txt";
+    
+    string line;
+    char char_name[100];
+    
+    strcpy(char_name, nameactual.c_str());
+    
+    ifstream myfile (char_name);
+    if (myfile.is_open()) {
+    
+        //getline (myfile,line);
+        //name = line;
+        
+
+        getline (myfile,line);
+        strcpy(char_name, line.c_str());
+        shareToSteal_ = atof(char_name);
+        
+        getline (myfile,line);
+        strcpy(char_name, line.c_str());
+        laundry_factor_ = atof(char_name);
+        
+        getline (myfile,line);
+        strcpy(char_name, line.c_str());
+        no_years_laundry_ = atof(char_name);
+        
+        getline (myfile,line);
+        strcpy(char_name, line.c_str());
+        time_to_steal_ = atof(char_name);
+    }
+
+ 	else {
+        cout << "Unable to open file" << endl; 
+    }
+    
+    //cout << "I functions load parameters" << endl << "sts: " << shareToSteal_ << endl << "lf: " << laundry_factor_ << endl << "years: " << no_years_laundry_ << endl << "ttts: " << time_to_steal_ << endl;
+    
+    //return param{shareToSteal, laundry_factor, no_years_laundry, time_to_steal};
+    
+} 
+
+
 
 /*
  * Functions to update Bennyland. Note that update_market() is old and not in use.
@@ -901,10 +991,10 @@ void City::save_money_data() {
  */
 
 void City::save_flash(int time) {
-    double timec = 0;
+    int timec = 0;
     timec = clock_ -> get_time();
-    //If right time, do everything, else, do nothing
-    if(timec >= time && timec < time + 10) {
+    //If right time, do everything, else, do nothing  && timec < time + 10
+    if(timec >= time ) {
         double consumer_capital = 0;
         double company_capital = 0;
         double bank_capital = 0;
@@ -1014,7 +1104,7 @@ void City::adjust_money() {
     Price_out = price_out_.begin();
     
     sum = 0;
-    for(i = 0; i < 4; i++) {
+    for(i = 0; i < 7; i++) {
         sum += *Price_out;
         Price_out++;
     }
@@ -1228,7 +1318,7 @@ string City::steal_money(string theThiefString) {
 	Company * theCompany = company_list_ -> get_company("johansson_och_johansson");// -> get_company();
 	//bank_ -> info();
 	
-	capital_to_steal = theCompany -> get_capital()*0.2;
+	capital_to_steal = theCompany -> get_capital()*shareToSteal_;
 	
 	theCompany -> change_capital(-capital_to_steal);
 	theThief -> change_capital(capital_to_steal);
@@ -1247,29 +1337,19 @@ double City::launder_money(string theThiefString, string theFraudCompanyString) 
 
 
 	double money_to_launder = 0;
-	double laundry_factor = 0.95;
 	Consumer * theThief = consumers_ -> get_consumer(theThiefString);
-	
-	money_to_launder = (theThief -> get_capital())*laundry_factor;
+	money_to_launder = (theThief -> get_capital())*laundry_factor_;
 	
 	//cout << "I city launder money" << endl;
 	//theThief -> info();
 	
-	market_ -> change_capital(money_to_launder/4);
-	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
 	
-	market_ -> change_capital(money_to_launder/4);
-	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
-
-	market_ -> change_capital(money_to_launder/4);
-	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
+	for(int j = 1; j <= no_years_laundry_; j++) {
+		market_ -> change_capital(money_to_launder/no_years_laundry_);
+		theThief -> change_capital(-money_to_launder/no_years_laundry_);
+		log_transaction_full(theThiefString, "Market", money_to_launder/no_years_laundry_, "Purchase", get_time(), 1);
 	
-	market_ -> change_capital(money_to_launder/4);
-	theThief -> change_capital(-money_to_launder/4);
-	log_transaction_full(theThiefString, "Market", money_to_launder/4, "Purchase", get_time(), 1);
+	}
 
 	Company * theFraudCompany = company_list_ -> get_company(theFraudCompanyString);
 	
@@ -1282,7 +1362,57 @@ double City::launder_money(string theThiefString, string theFraudCompanyString) 
 }
 
 
+void City::randomize_laundry_parameters() {
 
+	std::default_random_engine generator;
+	
+	double temp = 0.5;
+	
+	log_launder_parameters(shareToSteal_, laundry_factor_, no_years_laundry_, time_to_steal_);
+	
+	//Share to steal
+
+	std::normal_distribution<double> distribution_1(shareToSteal_,1.0);
+	temp = distribution_1(generator);
+	while (temp <= 0 || temp > 1) {
+		
+		temp = distribution_1(generator);
+	}
+	shareToSteal_ = temp;
+
+
+	std::normal_distribution<double> distribution_2(laundry_factor_,1.0);
+	temp = distribution_2(generator);
+	while (temp <= 0 || temp > 1) {	
+		temp = distribution_2(generator);
+	}
+	laundry_factor_ = temp;
+
+
+	std::normal_distribution<double> distribution_3(no_years_laundry_,3.0);
+	temp = (int) distribution_3(generator);
+	while (temp <= 0) {	
+		temp = (int) distribution_3(generator);
+	}
+	no_years_laundry_ = temp;
+	
+	
+	std::normal_distribution<double> distribution_4(time_to_steal_,3.0);
+	temp = (int) distribution_4(generator);
+	while (temp <= 0) {	
+		temp = (int) distribution_4(generator);
+	}
+	time_to_steal_ = temp;
+	
+
+	cout << "Launder params updated in city randomize launder parameters" << endl;
+	cout << "shareToSteal_: " << shareToSteal_ << endl;
+	cout << "laundry_factor_: " << laundry_factor_ << endl;
+	cout << "no_years_laundry_: " << no_years_laundry_ << endl;
+	cout << "time_to_steal_: " << time_to_steal_ << endl;
+
+
+}
 
 
 

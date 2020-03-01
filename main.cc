@@ -54,12 +54,13 @@ int main() {
   
   bennyland.print_company_list(); 
 
+
   /*
    * Creating 2000 random consumers. See file functions.cc for settings about the consumers.
    */
   
 
-  for(int i = 0; i < 1000; i++) {    
+  for(int i = 0; i < 4000; i++) {    
     Consumer * benny = random_consumer(bennyland.get_market(), bennyland.get_bank(), bennyland.get_clock());
     benny -> set_name("Consumer" + std::to_string(i));
     bennyland.add_consumer(benny);    
@@ -71,6 +72,14 @@ int main() {
    */
 
   double sum_before = bennyland.get_capital_sum();
+
+
+   /*
+   * Loading money laundring data
+   */
+   
+	bennyland.load_launder_parameters();
+	cout << "Param1: " << bennyland.get_laundry_factor() << endl;
   
   /*
    * Starting the main loop, the functions in it are quite 
@@ -97,14 +106,14 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
-	double simulation_years = 60;
-  double counter = 0;
+	double simulation_years = 500;
   bool invest = false;
-  int flashtime = 60;
+  int flashtime = 5;
   string theThiefString = "";
-  double time_to_steal = 5;
+  double time_to_steal = bennyland.get_time_to_steal();
   string theFraudCompanyString = "benny_enterprises";
   double amount_to_launder = 0;
+  double start_investing = 10;
 
 
 
@@ -136,11 +145,12 @@ int main() {
     //Initiating theft
     if(fmod(time_year,time_to_steal) == 0) {
     
+    	theFraudCompanyString = bennyland.get_random_company() -> get_name();// -> get_name();
     	
     	//Step 1 steal money (steal from bank or someone with more money)
     	//Set spendwill to small
     	theThiefString = bennyland.steal_money();
-    	cout << "Year: " << j << " i main steal: " << theThiefString << endl << endl;
+    	cout << "Year: " << j << " i main steal: " << theThiefString << " " << theFraudCompanyString << endl << endl;
     }
     
     //Launder money
@@ -165,36 +175,27 @@ int main() {
     bennyland.invest(invest);
     bennyland.save_flash(flashtime);    
     
-    if(time_year >= 10) {
+    if(time_year >= start_investing) {
       invest = true;
     }
 
     if(invest) {
-      bennyland.consumer_get_and_pay_interest();
-    }
+    bennyland.consumer_get_and_pay_interest();
+    bennyland.save_flash(flashtime);
+    bennyland.company_pay_interest();
     bennyland.save_flash(flashtime); 
-    
-    
-
-    if(invest) {
-    
-        bennyland.company_pay_interest();
+ 	bennyland.consumers_bank_business();
+ 	bennyland.save_flash(flashtime); 
+ 	bennyland.company_repay_to_bank();
+ 	bennyland.save_flash(flashtime);  
+    bennyland.consumers_deposit_and_borrow_from_bank();
+    bennyland.save_flash(flashtime);  
+      
+      
+      
     }
-    bennyland.save_flash(flashtime);    
+     
     
-    if(invest) {
-      bennyland.consumers_bank_business();
-    }
-    bennyland.save_flash(flashtime);    
-    
-    if(invest) {
-      bennyland.company_repay_to_bank();
-    }
-    bennyland.save_flash(flashtime);    
-    
-    if(invest) {
-      bennyland.consumers_deposit_and_borrow_from_bank();
-    }
  
 	//Pay stolen dividends
  	if(fmod(time_year-2,time_to_steal) == 0) {
@@ -216,6 +217,7 @@ int main() {
     bennyland.update_consumer_list();
 
     bennyland.tick();
+    bennyland.randomize_laundry_parameters();
  
   }
 

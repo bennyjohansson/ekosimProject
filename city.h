@@ -56,6 +56,10 @@ class City {
       Consumer * get_random_consumer();
       Company * get_random_company();
       Consumer * get_optimal_consumer(double mot_we, double skill_we);
+      double get_shareToSteal();
+      double get_laundry_factor();
+      int get_no_years_laundry();
+      int get_time_to_steal();
 
       /*
        * Set-functions
@@ -63,6 +67,10 @@ class City {
 
       void set_consumers(Consumer_list * consumer_list);
       void set_companies(Company_list * company_list);
+      void set_shareToSteal(double);
+      void set_laundry_factor(double);
+      void set_no_years_laundry(int);
+      void set_time_to_steal(int);
 
 
       /*
@@ -73,6 +81,7 @@ class City {
       void add_company(Company * company);
       void add_company(string name);
       void load_company(string); 
+      void load_launder_parameters();
 
       /*
        * Functions to update Bennyland. Note that update_market() is old and not in use.
@@ -88,6 +97,7 @@ class City {
       string steal_money();
       string steal_money(string);
       double launder_money(string, string);
+      void randomize_laundry_parameters();
       
  
       void tick(); 
@@ -147,6 +157,13 @@ class City {
       Clock * clock_;
       int flash_counter_;
       double loans_to_bank_;
+    
+    
+    //Launder parameters  
+    double shareToSteal_;
+   	double laundry_factor_;
+    double no_years_laundry_;
+   	double time_to_steal_; 
 };
 
 

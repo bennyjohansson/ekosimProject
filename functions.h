@@ -24,6 +24,9 @@ double get_consumer_loan(double, double, double);
 double get_consumer_borrow(double, double, double);
 void log_transaction(string, double, string, double);
 void log_transaction_full(string, string, double, string, double, int fraud = 0);
+void log_launder_parameters(double, double, int, int);
+//void load_launder_parameters();
+
 
 double capacity_increase(double, double);
 double item_cost(double);
