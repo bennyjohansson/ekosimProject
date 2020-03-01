@@ -117,6 +117,7 @@ int main() {
 
 
 
+
   for(int j = 0; j < simulation_years; j++) {
 
     double time_year = bennyland.get_time();
@@ -150,6 +151,7 @@ int main() {
     	//Step 1 steal money (steal from bank or someone with more money)
     	//Set spendwill to small
     	theThiefString = bennyland.steal_money();
+    	//cout << " I main steal " << time_year << "  " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
     	cout << "Year: " << j << " i main steal: " << theThiefString << " " << theFraudCompanyString << endl << endl;
     }
     
@@ -202,7 +204,7 @@ int main() {
     
     	//Step 3 generate dividend payment in small batches to our thief
     	bennyland.company_pay_dividends(theFraudCompanyString, theThiefString, amount_to_launder);
-    	
+    	bennyland.randomize_laundry_parameters();
     }
     	
 
@@ -217,7 +219,7 @@ int main() {
     bennyland.update_consumer_list();
 
     bennyland.tick();
-    bennyland.randomize_laundry_parameters();
+   
  
   }
 

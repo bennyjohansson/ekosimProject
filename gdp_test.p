@@ -5,7 +5,7 @@
    set terminal postscript eps color enhanced solid
    set output "money_test.eps"
    set xrange[*:*]
-   set yrange[*:7e+6]
+   set yrange[*:*]
    set size 1,1
    set key right
    set title "Money in Bennyland" font "Helvetica,24"
@@ -67,3 +67,16 @@
 	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:7 title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "1000*Interest rate" with lines ls 7,  "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
 	       
  
+ 		set nomultiplot
+      set output "employment.eps"
+      set xrange [*:*]
+      set yrange [*:*]
+      
+      set size 1,1
+      set key right
+      set title "Employment Bennyland" font "Helvetica,24"
+      set ylabel "Employed" font "Helvetica,18"
+      set xlabel "time" font "Helvetica,18"
+      plot "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
+	   
+	 

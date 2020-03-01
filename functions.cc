@@ -42,7 +42,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
                 double mot, double employees, double capacity) {
     
 
-    double rate1 =0.000000010;
+    double rate1 = 0.000000050;  //Funkar bra med 0.000000010;
     double rate2 = 0.000100;
 //    double rate1 =0.10;
 //    double rate2 = 0.0500;
@@ -71,6 +71,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
             prod = 0;
             break;
     } 
+     
     
     return prod;
 }
@@ -96,7 +97,7 @@ double capacity_increase(double items, double capacity) {
             break;
             
         case 2:
-            increase = 40*log(items*0.1 + 1);
+            increase = 30*log(items + 1);
             break;
             
             
@@ -105,6 +106,7 @@ double capacity_increase(double items, double capacity) {
             break;
     }
     
+       
     return increase;
 }
 

@@ -737,6 +737,8 @@ double Company::produce() {
     production = get_production();
     stock_ += production;
     
+    cout << "I Company produce, share of full capacity: " << production/(capacity_*3.1415/2) << "for " << name_ << endl;
+    
     return production;
 }
 
@@ -829,7 +831,13 @@ double Company::invest() {
     log_transaction_full(name_, "Market", capital + loans, "Investment", clock_ ->  get_time());
     
     //cout << "I company invest," << name_ << " orig cap " << capacity_;
+    
+    
     capacity_change = capacity_increase(items, capacity_);
+    
+    //cout <<  "I company invest, old capacity: " << capacity_ << "  increase: " << capacity_change << " for " << name_ << endl; 
+ 
+    
     change_capacity(capacity_change);  
     
     //prod_const_skill_ += capacity_change/1000;
