@@ -55,8 +55,8 @@ wage_change_limit_(1),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
-
 decay_(0.005),
+max_leverage_(1),
 market_(market),
 bank_(bank),
 clock_(clock),
@@ -280,7 +280,9 @@ double Company::get_investment() {
     price_out = market_ -> get_price_out();
     max_items = market_ -> get_items();
     
-    while(items_temp < max_items && cost < capital_*pbr_) {
+    while(items_temp < max_items && cost < capital_*pbr_ && (debts_ + loans)/capital_ - 1 < max_leverage_) {
+        
+        cout << "I company get investments: " << (debts_ + loans)/capital_ - 1 << endl;
         
         cost = price_out * items_temp;
         
@@ -363,8 +365,8 @@ double Company::get_desired_investment() {
         }
         
         income = get_investment_cashflow(items_temp, loans);//items
-        //cout << "I compannby desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << endl; 
-        if (income - cost > value) {
+        cout << "I compannby desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << "  Loans: " << loans << endl; 
+        if (income - cost > value && (debts_ + loans)/capital_ - 1 < max_leverage_) {
             value = income - cost;
             items = items_temp;
             increase = true;
@@ -433,9 +435,11 @@ double Company::get_desired_loans() {
     double desired_loans = 0;
     
     capital_to_invest = capital_ * pbr_;
-    
+    cout << "I compannby desired loans" << endl;
     desired_investment = get_desired_investment();
+    cout << "I compannby desired loans2" << endl;
     price_out = market_ -> get_price_out();
+    cout << "I compannby desired loans2" << endl;
     
     desired_loans = desired_investment*price_out - capital_to_invest;
     
@@ -471,9 +475,9 @@ double Company::get_expected_net_flow_to_bank() {
     }
     
     interest_to_bank = interest*debts_;
-    
+    cout << "Company Verify sign in company get expected net cash flow1" << endl;
     loans_from_bank = get_desired_loans();
-    //cout << "Verify sign in company get expected net cash flow" << endl;
+    cout << "Company Verify sign in company get expected net cash flow2" << endl;
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
     
     return sum;

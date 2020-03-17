@@ -1,9 +1,12 @@
 ## Gnuplot script file for plotting data in file "gnu_depth_si.dat"
    
+    x_start = 0
+      x_end = 500
    
    set nomultiplot
    set terminal postscript eps color enhanced solid
    set output "money_test.eps"
+   #set xrange[x_start:x_end]
    set xrange[*:*]
    set yrange[*:*]
    set size 1,1
@@ -28,10 +31,12 @@
    
    plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 8, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7
       
+     
       
       set nomultiplot
       set output "gdp_real.eps"
-      set xrange [*:*]
+      #set xrange[x_start:x_end]
+   		set xrange[*:*]
       set yrange [*:*]
       
       set size 1,1
@@ -44,8 +49,8 @@
 	 
 	 set nomultiplot
 	 set output "gdp_invest.eps"
-	 set xrange [*:*]
-	 set yrange [*:*]
+	 #set xrange[x_start:x_end]
+   set xrange[*:*]
 	 
 	 set size 1,1
 	 set key right
@@ -56,21 +61,21 @@
 	    
 	    set nomultiplot
 	    set output "diverse.eps"
-	    set xrange [*:*]
-	    set yrange [*:100]
+	   #set xrange[x_start:x_end]
+   set xrange[*:*]
 	    
 	    set size 1,1
 	    set key right
 	    set title "Prices, wages & stuff in Bennyland" font "Helvetica,24"
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
-	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:7 title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "1000*Interest rate" with lines ls 7,  "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
+	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:7 title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "1000*Interest rate" with lines ls 7 #,  "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
 	       
  
  		set nomultiplot
       set output "employment.eps"
-      set xrange [*:*]
-      set yrange [*:*]
+      #set xrange[x_start:x_end]
+   set xrange[*:*]
       
       set size 1,1
       set key right

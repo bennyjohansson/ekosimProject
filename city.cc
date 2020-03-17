@@ -574,9 +574,14 @@ void City::update_interest_rate() {
         
     double delta_sum = 0;
     double d_sum_di = 1;
+    double max_interest_rate = 5;
+    double ir_delta = 0.0005;
     
     interest = bank_ -> get_interest();
     prev_interest = interest;
+    
+    
+   
     
     
     consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
@@ -584,41 +589,74 @@ void City::update_interest_rate() {
     bank_sum = (bank_ -> get_sum_to_borrow());
     
     
-   //Getting estimated flows to the bank
+   //Getting estimated flows to the bank before interest change
     sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     
     //Updating interest rate
     bank_ -> change_interest(est_ir_change);
     interest = bank_ -> get_interest();
     
+     //If max interest rate setting interest to max_interest/2
+    if(interest >= max_interest_rate) {
     
+    	interest = max_interest_rate/2;
     
-    while(abs(sum_flows_to_bank) > diff_limit && counter < 30 && interest < 3) {
+    }
     
+    cout << "Start interest rate: " << prev_interest << endl;
+    
+    while(abs(sum_flows_to_bank) > diff_limit && counter < 20 && interest < max_interest_rate) {
+    
+    	cout << "I city update IR 1" << endl;
     	
-    	
-    	//Getting cash-flows
+    	//Getting cash-flows after initial interest change
     	consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    	cout << "I city update IR 2" << endl;
     	company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    	cout << "I city update IR 3" << endl;
     	bank_sum = (bank_ -> get_sum_to_borrow());
     	
-    	//Calculating deltas
+    	//Calculating cash-flow deltas after interest update
     	delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
-    	d_sum_di = delta_sum/(prev_interest - interest);
+    	ir_delta = (prev_interest - interest);
+    	cout << "I city update IR 4" << endl;
+    	if(ir_delta == 0) {
+    		cout << "I city updte IR, IR delta: " << ir_delta << " Prev: " << prev_interest << " Current: " << interest << endl;
+    		ir_delta = est_ir_change;
+    	}
+    	
+    	d_sum_di = delta_sum/ir_delta;
+    	//d_sum_di = delta_sum/(prev_interest - interest);
+    	
+    	if(d_sum_di == 0) {
+    		cout << "d_sum_di: " << d_sum_di << endl;
+    		d_sum_di = 100000;
+    	}
+    	
+    	//Updating flows to bank
     	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
+    	
+    	cout << "New ir: " << interest +  est_ir_change*ir_change_factor << " adjustment: " << est_ir_change*ir_change_factor << "  Total cashflow to bank: " << sum_flows_to_bank << endl;
     	
     	//Changint interest rate
     	prev_interest = interest;
     	bank_ -> change_interest(est_ir_change*ir_change_factor);
     	interest = bank_ -> get_interest();
     	
-    	
     	counter = counter + 1;
+    	cout << "I city update IR 5" << endl;
+    	
     }
-
-	cout << "I city update interest rate " << "Rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
+    
+    
+	if (interest > max_interest_rate) {
+		cout << "I city update interest rate, setting max rate of: " << max_interest_rate << " was " << interest << endl;
+		bank_ -> set_interest(max_interest_rate);
+	
+	}
+	cout << "I city update interest rate " << "Market rate: " << interest <<  " Max rate: " << max_interest_rate << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
 }
 void City::update_interest_rate2() {

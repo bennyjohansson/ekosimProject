@@ -145,6 +145,7 @@ private:
     double invest_;
     double pbr_;
     double decay_;
+    double max_leverage_;
     
     Consumer_list * employees_;
     Market *market_;

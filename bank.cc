@@ -89,11 +89,14 @@ double Bank::get_sum_to_borrow() {
     double safety_amount = 0;
     double sum = 0;
     
+    
+    //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
     safety_amount = loans_*safety_;
     
     if(safety_amount > assets_ && assets_ > 0) {
         safety_amount = assets_;
         sum = assets_ - safety_amount;
+        //sum = safety_amount - assets_;
     }
     else if (assets_ <= 0){
         sum = -assets_;
@@ -141,7 +144,9 @@ void Bank::change_interest(double ch) {
         interest_rate_ += ch;
     }
     else {
-        interest_rate_ = 0;
+    
+    	interest_rate_ += ch;
+        //interest_rate_ = 0;
     }
 }
 
@@ -174,11 +179,20 @@ void Bank::update_assets() {
 double Bank::pay_dividends() {
     
     double dividends = 0;
+    double safety_amount = 0;
+    
+    cout << "I bank pay_dividends, unchecked changes here and in get_sum_to_borrow. Change interest had min of 0" << endl;
+    
+    //Safety amount
+    safety_amount = loans_*safety_;
+    
+    
+    
     
     if(deposits_ < loans_) {
         
+        //dividends = fmax(0, assets_ - safety_amount) * div_ratio_;
         dividends = assets_ * div_ratio_;
-        
     }
     else {
         

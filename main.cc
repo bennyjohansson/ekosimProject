@@ -106,7 +106,7 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
-	double simulation_years = 500;
+	double simulation_years = 1000;
   bool invest = false;
   int flashtime = 5;
   string theThiefString = "";
@@ -173,9 +173,12 @@ int main() {
       bennyland.update_interest_rate();
     }
 
-    bennyland.save_flash(flashtime);    
+    bennyland.save_flash(flashtime);   
+    cout << "I main test" << endl; 
     bennyland.invest(invest);
     bennyland.save_flash(flashtime);    
+    cout << "I main test2" << endl;
+    
     
     if(time_year >= start_investing) {
       invest = true;

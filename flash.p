@@ -5,8 +5,10 @@
    set nomultiplot
    set terminal postscript eps color enhanced solid
    set output "flash.eps"
-   set xrange[*:*]
-   set yrange[*:*]
+   #set xrange[12430:12440]
+   #set yrange[-1e40:1e40]
+   set xrange[1130:1140]
+   set yrange[-1e60:1e60]
    set size 1,1
    set key right
    set title "Money in Bennyland" font "Helvetica,24"
