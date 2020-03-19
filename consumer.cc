@@ -416,35 +416,43 @@ void Consumer::update_motivation() {
 
 double Consumer::buy() {
     
-    double amount = 0;
+    double amount_cash = 0;
+    double amount_bank = 0;
+    double total_amount = 0;
     double price = 0;
     double quantity = 0;
     
     if (capital_ > 0) {
-        amount = capital_ * spendwill_;
+        amount_cash = capital_ * spendwill_;
+        amount_bank = loans_ * spendwill_;
+        total_amount = amount_bank + amount_cash;
     }
     
     price = market_ -> get_price_out();
-    quantity = amount/price;
+    quantity = total_amount/price;
     
     /*
      * Have to check if the market has got enough intems to sell 
      */
     
-    if (market_ -> get_items() > quantity && amount > 0) {
+    if (market_ -> get_items() > quantity && total_amount > 0) {
         
         items_ += quantity;
-        market_ -> change_capital(amount);
-        change_capital(-amount);
+        market_ -> change_capital(total_amount);
         market_ -> change_items(-quantity);
         
-        log_transaction_full(name_, "Market", amount, "Purchase", get_time());
-        log_transaction(name_, amount, "Purchase", get_time());
+        change_capital(-amount_cash);
+        change_loans(-amount_bank);
+        bank_ -> change_deposits(-amount_bank);
+        
+        log_transaction_full(name_, "Market", total_amount, "Purchase", get_time());
+        log_transaction(name_, total_amount, "Purchase", get_time());
+        log_transaction(name_, amount_bank, "Deposit", get_time());
         
     }
     
     
-    return amount;
+    return total_amount;
 }
 
 

@@ -203,12 +203,14 @@ double Consumer_list::get_total_demand() {
   double sum = 0;
   double sw = 0;
   double cap = 0;
+  double loans = 0;
   
   if(list_) {
     for(p = list_; p -> next_; p = p -> next_) {
       sw = p -> get_spendwill();
       cap = p -> get_capital();
-      sum += (sw*cap);
+      loans = p -> get_loans();
+      sum += (sw*(cap + loans));
     }
   }
   else {

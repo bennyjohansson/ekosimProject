@@ -26,6 +26,7 @@ public:
 	double get_capital();
 	double get_spendwill();
 	double get_income();
+	double get_loans();
 	bool get_employment_status();
 	void set_employment_status(bool);
 

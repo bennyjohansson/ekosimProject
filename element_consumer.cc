@@ -45,6 +45,10 @@ double  Element_consumer::get_capital() {
   return consumer_ -> get_capital();
 }
 
+double  Element_consumer::get_loans() {
+  return consumer_ -> get_loans();
+}
+
 double  Element_consumer::get_spendwill() {
   return consumer_ -> get_spendwill();
 }
