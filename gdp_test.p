@@ -82,6 +82,6 @@
       set title "Employment Bennyland" font "Helvetica,24"
       set ylabel "Employed" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
-      plot "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
+      plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
 	   
 	 

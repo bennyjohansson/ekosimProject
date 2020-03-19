@@ -178,11 +178,11 @@ double Company_list::get_debts_sum() {
 double Company_list::get_expected_net_flow_to_bank_sum() {
     Element_company * p;
     double sum = 0;
-    cout << "I company_list net cf to bank sum: " << sum << endl;
+    //cout << "I company_list net cf to bank sum: " << sum << endl;
     for (p = list_; p; p = p -> next_) {
         sum += p -> get_company() -> get_expected_net_flow_to_bank();
     }
-    cout << "I company_list net cf to bank sum: " << sum << endl;
+    //cout << "I company_list net cf to bank sum: " << sum << endl;
     return sum;
 }
 

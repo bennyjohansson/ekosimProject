@@ -182,6 +182,7 @@ double Bank::pay_dividends() {
     double safety_amount = 0;
     
     cout << "I bank pay_dividends, unchecked changes here and in get_sum_to_borrow. Change interest had min of 0" << endl;
+    cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
     
     //Safety amount
     safety_amount = loans_*safety_;
@@ -191,7 +192,7 @@ double Bank::pay_dividends() {
     
     if(deposits_ < loans_) {
         
-        //dividends = fmax(0, assets_ - safety_amount) * div_ratio_;
+        //dividends = fmin(0, assets_ - safety_amount) * div_ratio_;
         dividends = assets_ * div_ratio_;
     }
     else {

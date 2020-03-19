@@ -174,10 +174,8 @@ int main() {
     }
 
     bennyland.save_flash(flashtime);   
-    cout << "I main test" << endl; 
     bennyland.invest(invest);
     bennyland.save_flash(flashtime);    
-    cout << "I main test2" << endl;
     
     
     if(time_year >= start_investing) {

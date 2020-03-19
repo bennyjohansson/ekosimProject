@@ -282,7 +282,7 @@ double Company::get_investment() {
     
     while(items_temp < max_items && cost < capital_*pbr_ && (debts_ + loans)/capital_ - 1 < max_leverage_) {
         
-        cout << "I company get investments: " << (debts_ + loans)/capital_ - 1 << endl;
+        //cout << "I company get investments: " << (debts_ + loans)/capital_ - 1 << endl;
         
         cost = price_out * items_temp;
         
@@ -365,7 +365,7 @@ double Company::get_desired_investment() {
         }
         
         income = get_investment_cashflow(items_temp, loans);//items
-        cout << "I compannby desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << "  Loans: " << loans << endl; 
+        //cout << "I company desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << "  Loans: " << loans << endl; 
         if (income - cost > value && (debts_ + loans)/capital_ - 1 < max_leverage_) {
             value = income - cost;
             items = items_temp;
@@ -435,11 +435,8 @@ double Company::get_desired_loans() {
     double desired_loans = 0;
     
     capital_to_invest = capital_ * pbr_;
-    cout << "I compannby desired loans" << endl;
     desired_investment = get_desired_investment();
-    cout << "I compannby desired loans2" << endl;
     price_out = market_ -> get_price_out();
-    cout << "I compannby desired loans2" << endl;
     
     desired_loans = desired_investment*price_out - capital_to_invest;
     
@@ -475,9 +472,7 @@ double Company::get_expected_net_flow_to_bank() {
     }
     
     interest_to_bank = interest*debts_;
-    cout << "Company Verify sign in company get expected net cash flow1" << endl;
     loans_from_bank = get_desired_loans();
-    cout << "Company Verify sign in company get expected net cash flow2" << endl;
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
     
     return sum;
@@ -741,7 +736,7 @@ double Company::produce() {
     production = get_production();
     stock_ += production;
     
-    cout << "I Company produce, share of full capacity: " << production/(capacity_*3.1415/2) << "for " << name_ << endl;
+    cout << "I Company produce, share of full capacity: " << production/(capacity_*3.1415/2) << "  and capacity: " << capacity_ << "  for " << name_ << endl;
     
     return production;
 }
