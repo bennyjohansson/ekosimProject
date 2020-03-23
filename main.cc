@@ -143,6 +143,7 @@ int main() {
     bennyland.save_flash(flashtime);
     
     
+    
     //Initiating theft
     if(fmod(time_year,time_to_steal) == 0) {
     
@@ -151,22 +152,22 @@ int main() {
     	//Step 1 steal money (steal from bank or someone with more money)
     	//Set spendwill to small
     	theThiefString = bennyland.steal_money();
-    	cout << " I main steal " << time_year << "  " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
+    	cout << " I main steal " << time_year << " tts " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
     	cout << "Year: " << j << " i main steal: " << theThiefString << " " << theFraudCompanyString << endl << endl;
     }
+
     
     //Launder money
     if(fmod(time_year-2,time_to_steal) == 0) {
     
     	//Step 2.1 buy stuff from the market in small batches from our insider but no goods
     	//Step 2.2 move money from market to company
-    	cout << " I main steal 2 " << time_year << "  " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
+    	cout << " I main steal 2 " << time_year << " tts " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
     	amount_to_launder = bennyland.launder_money(theThiefString, theFraudCompanyString);
     	cout << "I main launder money: " << amount_to_launder << endl;
     	
     }
     
-
     bennyland.pay_company_employees();
     bennyland.save_flash(flashtime);
     
@@ -174,10 +175,10 @@ int main() {
       bennyland.update_interest_rate();
     }
 
+
     bennyland.save_flash(flashtime);   
     bennyland.invest(invest);
     bennyland.save_flash(flashtime);    
-    
     
     if(time_year >= start_investing) {
       invest = true;
@@ -207,7 +208,7 @@ int main() {
     	//Step 3 generate dividend payment in small batches to our thief
     	bennyland.company_pay_dividends(theFraudCompanyString, theThiefString, amount_to_launder);
     	bennyland.randomize_laundry_parameters();
-    	cout << " I main steal 3 " << time_year << "  " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
+    	cout << " I main steal 3 " << time_year << " tts " << time_to_steal << "  Mod: " << fmod(time_year,time_to_steal) << endl;
     }
     	
 

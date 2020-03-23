@@ -665,6 +665,11 @@ void City::update_interest_rate() {
 		bank_ -> set_interest(max_interest_rate);
 	
 	}
+	else if(-interest > max_interest_rate) {
+		cout << "I city update interest rate, setting negative max rate of: " << -max_interest_rate << " was " << interest << endl;
+		bank_ -> set_interest(-max_interest_rate);
+	
+	}
 	
 	//Testing response to increasing interest rate
     //	if(clock_ -> get_time() >= 100 && clock_ -> get_time() < 150 ) {

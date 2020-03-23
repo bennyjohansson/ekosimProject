@@ -102,6 +102,40 @@ double capacity_increase(double items, double capacity) {
             break;
             
         case 3:
+        //0.005 works fine
+            increase = 0.05*items;
+            break;
+            
+            
+        default:
+            increase = 0;
+            break;
+    }
+    
+       
+    return increase;
+}
+
+double factor_increase(double items, double p_skill, double p_mot, double capacity) {
+
+ //Function not dompleted
+ //Best idea is probably to call both capacity increase and factor increase from company etc. 
+    
+    double increase = 0;
+    int function_select = 3;
+    
+    
+    switch (function_select) {
+        case 1:
+            increase = 30000/capacity*log(items*50/capacity + 1);
+            break;
+            
+        case 2:
+        //30 works fine
+            increase = 40*log(items + 1);
+            break;
+            
+        case 3:
         //30 works fine
             increase = 0.005*items;
             break;
