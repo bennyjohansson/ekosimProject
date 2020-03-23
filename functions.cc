@@ -42,7 +42,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
                 double mot, double employees, double capacity) {
     
 
-    double rate1 = 0.000000050;  //Funkar bra med 0.000000010;
+    double rate1 = 0.00000005;  //Funkar bra med 0.000000010;
     double rate2 = 0.000100;
 //    double rate1 =0.10;
 //    double rate2 = 0.0500;
@@ -88,7 +88,7 @@ double get_prod(Consumer * consumer, double capacity) {
 double capacity_increase(double items, double capacity) {
     
     double increase = 0;
-    int function_select = 2;
+    int function_select = 3;
     
     
     switch (function_select) {
@@ -97,7 +97,13 @@ double capacity_increase(double items, double capacity) {
             break;
             
         case 2:
-            increase = 30*log(items + 1);
+        //30 works fine
+            increase = 40*log(items + 1);
+            break;
+            
+        case 3:
+        //30 works fine
+            increase = 0.005*items;
             break;
             
             

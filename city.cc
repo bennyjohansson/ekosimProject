@@ -39,7 +39,7 @@ flash_counter_(0),
 shareToSteal_(0.95),
 laundry_factor_(0.95),
 no_years_laundry_(4),
-time_to_steal_(10000) 
+time_to_steal_(7919) 
 {}
 
 
@@ -577,6 +577,7 @@ void City::update_interest_rate() {
     double d_sum_di = 1;
     double max_interest_rate = 5;
     double ir_delta = 0.0005;
+    double ir_add_on_test = 0.02;
     
     interest = bank_ -> get_interest();
     prev_interest = interest;
@@ -613,6 +614,7 @@ void City::update_interest_rate() {
     	//Calculating cash-flow deltas after interest update
     	delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
     	ir_delta = (prev_interest - interest);
+    	
     	if(ir_delta == 0) {
     		//cout << "I city updte IR, IR delta: " << ir_delta << " Prev: " << prev_interest << " Current: " << interest << endl;
     		ir_delta = est_ir_change;
@@ -631,16 +633,22 @@ void City::update_interest_rate() {
     	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     	
     	
-    	//If flows to bank increases we have risk of divergence
+    	//If flows to bank increases we have risk of divergence, changing back half a step
     	if(abs(prev_flows_to_bank) <= abs(sum_flows_to_bank)){
     	
+    		//Setting previos interest rate and halving ir_change_factor (Testing these lines)
+    		//bank_ -> change_interest(-est_ir_change*ir_change_factor/2);
+    		//interest = bank_ -> get_interest();
+    		
     		ir_change_factor = ir_change_factor/2;
-    		cout << "In city upd. re, divergence at counter: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    		cout << "In city upd. re, divergence: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
     	}
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
-    	cout << "In city upd. ir at counter: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    	//cout << "In city upd. ir: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    	cout << "In city upd. ir: " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
     	//cout << "New ir: " << interest +  est_ir_change*ir_change_factor << " adjustment: " << est_ir_change*ir_change_factor << "  Total cashflow to bank: " << sum_flows_to_bank << endl;
+    		
     	
     	//Changint interest rate
     	prev_interest = interest;
@@ -651,12 +659,20 @@ void City::update_interest_rate() {
     	
     }
     
-    
+    //If interest above max interest
 	if (interest > max_interest_rate) {
 		cout << "I city update interest rate, setting max rate of: " << max_interest_rate << " was " << interest << endl;
 		bank_ -> set_interest(max_interest_rate);
 	
 	}
+	
+	//Testing response to increasing interest rate
+    //	if(clock_ -> get_time() >= 100 && clock_ -> get_time() < 150 ) {
+    //		cout << "In city update interest, setting extra ir with: " << ir_add_on_test << endl;
+    //		bank_ -> change_interest(ir_add_on_test);
+    //	}
+    	
+	
 	cout << "I city update interest rate " << "Market rate: " << interest <<  " Max rate: " << max_interest_rate << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
 }
@@ -1101,7 +1117,7 @@ void City::adjust_money() {
      *
      */
 
-    int function_select = 1;
+    int function_select = 2;
     
     int i = 0;
     double items_a = 0;

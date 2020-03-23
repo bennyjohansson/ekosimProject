@@ -55,7 +55,7 @@ wage_change_limit_(1),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
-decay_(0.005),
+decay_(0.001),
 max_leverage_(1),
 market_(market),
 bank_(bank),
@@ -231,6 +231,7 @@ double Company::get_investment_cashflow(double items, double loans) {
     price_out = market_ -> get_price_out();
     capacity_incr = capacity_increase(items, capacity_);
     new_capacity = capacity_ + capacity_incr;
+    //Works well with factor_increase += capacity_incr/100;
     factor_increase += capacity_incr/100;
     size = employees_ -> get_size();
     skill_sum = employees_ -> get_skill_sum();
@@ -241,6 +242,7 @@ double Company::get_investment_cashflow(double items, double loans) {
     
     //nedanstående additioner till prod konst skill och mot är tesingar
     capacity_initial_increase = capacity_incr;
+    
     
     while (new_capacity >= zero_limit && t < 20 && new_capacity > 0.1*capacity_initial_increase) {
         
@@ -258,7 +260,7 @@ double Company::get_investment_cashflow(double items, double loans) {
     }
     //cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
     value -= loan_cost;
-    
+    //cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
     return value;
     
 }
