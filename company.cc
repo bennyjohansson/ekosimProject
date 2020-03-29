@@ -73,6 +73,9 @@ void Company::info() {
     cout << "Name: " << name_ << endl 
     << "Capital: " <<  capital_ << endl
     << "Stock: " << stock_ << endl 
+    << "Capacity: " << capacity_ << endl
+    << "Prod const sk: " << prod_const_skill_ << endl
+    << "Prod const mot: " << prod_const_motivation_ << endl
     << "Employees: " << employees_ -> get_size() << endl << endl;
 }
 
@@ -205,22 +208,32 @@ double Company::get_items_for_production() {
     return items;
 }
 
+
 double Company::get_investment_cashflow(double items, double loans) {
     
     double interest_rate = 0;
+    
     double capacity_incr = 0;
+	double factor_change = 0;
     double new_capacity = 0;
-    double capacity_initial_increase = 0;
+    double old_capacity = 0;
+    //double capacity_initial_increase = 0;
+    double production_old = 0;
+    double production_new = 0;
+    double pcs = 0;
+    double pcm = 0;
+    
     double value = 0;
     double price_in = 0;
+    double price_out = 0;
+    
     int t = 1;
     int size = 0;
+    
     double mot_sum = 0;
     double skill_sum = 0;
-    double production = 0;
-    double price_out = 0;
+    
     double loan_cost = 0;
-    double factor_increase = 0;
     double sales_value = 0;
     double est_wages = 0;
     double est_prod_cost = 0;
@@ -229,34 +242,50 @@ double Company::get_investment_cashflow(double items, double loans) {
     interest_rate = bank_ -> get_interest();
     price_in = market_ -> get_price_in();
     price_out = market_ -> get_price_out();
-    capacity_incr = capacity_increase(items, capacity_);
-    new_capacity = capacity_ + capacity_incr;
-    //Works well with factor_increase += capacity_incr/100;
-    factor_increase += capacity_incr/100;
     size = employees_ -> get_size();
     skill_sum = employees_ -> get_skill_sum();
     mot_sum = employees_ -> get_motivation_sum();
     
+    pcs = prod_const_skill_;
+    pcm = prod_const_motivation_;
+    
+    //Capacity and efficiency increase
+    capacity_incr = capacity_increase(items, capacity_);
+    
+    old_capacity = capacity_;
+    new_capacity = capacity_ + capacity_incr;
+    
+    
+    factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
         
-    loan_cost =   bank_ -> get_loan_cost(loans);
+    loan_cost = bank_ -> get_loan_cost(loans);
     
     //nedanstående additioner till prod konst skill och mot är tesingar
-    capacity_initial_increase = capacity_incr;
+    //capacity_initial_increase = capacity_incr;
     
     
-    while (new_capacity >= zero_limit && t < 20 && new_capacity > 0.1*capacity_initial_increase) {
+    while (new_capacity >= zero_limit && t < 20 ) { //&& new_capacity > 0.1*capacity_initial_increase
         
-        production = get_prod(skill_sum, prod_const_skill_+factor_increase, mot_sum, prod_const_motivation_+factor_increase, size, new_capacity);
         
-        sales_value = production*price_in;
-        est_wages = get_estimated_wages(production);
-        est_prod_cost = item_cost(production)*price_out;
+        production_old = get_prod(skill_sum, pcs, mot_sum, pcm, size, old_capacity);
+        production_new = get_prod(skill_sum, pcs+factor_change, mot_sum, pcm+factor_change, size, new_capacity);
+        
+        sales_value = (production_new - production_old)*price_in;
+        est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
+        est_prod_cost = (item_cost(production_new) - item_cost(production_old))*price_out;
         
         value += (sales_value - est_prod_cost - est_wages)/(pow((1 + interest_rate), t));
         t++;
         
+        
+        //Simulating decay of production factors
         new_capacity -= new_capacity*decay_;
-        //cout << t << " " << "Capacity: " << capacity_ << "New_capacity: " << new_capacity << endl;
+        old_capacity -= old_capacity*decay_;
+        pcs -= pcs*decay_;
+        pcm -= pcm*decay_;
+        factor_change -= factor_change*decay_;
+        
+        //cout << "   - " << t << " " << "Capacity: " << capacity_ << " Capacity incr: " << capacity_incr << endl;
     }
     //cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
     value -= loan_cost;
@@ -265,11 +294,74 @@ double Company::get_investment_cashflow(double items, double loans) {
     
 }
 
+// double Company::get_investment_cashflow_old(double items, double loans) {
+//     
+//     double interest_rate = 0;
+//     double capacity_incr = 0;
+//     double new_capacity = 0;
+//     double capacity_initial_increase = 0;
+//     double value = 0;
+//     double price_in = 0;
+//     int t = 1;
+//     int size = 0;
+//     double mot_sum = 0;
+//     double skill_sum = 0;
+//     double production = 0;
+//     double price_out = 0;
+//     double loan_cost = 0;
+//     double factor_change = 0;
+//     double sales_value = 0;
+//     double est_wages = 0;
+//     double est_prod_cost = 0;
+//     double zero_limit = 1;
+//     
+//     interest_rate = bank_ -> get_interest();
+//     price_in = market_ -> get_price_in();
+//     price_out = market_ -> get_price_out();
+//     size = employees_ -> get_size();
+//     skill_sum = employees_ -> get_skill_sum();
+//     mot_sum = employees_ -> get_motivation_sum();
+//     
+//     //Capacity and efficiency increase
+//     //cout << "Calling capacity increase i comp investment cashflows" << endl;
+//     capacity_incr = capacity_increase(items, capacity_);
+//     new_capacity = capacity_ + capacity_incr;
+//     factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
+//     
+//     
+//         
+//     loan_cost =   bank_ -> get_loan_cost(loans);
+//     
+//     //nedanstående additioner till prod konst skill och mot är tesingar
+//     capacity_initial_increase = capacity_incr;
+//     
+//     
+//     while (new_capacity >= zero_limit && t < 20 && new_capacity > 0.1*capacity_initial_increase) {
+//         
+//         production = get_prod(skill_sum, prod_const_skill_+factor_change, mot_sum, prod_const_motivation_+factor_change, size, new_capacity);
+//         
+//         sales_value = production*price_in;
+//         est_wages = get_estimated_wages(production);
+//         est_prod_cost = item_cost(production)*price_out;
+//         
+//         value += (sales_value - est_prod_cost - est_wages)/(pow((1 + interest_rate), t));
+//         t++;
+//         
+//         new_capacity -= new_capacity*decay_;
+//         //cout << t << " " << "Capacity: " << capacity_ << "New_capacity: " << new_capacity << endl;
+//     }
+//     //cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
+//     value -= loan_cost;
+//     //cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
+//     return value;
+//     
+// }
+
 
 double Company::get_investment() {
     
     double max_items = 0;
-    double items_temp = 1;
+    double items_temp = 10;
     double items = 0;
     double cost = 0;
     double income = 0;
@@ -360,15 +452,22 @@ double Company::get_desired_investment() {
     
     while(increase) {
         
+        
+        //Cost of the investment
         cost = price_out * items_temp;
         
+        
+        //This misses max leverage - TO BE CORRECTED
         if(cost > capital_*pbr_) {
             loans = cost - capital_*pbr_;
         }
         
-        income = get_investment_cashflow(items_temp, loans);//items
-        //cout << "I company desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << "  Loans: " << loans << endl; 
+        income = get_investment_cashflow(items_temp, loans);  //items NET PRESENT VALUE OF FUTURE CASHFLOWS
+        
+        //cout << "I comp des inv " << " income (NPV): " << income << " cost: " << cost << "  debt: " << debts_   << "  Loans: " << loans << " items: " << items_temp << endl; 
+        
         if (income - cost > value && (debts_ + loans)/capital_ - 1 < max_leverage_) {
+            
             value = income - cost;
             items = items_temp;
             increase = true;
@@ -377,7 +476,8 @@ double Company::get_desired_investment() {
             increase = false;
         }
         
-        items_temp += 1000;
+        items_temp += 100; //Should be 1000
+        //cout << "I comp des invest " << increase << " " << items_temp << endl;
         
     }
     
@@ -536,7 +636,8 @@ void Company::change_capital(double ch) {
 }
 
 void Company::change_prod_const_skill(double ch) {
-    prod_const_skill_ += prod_const_skill_;
+	//out << "Increasing skill i company" << endl;
+    prod_const_skill_ += ch;
 }
 
 void Company::change_prod_const_motivation(double ch) {
@@ -589,6 +690,8 @@ void Company::remove_employee(Consumer * consumer) {
 
 void Company::update_company() {
     capacity_ -= decay_*capacity_;
+    prod_const_skill_ -= decay_*prod_const_skill_;
+    prod_const_motivation_ -= decay_*prod_const_motivation_;
 }
 
 bool Company::update_employees(Consumer * opt) {
@@ -738,7 +841,7 @@ double Company::produce() {
     production = get_production();
     stock_ += production;
     
-    cout << "I Company produce, share of full capacity: " << production/(capacity_*3.1415/2) << "  and capacity: " << capacity_ << "  for " << name_ << endl;
+    cout << "I Company produce, share of full capacity: " << production/(capacity_*3.1415/2) << " capacity: " << capacity_ << " employees: " << employees_ -> get_size() << " for " << name_ << endl;
     
     return production;
 }
@@ -775,28 +878,12 @@ double Company::invest() {
     double price_out = 0;
     double value = 0;
     double capacity_change = 0;
+    double factor_change = 0;
     bool increase = true;
     
     price_out = market_ -> get_price_out();
     max_items = market_ -> get_items();
     
-    //  while(items < max_items && cost < capital_*pbr_ && increase) {
-    
-    //    cost = price_in * items_temp;
-    //  income = get_investment_cashflow(items, 0);
-    //    cout << "I company invest, cost: " << cost <<  "   Income: " << income << endl;    
-    
-    //if (income - cost > value) {
-    // value = income - cost;
-    //   items = items_temp;
-    //  increase = true;
-    //}
-    //else {
-    //  increase = false;
-    //}
-    
-    //items_temp += 1;
-    //}
     items = get_desired_investment();
     
     cost = items*price_out;
@@ -810,7 +897,7 @@ double Company::invest() {
         loans = 0;
     }
     if(bank_ -> get_assets() < loans) {
-        cout << "No money in bank (from company invest)" << "loans1: " << loans << " loans2: " << loans2 << endl;
+        //cout << "No money in bank (from company invest)" << "loans1: " << loans << " loans2: " << loans2 << endl;
         loans = 0;
         items = get_investment();
         cost = items*price_out;
@@ -831,21 +918,22 @@ double Company::invest() {
     
     log_transaction_full(name_, "Market", capital + loans, "Investment", clock_ ->  get_time());
     
-    //cout << "I company invest," << name_ << " orig cap " << capacity_;
     
+    //Increasing capacity and efficiency
+    //cout << "calling capacity_increase in invest" << endl;
     
     capacity_change = capacity_increase(items, capacity_);
+    factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
     
-    //cout <<  "I company invest, old capacity: " << capacity_ << "  increase: " << capacity_change << " for " << name_ << endl; 
- 
+    //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
+	//cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
     
+    change_prod_const_skill(factor_change);
+    change_prod_const_motivation(factor_change);
     change_capacity(capacity_change);  
-    
-    //prod_const_skill_ += capacity_change/1000;
-    //prod_const_motivation_ += capacity_change/1000;
-    
+
     //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
-    //  cout << "I company invest  " << name_ << "     items: " << items << "    " << "Cost: " << cost << "   Capac ch: " << capacity_change << "  Capital before: " << capital_old << "  Available capital: " << available_capital << "    Desired loans: " << loans << "   Max items  " << max_items << endl;
+    cout << "I comp inv items: " << items << " Cost: " << cost << " Capa ch: " << capacity_change << " Capital before: " << capital_old << " Available capital: " << available_capital << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
     
     investments_.push_front(cost);
     
@@ -1035,8 +1123,8 @@ void Company::buy_items_for_production() {
     price = market_ -> get_price_out();
     amount = items*price;
     //  cout << "I comapny buy items, cost = " << items << endl; 
-    change_capital(-amount);
     
+    change_capital(-amount);
     market_ -> change_capital(amount);
     market_ -> change_items(-items);
     

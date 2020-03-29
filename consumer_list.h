@@ -78,14 +78,16 @@ class Consumer_list {
       void deposit_and_borrow_from_bank();
       void deposit_money_to_bank();
       void borrow_money_from_bank();
-
       void repay_to_bank();
       void get_repayment_from_bank();
       void get_and_pay_interest();
+      void bank_business();
+      
       void pay_employees(double);
       void pay_employees_individual(double, double, double, string); 
       void pay_dividends(double);
 	void pay_dividends_log(double, string);
+	void pay_all_dividends_log(double, double, double); 
 	
    protected:
 

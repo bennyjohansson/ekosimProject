@@ -106,29 +106,44 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
-	double simulation_years = 1000;
+	double simulation_years = 500;
   bool invest = false;
   int flashtime = 5;
   string theThiefString = "";
   double time_to_steal = bennyland.get_time_to_steal();
   string theFraudCompanyString = "benny_enterprises";
   double amount_to_launder = 0;
-  double start_investing = 10;
+  double start_investing = 5;
+  unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5= 0, timer6 = 0, timer7 = 0, timer8 = 0;
 
 
 
 
   for(int j = 0; j < simulation_years; j++) {
+  
+  	//Timer checkpoint
+  	timer0 = stopwatch();
 
     double time_year = bennyland.get_time();
-    cout << time_year << endl;
+    cout << "------------------------------------------------------------------------------------" << endl;
+    cout << "Year: " << time_year << endl;
+    cout << "------------------------------------------------------------------------------------" << endl;
+        
+    cout << endl << "PRICING, EMPLYEES & PRODUCING" << endl;
 
     bennyland.update_employees();
     bennyland.negotiate_market_price();
 
     bennyland.save_flash(flashtime);
 
+	
     bennyland.produce();
+
+	//Timer checkpoint produce
+	timer1 = stopwatch();// - timer0;
+
+    cout << endl << "UPDATING COMPANIES, BUYING & SELLING" << endl;
+
    
     if(invest) {
       bennyland.update_companies();
@@ -141,9 +156,8 @@ int main() {
 
     bennyland.consumers_buy();
     bennyland.save_flash(flashtime);
-    
-    
-    
+   
+       
     //Initiating theft
     if(fmod(time_year,time_to_steal) == 0) {
     
@@ -171,6 +185,12 @@ int main() {
     bennyland.pay_company_employees();
     bennyland.save_flash(flashtime);
     
+    //Timer checkpoint buy/sell
+	timer2 = stopwatch();
+	
+	cout << endl << "INTERST RATE & INVESTING" << endl;
+
+    
     if(invest) { 
       bennyland.update_interest_rate();
     }
@@ -184,23 +204,34 @@ int main() {
       invest = true;
     }
 
+	
+	//Timer checkpoint update interest & invest
+	timer3 = stopwatch();
+	
+	cout << endl << "BANK BUSINESS" << endl;
+	
+	
+
     if(invest) {
-    bennyland.consumer_get_and_pay_interest();
-    bennyland.save_flash(flashtime);
-    bennyland.company_pay_interest();
-    bennyland.save_flash(flashtime); 
- 	bennyland.consumers_bank_business();
- 	bennyland.save_flash(flashtime); 
- 	bennyland.company_repay_to_bank();
- 	bennyland.save_flash(flashtime);  
-    bennyland.consumers_deposit_and_borrow_from_bank();
-    bennyland.save_flash(flashtime);  
-      
-      
-      
-    }
-     
     
+		//bennyland.consumer_get_and_pay_interest();  		
+   		bennyland.consumers_bank_business();
+		//bennyland.consumers_deposit_and_borrow_from_bank();
+    	
+ 		bennyland.company_pay_interest();
+ 		bennyland.company_repay_to_bank();
+
+
+    	//bennyland.save_flash(flashtime);  
+          
+    }
+    
+   
+    //Timer checkpoint bank business
+		timer4 = stopwatch();
+ 
+    cout << endl << "DIVIDENDS" << endl;
+
  
 	//Pay stolen dividends
  	if(fmod(time_year-2,time_to_steal) == 0) {
@@ -214,7 +245,13 @@ int main() {
 
     bennyland.company_pay_dividends();
     
+    //Timer checkpoint last part
+    timer5 = stopwatch();// - timer4;
+	cout << endl << "SAVING DATA" << endl;
+
+    
     bennyland.save_money_data();
+    
 
     bennyland.save_flash(flashtime);
 
@@ -224,7 +261,18 @@ int main() {
 
     bennyland.tick();
    
- 
+   //Timer checkpoint last part
+	timer6 = stopwatch();// - timer5;
+   
+   
+   cout << endl << "TIME MEASUREMENTS" << endl;
+ 	cout << "Produce:  " << timer1/10000 << endl;
+ 	cout << "Buy/sell: " << timer2/10000 << endl;
+ 	cout << "Int & Iv: " << timer3/10000 << endl;
+ 	cout << "Bank bus: " << timer4/10000 << endl;
+ 	cout << "Divs:     " << timer5/10000 << endl;
+ 	cout << "Sav&up:   " << timer6/10000 << endl;
+ 	cout << "Total:    " << (timer1 +  timer2 +  timer3 +  timer4 +  timer5)/10000 << endl << endl;
   }
 
   
@@ -232,8 +280,9 @@ int main() {
    * Printing info from the main loop. Run "gnuplot gdp.p" and then "gv gdp.eps" to view the output.   
    */
   
-  bennyland.print_company_list();  
+  
   bennyland.print_GDP();
+  bennyland.print_company_list();  
   bennyland.market_info();
   bennyland.consumer_info();
   bennyland.bank_info();  

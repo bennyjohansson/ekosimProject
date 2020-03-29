@@ -173,7 +173,9 @@ double Consumer::get_desired_loans() {
     interest = bank_ -> get_interest();
     
     ///if(capital_ > 0) {
-    amount = get_consumer_loan(savewill_, capital_, interest);
+    
+    get_consumer_loan(savewill_, capital_, interest);
+    
     //savewill_*capital_*10*interest;
     //}
     //else {
@@ -191,8 +193,8 @@ double Consumer::get_desired_borrow() {
     interest = bank_ -> get_interest();
     available_capital = bank_ -> get_sum_to_borrow();
     
-    
-    amount = get_consumer_borrow(borrowwill_, capital_, interest); 
+    amount = get_consumer_borrow(borrowwill_, capital_, loans_, debts_, interest);
+    //amount = get_consumer_borrow(borrowwill_, capital_, interest); 
     //borrowwill_*capital_/(0.1+interest);
     //amount = borrowwill_*capital_/(interest);
     //  cout << "I consumer get_desired_borrow: " << available_capital << "  Desired borrow: " << amount << endl;

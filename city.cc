@@ -569,7 +569,7 @@ void City::update_interest_rate() {
     double company_sum = 0;
     double bank_sum = 0;
     
-    double diff_limit = 50;
+    double diff_limit = 500; //50 works fine
     double sum_flows_to_bank = 0;
     double prev_flows_to_bank = 0;
         
@@ -578,6 +578,7 @@ void City::update_interest_rate() {
     double max_interest_rate = 5;
     double ir_delta = 0.0005;
     double ir_add_on_test = 0.02;
+    int number_of_iterations = 20; //20 works fine
     
     interest = bank_ -> get_interest();
     prev_interest = interest;
@@ -602,9 +603,9 @@ void City::update_interest_rate() {
     
     }
     
-    cout << "Start interest rate: " << prev_interest << endl;
+    //cout << "Start interest rate: " << prev_interest << endl;
     
-    while(abs(sum_flows_to_bank) > diff_limit && counter < 20 && interest < max_interest_rate) {
+    while(abs(sum_flows_to_bank) > diff_limit && counter < number_of_iterations && interest < max_interest_rate) {
         	
     	//Getting cash-flows after initial interest change
     	consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
@@ -641,7 +642,7 @@ void City::update_interest_rate() {
     		//interest = bank_ -> get_interest();
     		
     		ir_change_factor = ir_change_factor/2;
-    		cout << "In city upd. re, divergence: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    		//cout << "In city upd. re, divergence: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
     	}
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
@@ -1022,25 +1023,35 @@ void City::save_money_data() {
     double total_capital = 0;
     double time = 0;
     
+    
     consumer_capital = consumers_ -> get_capital_sum();
     company_capital = company_list_ -> get_capital_sum();
     bank_capital = bank_ -> get_assets();
+    market_capital = market_ -> get_capital();
+	
+    
+    //consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_assets();
+    
     bank_loans = bank_ -> get_loans();
     bank_deposits = bank_ -> get_deposits();
-    market_capital = market_ -> get_capital();
-    total_capital = get_capital_sum();
+    
+    total_capital = consumer_capital + company_capital + bank_capital + market_capital;
     time = clock_ -> get_time();
     //  cout << "I city save money data, time: " << clock_ -> get_time() << "  assets: " << bank_capital << endl;
+	
+	
     
     bank_capital_.push_front(bank_capital);
     consumer_capital_.push_front(consumer_capital);
     company_capital_.push_front(company_capital);
     market_capital_.push_front(market_capital);
     total_capital_.push_front(total_capital);
+
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
     << company_capital << " " << market_capital << " " << total_capital << endl;
+	
     
 }
 
@@ -1094,11 +1105,16 @@ void City::consumers_buy() {
 
 void City::invest(bool invest) {
     double invested_capital = 0;
+    double price = 0;
+    
+    price = market_ -> get_price_out();
+    
     if(invest) {
         invested_capital = company_list_ -> invest();
     }  
+    
     investments_.push_front(invested_capital);
-    cout << "I city invest, invested_capital: " << invested_capital << "  At the price: " << market_ -> get_price_out() << endl;
+    cout << "I city invest, invested_capital: " << invested_capital << "  Items: " <<  invested_capital/price << "  At the price: " << price << endl;
 }
 
 void City::adjust_money() {
@@ -1266,9 +1282,13 @@ void City::company_repay_to_bank() {
 
 
 void City::consumers_bank_business() {
-    consumers_ -> repay_to_bank();
-    consumers_ -> get_repayment_from_bank();
+    consumers_ -> bank_business();
 }
+
+//void City::consumers_bank_business() {
+//    consumers_ -> repay_to_bank();
+//    consumers_ -> get_repayment_from_bank();
+//}
 
 void City::consumer_get_and_pay_interest() {
     consumers_ -> get_and_pay_interest();
@@ -1298,9 +1318,10 @@ void City::company_pay_dividends() {
     
     //amount = (total_profit_m + total_profit_c+ total_profit_b)/size;
     
-    consumers_ -> pay_dividends_log(total_profit_c/size, "Company");
-    consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
-    consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
+    //consumers_ -> pay_dividends_log(total_profit_c/size, "Company");
+    //consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
+    //consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
+    consumers_ -> pay_all_dividends_log(total_profit_c/size, total_profit_m/size, total_profit_b/size);
     
 }
 

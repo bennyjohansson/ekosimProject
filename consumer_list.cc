@@ -39,7 +39,7 @@ void Consumer_list::info() {
   int trustworthy = 0;
   
   if (list_) {
-    cout << "Listname: " << name_ << endl
+    cout << "Listname: " << name_ << endl << "------------------------" <<  endl << endl 
 	 << "Listsize: " << size_ << endl;
     
     total_cap = get_capital_sum();
@@ -58,7 +58,7 @@ void Consumer_list::info() {
 	 << "Average motivation: " << average_motivation << endl 
 	 << "Average skill: " << average_skill << endl
 	 << "Accumulated spendwill: " << total_spendwill << endl
-	 << "Trustworthy: " << trustworthy << endl;
+	 << "Trustworthy: " << trustworthy << endl << endl;
 
   }
   else {
@@ -494,6 +494,21 @@ void Consumer_list::deposit_and_borrow_from_bank() {
   }
 }
 
+void Consumer_list::bank_business() {
+ Element_consumer * p;
+  
+  for(p = list_; p; p = p -> next_){
+  	Consumer * consumer = p -> get_consumer();
+    consumer -> get_interest();
+    consumer -> pay_interest();
+  	consumer -> repay_to_bank();
+	consumer -> get_repayment_from_bank();
+	consumer -> deposit_and_borrow_from_bank();
+  
+  }
+}
+
+
 void Consumer_list::deposit_money_to_bank() {
  Element_consumer * p;
   
@@ -589,6 +604,32 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay) {
   }
 }
 
+
+void Consumer_list::pay_all_dividends_log(double amount_company, double amount_market, double amount_bank) {
+
+  Element_consumer * p;
+  int time = 0;
+  string name; 
+  
+
+  for(p = list_; p; p = p -> next_) {
+    Consumer * consumer = p -> get_consumer();
+    
+    name = consumer -> get_name();
+    time = consumer ->  get_time();
+    
+    consumer -> change_capital(amount_company);
+    log_transaction_full("Company", name, amount_company, "Dividends", time);
+    
+    consumer -> change_capital(amount_market);
+    log_transaction_full("Market", name, amount_market, "Dividends", time);
+    
+    consumer -> change_capital(amount_bank);
+    log_transaction_full("Bank", name, amount_bank, "Dividends", time);
+  
+  
+  }
+}
 
 
 

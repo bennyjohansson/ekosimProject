@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 #include "functions.h"
 #include "consumer.h"
 #include "market.h"
@@ -44,13 +45,14 @@ double get_prod(double sk_sum, double sk, double mot_sum,
 
     double rate1 = 0.00000005;  //Funkar bra med 0.000000010;
     double rate2 = 0.000100;
+    double rate4 = 0.001; 
 //    double rate1 =0.10;
 //    double rate2 = 0.0500;
 
 
     double prod = 0;
     
-    int prod_function = 3;
+    int prod_function = 4;
     //cout << "in functins get prod " << capacity << endl;
     switch (prod_function) {
             
@@ -64,6 +66,10 @@ double get_prod(double sk_sum, double sk, double mot_sum,
             
         case 3:
             prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate1*capacity);
+            break;
+             
+        case 4:
+            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate4);
             break;    
         
             
@@ -88,8 +94,7 @@ double get_prod(Consumer * consumer, double capacity) {
 double capacity_increase(double items, double capacity) {
     
     double increase = 0;
-    int function_select = 3;
-    
+    int function_select = 2;
     
     switch (function_select) {
         case 1:
@@ -98,12 +103,17 @@ double capacity_increase(double items, double capacity) {
             
         case 2:
         //30 works fine
-            increase = 40*log(items + 1);
+            increase = 100*log(items + 1);
             break;
             
         case 3:
-        //0.005 works fine
-            increase = 0.05*items;
+        //Suitable when using factor increase
+            increase = 0.6*items;
+            break;
+            
+        case 4:
+        //0.01 ger sjunkande GDP och 0.05 ökande 
+            increase = 0.1*items;
             break;
             
             
@@ -116,38 +126,39 @@ double capacity_increase(double items, double capacity) {
     return increase;
 }
 
-double factor_increase(double items, double p_skill, double p_mot, double capacity) {
+double factor_increase(double items, double sk, double mot, double capacity) {
 
- //Function not dompleted
+ //Function not completed
  //Best idea is probably to call both capacity increase and factor increase from company etc. 
-    
-    double increase = 0;
+//Bör sannolikt vara korrelerad med capacity - dyrare att effektivisera något stort än något litet
+// Bör inte finnas något tak typ att 1 är max
+//Kan man tänka sig att kostnad för typ 5% ökning är direkt proportionell mot capacity eller behövs någon icke-linjär funktion?
+    double f_increase = 0;
     int function_select = 3;
     
     
     switch (function_select) {
         case 1:
-            increase = 30000/capacity*log(items*50/capacity + 1);
+            f_increase = 2;
             break;
             
         case 2:
-        //30 works fine
-            increase = 40*log(items + 1);
+        //Used
+            f_increase = 0.5*log(0.1*items/capacity + 1);
             break;
             
         case 3:
-        //30 works fine
-            increase = 0.005*items;
-            break;
-            
+        //Used
+            f_increase = 0.025*items/capacity;
+            break;     
             
         default:
-            increase = 0;
+            f_increase = 0;
             break;
     }
     
        
-    return increase;
+    return f_increase;
 }
 
 double get_price(double excess) {
@@ -184,7 +195,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double sk = 0.5;
     double cap = 100; 
     double spe = 0.7;
-    double save = 0.05; //1-spe;
+    double save = 0.25; //1-spe; Was 0.05 2020-03-26
     double borrow = 0.020;
     
     
@@ -222,6 +233,7 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
     double amount = 0;
     int function_select = 1;
     
+    
     switch (function_select) {
         case 1:
             if(capital > 0) {
@@ -239,23 +251,31 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
             else {
                 amount = 0;
             }
+        
+        case 3:
+            if(capital > 0) {
+            	amount = 0;
+            }
+            else {
+                amount = 0;
+            }
             
         default:
             break;
     }
-    
     
     return amount;
     
 }
 
 
-double get_consumer_borrow(double borrowwill, double capital, double interest) {
+double get_consumer_borrow(double borrowwill, double capital, double loans, double debt, double interest) {
     
     double amount = 0;
     //double factor = 5;
+    double max_leverage = 1;
     
-    int function_select = 2;
+    int function_select = 1;
     
     switch (function_select) {
         case 1:
@@ -267,11 +287,19 @@ double get_consumer_borrow(double borrowwill, double capital, double interest) {
             }
             
             break;
+		case 2:
+            if(capital > 0) {
+                amount = fmax(borrowwill*((1+max_leverage)*(capital + loans) - debt)/(1+100*interest), 0);
+            }
+            else {
+                amount = 0;
+            }
             
-        case 2:
+            break;
+        case 3:
             amount = 0;
             break;
-            
+        
         default:
             break;
     }
@@ -309,6 +337,21 @@ void log_launder_parameters(double shareToSteal, double laundry_factor, int no_y
     file1 << shareToSteal << " "  << laundry_factor << " " << no_years_laundry << " "  << time_to_steal << endl;
     
     file1.close();
+
+}
+
+unsigned int stopwatch() {
+
+	static auto start_time = chrono::steady_clock::now();
+	
+	auto end_time = chrono::steady_clock::now();
+	
+	auto delta = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
+	
+	start_time =  end_time;
+	
+	return delta.count();
+	
 
 }
 
