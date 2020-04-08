@@ -174,7 +174,7 @@ double Consumer::get_desired_loans() {
     
     ///if(capital_ > 0) {
     
-    get_consumer_loan(savewill_, capital_, interest);
+    amount = get_consumer_loan(savewill_, capital_, interest);
     
     //savewill_*capital_*10*interest;
     //}

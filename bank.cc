@@ -192,8 +192,8 @@ double Bank::pay_dividends() {
     
     if(deposits_ < loans_) {
         
-        //dividends = fmin(0, assets_ - safety_amount) * div_ratio_;
-        dividends = assets_ * div_ratio_;
+        dividends = fmax(0, assets_ - safety_amount) * div_ratio_;
+        //dividends = assets_ * div_ratio_;
     }
     else {
         

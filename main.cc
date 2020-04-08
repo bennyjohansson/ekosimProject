@@ -255,7 +255,7 @@ int main() {
 
     bennyland.save_flash(flashtime);
 
-    //bennyland.adjust_money();
+    bennyland.adjust_money();
     bennyland.save_flash(flashtime);
     bennyland.update_consumer_list();
 
@@ -308,7 +308,7 @@ int main() {
        << "Added money: " << bennyland.get_loans_to_bank() << endl;
   
 
-  //  bennyland.print_consumer_list();
+  //bennyland.print_consumer_list();
 
 };
 

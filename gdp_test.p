@@ -8,7 +8,7 @@
    set output "money_test.eps"
    #set xrange[x_start:x_end]
    set xrange[*:*]
-   set yrange[*:*]
+   set yrange[*:0.3e7]
    set size 1,1
    set key right
    set title "Money in Bennyland" font "Helvetica,24"
@@ -26,10 +26,12 @@
    set style line 6 linetype 4 linewidth 2
    set style line 7 linetype 5 linewidth 2
    set style line 8 linetype 6 linewidth 2
+   set style line 9 linetype 7 linewidth 2 dt 4
+   set style line 10 linetype 8 linewidth 2 dt 2
 
   
    
-   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 8, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7
+   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 2, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7, "money_test.txt" using 1:9 title "Consumer debts" with lines ls 8, "money_test.txt" using 1:10 title "Consumer deposits" with lines ls 9
       
      
       
@@ -63,6 +65,7 @@
 	    set output "diverse.eps"
 	   #set xrange[x_start:x_end]
    set xrange[*:*]
+   set yrange [*:10]
 	    
 	    set size 1,1
 	    set key right
@@ -75,6 +78,7 @@
  		set nomultiplot
       set output "employment.eps"
       #set xrange[x_start:x_end]
+      set yrange [*:*]
    set xrange[*:*]
       
       set size 1,1

@@ -148,8 +148,8 @@ double factor_increase(double items, double sk, double mot, double capacity) {
             break;
             
         case 3:
-        //Used
-            f_increase = 0.025*items/capacity;
+        //Used 0.025 which was good
+            f_increase = 0.25*items/capacity;
             break;     
             
         default:
@@ -195,8 +195,8 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double sk = 0.5;
     double cap = 100; 
     double spe = 0.7;
-    double save = 0.25; //1-spe; Was 0.05 2020-03-26
-    double borrow = 0.020;
+    double save = 0.05; //1-spe; Was 0.05 2020-03-26
+    double borrow = 0.010; //Was 0.02 2020-04-01
     
     
     randomize(mot, 0.7);
@@ -275,7 +275,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
     //double factor = 5;
     double max_leverage = 1;
     
-    int function_select = 1;
+    int function_select = 2;
     
     switch (function_select) {
         case 1:
@@ -289,7 +289,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
             break;
 		case 2:
             if(capital > 0) {
-                amount = fmax(borrowwill*((1+max_leverage)*(capital + loans) - debt)/(1+100*interest), 0);
+                amount = fmax(borrowwill/(1+100*interest)*((1+max_leverage)*(capital + loans) - debt), 0);
             }
             else {
                 amount = 0;

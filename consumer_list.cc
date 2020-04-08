@@ -39,8 +39,8 @@ void Consumer_list::info() {
   int trustworthy = 0;
   
   if (list_) {
-    cout << "Listname: " << name_ << endl << "------------------------" <<  endl << endl 
-	 << "Listsize: " << size_ << endl;
+    cout << "Listname: " << name_ << endl << "------------------------" <<  endl  
+    << "Listsize: " << size_ << endl;
     
     total_cap = get_capital_sum();
     average_motivation = get_motivation_sum()/size_;

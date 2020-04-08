@@ -577,7 +577,7 @@ void City::update_interest_rate() {
     double d_sum_di = 1;
     double max_interest_rate = 5;
     double ir_delta = 0.0005;
-    double ir_add_on_test = 0.02;
+    double ir_add_on_test = 0.01;
     int number_of_iterations = 20; //20 works fine
     
     interest = bank_ -> get_interest();
@@ -591,6 +591,14 @@ void City::update_interest_rate() {
    //Getting estimated flows to the bank before interest change
     sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     prev_flows_to_bank = sum_flows_to_bank;
+    
+    //Setting ir_change_factor
+    if(sum_flows_to_bank > 0) {
+    	est_ir_change = -interest/10;    
+    }
+    else {
+    	est_ir_change = interest/10;
+    } 
     
     //Updating interest rate
     bank_ -> change_interest(est_ir_change);
@@ -673,13 +681,13 @@ void City::update_interest_rate() {
 	}
 	
 	//Testing response to increasing interest rate
-    //	if(clock_ -> get_time() >= 100 && clock_ -> get_time() < 150 ) {
-    //		cout << "In city update interest, setting extra ir with: " << ir_add_on_test << endl;
-    //		bank_ -> change_interest(ir_add_on_test);
-    //	}
+    // if(clock_ -> get_time() >= 50 && clock_ -> get_time() < 60 ) {
+//     	cout << "In city update interest, setting extra ir with: " << ir_add_on_test << endl;
+//     	bank_ -> change_interest(ir_add_on_test);
+//     }
     	
 	
-	cout << "I city update interest rate " << "Market rate: " << interest <<  " Max rate: " << max_interest_rate << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
+	cout << "I city update interest rate " << "Market rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
 }
 void City::update_interest_rate2() {
@@ -1022,10 +1030,15 @@ void City::save_money_data() {
     double market_capital = 0;
     double total_capital = 0;
     double time = 0;
+    double consumer_debts = 0;
+    double consumer_deposits = 0;
     
     
     consumer_capital = consumers_ -> get_capital_sum();
+    consumer_debts = consumers_ -> get_debts_sum(); 
+    consumer_deposits = consumers_ -> get_loans_sum();
     company_capital = company_list_ -> get_capital_sum();
+    
     bank_capital = bank_ -> get_assets();
     market_capital = market_ -> get_capital();
 	
@@ -1050,7 +1063,7 @@ void City::save_money_data() {
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
-    << company_capital << " " << market_capital << " " << total_capital << endl;
+    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << endl;
 	
     
 }
@@ -1128,8 +1141,9 @@ void City::adjust_money() {
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
+    double scale_factor = 0.15;
     
-    double MAX_CHANGE_FACTOR = 0.5;
+    double MAX_CHANGE_FACTOR = 0.01;
     
     
     /*
@@ -1241,7 +1255,7 @@ void City::adjust_money() {
         money_change_factor = 0;
     }
     
-    money_change = total_money*money_change_factor;
+    money_change = total_money*money_change_factor*scale_factor;
     
     
     //cout << "I city adjust money, mone increase factor: " << money_change/total_money << " Total money " << total_money << " Money change " << money_change <<  endl;
