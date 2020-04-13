@@ -241,7 +241,7 @@ Consumer * City::get_random_consumer() {
 
 double City::get_capital_sum() {
     double csum = 0;
-    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_assets();//consumers_ -> get_loans_sum();
+    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum() 
     
     return csum;
 }
@@ -419,7 +419,7 @@ void City::load_company(string nameactual) {
     }
     //cout << "I city load_company(String) capital =  " << capital << " wc " << wage_const <<  endl;
     //cout << " name " << name << " capital " << capital << " stock " << stock << " capacity " << capacity << " mot " << p_c_mot << " skill " << p_c_skill << " wage_const " << wage_const << " pbr " << pbr << " wcl " << wage_change_limit << " decay " << decay << endl;
-    pbr = 0.3;
+    //pbr = 0.3;
     wage_const = 0.7;
     cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
     add_company(new Company(nameactual, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
@@ -491,6 +491,7 @@ void City::negotiate_market_price() {
     double expected_investment = 0;
     double production_demand = 0;
     double market_items = 0;
+    double market_excess_demand = 0;
     double company_items = 0;
     double company_planned_production = 0;
     double marginal = 0;
@@ -503,6 +504,7 @@ void City::negotiate_market_price() {
     list<double>::iterator invest; // = NULL;//list::end();
     
     invest = investments_.begin();
+    //demand = demand_.begin();
     marginal = market_ -> get_marginal();
     size = consumers_ -> get_size();
     price_out = market_ -> get_price_out();
@@ -516,25 +518,35 @@ void City::negotiate_market_price() {
     //average_investment = average_investment/i;
     //   expected_investment = (1 - *investmnts_.begin()/average_investment);
     
-    consumer_demand = consumers_ -> get_total_demand();
     
+    //Getting demand from participants
+    consumer_demand = consumers_ -> get_total_demand(); //*demand_.begin(); //
     investment_demand = *investments_.begin();//average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
-    
     production_demand =  (company_list_ -> get_items_for_production_sum())*price_out;
+    market_excess_demand = (market_ -> get_excess_demand_items())*price_out;
     
-    market_items = market_ -> get_items();
+    //Getting avilable items;
     company_items = company_list_ -> get_item_sum();
     company_planned_production = company_list_ -> get_planned_production_sum();
+    market_items = market_ -> get_items();
     
-    demand =  consumer_demand + production_demand + investment_demand;
+    
+
+    
+    demand =  consumer_demand + production_demand + investment_demand + market_excess_demand;
+    
     items = market_items + company_items + company_planned_production;
     
     price_out = demand/items;
     price_in = price_out/(1 + marginal);
     
+    cout << "I City negotiate price, market_Excess demand: " << market_excess_demand << " Price: " << price_out << " Price without excess: " << (demand - market_excess_demand)/items << endl;
+
+    
     market_ -> set_price_out(price_out);
     
-    cout << "I city neg market price, price: " << price_old << endl;
+    //cout << "I city neg market price, price: " << price_out << endl;
+    market_ -> reset_excess_demand_items();
     
     //market_ -> set_price_in(price_in);
     //cout << "I city neg price, planned investment: " << investment_demand << " $BJ at the price: " << price_old << endl << "And planned production: " << company_planned_production  << endl << "   And planned demand: " << consumer_demand << endl;
@@ -562,6 +574,7 @@ void City::update_interest_rate() {
 	
 	double interest = 0.05;
 	double prev_interest = 0.05;
+	double initial_interest = 0;
     double ir_change_factor = 0.3;
     double est_ir_change = 0.005;
     
@@ -569,55 +582,63 @@ void City::update_interest_rate() {
     double company_sum = 0;
     double bank_sum = 0;
     
-    double diff_limit = 500; //50 works fine
+    double diff_limit = 1000; //500 works fine
     double sum_flows_to_bank = 0;
     double prev_flows_to_bank = 0;
+    double initial_flows_to_bank = 0;
         
     double delta_sum = 0;
     double d_sum_di = 1;
     double max_interest_rate = 5;
     double ir_delta = 0.0005;
-    double ir_add_on_test = 0.01;
+    double ir_add_on_test = -0.5;
     int number_of_iterations = 20; //20 works fine
     
+        
     interest = bank_ -> get_interest();
+    initial_interest = interest;
     prev_interest = interest;
     
     consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
     company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
     bank_sum = (bank_ -> get_sum_to_borrow());
     
+   
     
    //Getting estimated flows to the bank before interest change
     sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
+    initial_flows_to_bank = sum_flows_to_bank;
     prev_flows_to_bank = sum_flows_to_bank;
     
-    //Setting ir_change_factor
-    if(sum_flows_to_bank > 0) {
-    	est_ir_change = -interest/10;    
+    //If we are outside tolerance (diff_limit), do something, else do nothing
+    if (sum_flows_to_bank > diff_limit) {
+	    
+	    //Setting ir_change_factor
+    	if(sum_flows_to_bank > 0) {
+    		est_ir_change = -interest/10;    
+    	}
+    	else {
+    		est_ir_change = interest/10;
+    	} 
+    
+    
+    	//Updating interest rate
+    	bank_ -> change_interest(est_ir_change);
+    	interest = bank_ -> get_interest();
+    
+     	//If max interest rate setting interest to max_interest/2
+    	if(interest >= max_interest_rate) {
+    		interest = max_interest_rate/2;
+    	}
     }
-    else {
-    	est_ir_change = interest/10;
-    } 
     
-    //Updating interest rate
-    bank_ -> change_interest(est_ir_change);
-    interest = bank_ -> get_interest();
-    
-     //If max interest rate setting interest to max_interest/2
-    if(interest >= max_interest_rate) {
-    
-    	interest = max_interest_rate/2;
-    
-    }
-    
-    //cout << "Start interest rate: " << prev_interest << endl;
     
     while(abs(sum_flows_to_bank) > diff_limit && counter < number_of_iterations && interest < max_interest_rate) {
-        	
     	//Getting cash-flows after initial interest change
     	consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    	
     	company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    	
     	bank_sum = (bank_ -> get_sum_to_borrow());
     	
     	//Calculating cash-flow deltas after interest update
@@ -645,18 +666,14 @@ void City::update_interest_rate() {
     	//If flows to bank increases we have risk of divergence, changing back half a step
     	if(abs(prev_flows_to_bank) <= abs(sum_flows_to_bank)){
     	
-    		//Setting previos interest rate and halving ir_change_factor (Testing these lines)
-    		//bank_ -> change_interest(-est_ir_change*ir_change_factor/2);
-    		//interest = bank_ -> get_interest();
     		
     		ir_change_factor = ir_change_factor/2;
     		//cout << "In city upd. re, divergence: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
     	}
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
-    	//cout << "In city upd. ir: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+
     	cout << "In city upd. ir: " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
-    	//cout << "New ir: " << interest +  est_ir_change*ir_change_factor << " adjustment: " << est_ir_change*ir_change_factor << "  Total cashflow to bank: " << sum_flows_to_bank << endl;
     		
     	
     	//Changint interest rate
@@ -680,97 +697,104 @@ void City::update_interest_rate() {
 	
 	}
 	
-	//Testing response to increasing interest rate
-    // if(clock_ -> get_time() >= 50 && clock_ -> get_time() < 60 ) {
+	//If divergence and initial interest better than final
+	if(initial_flows_to_bank < sum_flows_to_bank && counter == 20) {
+		cout << "Final divergence and worse than initial IR, setting initial IR of: " << initial_interest << " vs " << interest << " and initial flows: " << initial_flows_to_bank << " vs flows " << sum_flows_to_bank << endl;
+		bank_ -> set_interest(initial_interest);
+	
+	}
+	
+// 	Testing response to increasing interest rate
+//     if(clock_ -> get_time() >= 20 && clock_ -> get_time() < 25 ) {
 //     	cout << "In city update interest, setting extra ir with: " << ir_add_on_test << endl;
 //     	bank_ -> change_interest(ir_add_on_test);
-//     }
+//    }
     	
 	
 	cout << "I city update interest rate " << "Market rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
 }
-void City::update_interest_rate2() {
-    
-    double interest = 0.01;
-    double factor = 0.005;
-    double counter = 1;
-    double consumer_sum = 0;
-    double company_sum = 0;
-    double bank_sum = 0;
-    int diff_limit = 50;
-    int sum = 0;
-    double bank_safety = 0;
-    double delta_sum = 0;
-    
-    interest = bank_ -> get_interest();
-    bank_safety = bank_ -> get_safety();
-    
-    //   cout << "cu i city interest" << endl << "before get consumer to bank cashflow" << endl;
-    consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
-    //cout << "cu  after get consumer to bank cashflow" << endl;
-    company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
-    //cout << "cu before  get company  to bank cashflow" << endl;
-    bank_sum = (bank_ -> get_sum_to_borrow());
-    //cout << "cu after  get company  to bank cashflow" << endl;
-    
-    
-    //Checking direction of interest change
-    sum = consumer_sum + company_sum + bank_sum;
-    
-
-     cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
-
-    if(sum <= 0) {
-        for(int i = 0; i < 5 && abs(sum) > diff_limit ; i++) {
-            while(counter*sum < 0 && abs(sum) > diff_limit && interest < 5) { //&&interest > 0.0000001  && 
-                cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
-                //cout << "I city calculate interest  " << "Delta sum: " << delta_sum << endl;
-                bank_ -> change_interest(counter*factor);
-                interest = bank_ -> get_interest();
-                
-                consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
-                company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
-                bank_sum = (bank_ -> get_sum_to_borrow());
-                
-                delta_sum = (consumer_sum + company_sum + bank_sum) - sum;
-                
-                sum = consumer_sum + company_sum + bank_sum; 
-                
-            }
-            counter = - counter;
-            factor = factor/4;
-        }
-    }
-    
-    else if(sum > 0) {
-        counter = 1;
-        factor = 0.01; 
-        for(int i = 0; i < 10 && abs(sum) > diff_limit ; i++) {
-            while(counter*sum > 0 && abs(sum) > diff_limit && interest > 0.00001) {
-                cout << "Sum: " << sum << "  Summa flr sum > 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << "  Bank assets: " << bank_ -> get_assets() << "  Interest: " << interest << endl;
-                
-                bank_ -> change_interest(-counter*factor);
-                interest = bank_ -> get_interest();
-                
-                // cout << "cd i city interest" << endl << "before get consumer to bank cashflow" << endl;
-                consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
-                //    cout << "cd  after get consumer to bank cashflow" << endl;
-                company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
-                //cout << "cd before  get company  to bank cashflow" << endl;
-                bank_sum = (bank_ -> get_sum_to_borrow());
-                //cout << "cd after  get company  to bank cashflow" << endl;
-                
-                sum = consumer_sum + company_sum + bank_sum; // + bank_sum   
-            }
-            counter = - counter;
-            factor = factor/4; 
-        }
-    }
-    cout << "I city update interest trustworthy " << consumers_ -> get_trustworthy() << endl; 
-    //   bank_ -> set_interest(interest);
-    
-}
+// void City::update_interest_rate2() {
+//     
+//     double interest = 0.01;
+//     double factor = 0.005;
+//     double counter = 1;
+//     double consumer_sum = 0;
+//     double company_sum = 0;
+//     double bank_sum = 0;
+//     int diff_limit = 50;
+//     int sum = 0;
+//     double bank_safety = 0;
+//     double delta_sum = 0;
+//     
+//     interest = bank_ -> get_interest();
+//     bank_safety = bank_ -> get_safety();
+//     
+//     //   cout << "cu i city interest" << endl << "before get consumer to bank cashflow" << endl;
+//     consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//     //cout << "cu  after get consumer to bank cashflow" << endl;
+//     company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//     //cout << "cu before  get company  to bank cashflow" << endl;
+//     bank_sum = (bank_ -> get_sum_to_borrow());
+//     //cout << "cu after  get company  to bank cashflow" << endl;
+//     
+//     
+//     //Checking direction of interest change
+//     sum = consumer_sum + company_sum + bank_sum;
+//     
+// 
+//      cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank assets: " << bank_ -> get_capital() << "  Interest: " << interest << endl;
+// 
+//     if(sum <= 0) {
+//         for(int i = 0; i < 5 && abs(sum) > diff_limit ; i++) {
+//             while(counter*sum < 0 && abs(sum) > diff_limit && interest < 5) { //&&interest > 0.0000001  && 
+//                 cout << "I city calculate interest  " << "Sum: " << sum  << "  Summa sum < 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "   Bank sum:" << bank_sum << "  Bank capital: " << bank_ -> get_capital() << "  Interest: " << interest << endl;
+//                 //cout << "I city calculate interest  " << "Delta sum: " << delta_sum << endl;
+//                 bank_ -> change_interest(counter*factor);
+//                 interest = bank_ -> get_interest();
+//                 
+//                 consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//                 company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//                 bank_sum = (bank_ -> get_sum_to_borrow());
+//                 
+//                 delta_sum = (consumer_sum + company_sum + bank_sum) - sum;
+//                 
+//                 sum = consumer_sum + company_sum + bank_sum; 
+//                 
+//             }
+//             counter = - counter;
+//             factor = factor/4;
+//         }
+//     }
+//     
+//     else if(sum > 0) {
+//         counter = 1;
+//         factor = 0.01; 
+//         for(int i = 0; i < 10 && abs(sum) > diff_limit ; i++) {
+//             while(counter*sum > 0 && abs(sum) > diff_limit && interest > 0.00001) {
+//                 cout << "Sum: " << sum << "  Summa flr sum > 0, company_sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << "  Bank capital: " << bank_ -> get_capital() << "  Interest: " << interest << endl;
+//                 
+//                 bank_ -> change_interest(-counter*factor);
+//                 interest = bank_ -> get_interest();
+//                 
+//                 // cout << "cd i city interest" << endl << "before get consumer to bank cashflow" << endl;
+//                 consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+//                 //    cout << "cd  after get consumer to bank cashflow" << endl;
+//                 company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+//                 //cout << "cd before  get company  to bank cashflow" << endl;
+//                 bank_sum = (bank_ -> get_sum_to_borrow());
+//                 //cout << "cd after  get company  to bank cashflow" << endl;
+//                 
+//                 sum = consumer_sum + company_sum + bank_sum; // + bank_sum   
+//             }
+//             counter = - counter;
+//             factor = factor/4; 
+//         }
+//     }
+//     cout << "I city update interest trustworthy " << consumers_ -> get_trustworthy() << endl; 
+//     //   bank_ -> set_interest(interest);
+//     
+// }
 
 // void City::update_interest_rate() {
 //     
@@ -1027,6 +1051,7 @@ void City::save_money_data() {
     double bank_capital = 0;
     double bank_loans = 0;
     double bank_deposits = 0;
+    double bank_liquidity = 0;
     double market_capital = 0;
     double total_capital = 0;
     double time = 0;
@@ -1039,8 +1064,9 @@ void City::save_money_data() {
     consumer_deposits = consumers_ -> get_loans_sum();
     company_capital = company_list_ -> get_capital_sum();
     
-    bank_capital = bank_ -> get_assets();
+    bank_capital = bank_ -> get_capital();
     market_capital = market_ -> get_capital();
+    bank_liquidity = bank_ -> get_liquidity();
 	
     
     //consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_assets();
@@ -1048,7 +1074,7 @@ void City::save_money_data() {
     bank_loans = bank_ -> get_loans();
     bank_deposits = bank_ -> get_deposits();
     
-    total_capital = consumer_capital + company_capital + bank_capital + market_capital;
+    total_capital = get_capital_sum(); //consumer_capital + consumer_deposits + company_capital + bank_capital + market_capital;
     time = clock_ -> get_time();
     //  cout << "I city save money data, time: " << clock_ -> get_time() << "  assets: " << bank_capital << endl;
 	
@@ -1087,7 +1113,7 @@ void City::save_flash(int time) {
         
         consumer_capital = consumers_ -> get_capital_sum();
         company_capital = company_list_ -> get_capital_sum();
-        bank_capital = bank_ -> get_assets();
+        bank_capital = bank_ -> get_capital();
         market_capital = market_ -> get_capital();
         total_capital = get_capital_sum();
         
@@ -1141,7 +1167,7 @@ void City::adjust_money() {
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.15;
+    double scale_factor = 0.1;
     
     double MAX_CHANGE_FACTOR = 0.01;
     
@@ -1171,7 +1197,7 @@ void City::adjust_money() {
     Wages = ((company_list_ -> get_company("bempa_AB"))-> wages_.begin());    
     
     total_money = get_capital_sum();
-    bank_money = bank_ -> get_assets();
+    bank_money = bank_ -> get_capital();
     
     
     //Function 1
@@ -1276,7 +1302,8 @@ void City::adjust_money() {
     }
     */
     
-    bank_ -> change_assets(money_change);
+    bank_ -> change_capital(money_change);
+    bank_ -> change_liquidity(money_change);
     loans_to_bank_ += money_change;
     
 }

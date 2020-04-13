@@ -5,7 +5,29 @@
 \paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\f0\fs24 \cf0 2020-04-03\
+\f0\fs24 \cf0 2020-04-10\
+New market purchase function implemented for consumers but not for companies. Should be added in both invest and buy_items_for roduction\
+Funny how this hopefully works (excess items) as the I in a PID-regulator. \
+\
+\
+ERROR IN consumer -> deposit_and_borrow_from_bank();  leaking money\
+No it wasn\'92t, problematic in total capital function, use cash/liquidity measure\
+\
+		cash		dep		bor 		liq\
+cons 	100		0		0		100\
+bank		100		0		0		100\
+\
+		cap		dep		bor 		liq\
+cons 	100		30		70		140\
+bank		100		30		70		60\
+\
+\
+\
+\
+2020-04-08\
+H\'e5ller p\'e5 att uppdatera banken. Alla bank_ funktioner i company och consumer m\'e5ste ses \'f6ver och \'e4ndras till sammansatta funktioner. \
+\
+2020-04-03\
 Verkar bli problem d\'e5 det tar slut pengar i banken\
 BANKEN HANTERAR ASSETS & DEPOSITS OCH LOANS FELAKTIGT!!\
 N\'c4R MAN \'c4NDRAR DEPOSITS/LOANS S\'c5 \'c4NDRAR MAN \'c4VEN ASSETS. BEH\'d6VER F\'d6RFINA BEGREPPEN H\'c4R. \
@@ -41,8 +63,7 @@ City::consumers_bank_business()  ->   consumers_ -> bank_business() ->\
 \
 2020-03-26\
 Problems in get_desired investment och investment cashflow. Har r\'e4ttat till s\'e5 att inte hela investeringen r\'e4knas med, har nog inte t\'e4nkt hela v\'e4gen i m\'e5l h\'e4r. \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
-\cf0 \
+\
 2020-03-24\
 Removing factor_increase\
 Problems in get_desired investment och investment cashflow\
@@ -50,8 +71,7 @@ Investment cashflows r\'e4knar ju p\'e5 hela produktionen och inte bara invester
 \
 \
 2020-03-20\
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
-\cf0 Invest -> get_desired_investment() -> while (get_investment_cashflows (items, loans)) -> capacity_increase() & while(decay)\
+Invest -> get_desired_investment() -> while (get_investment_cashflows (items, loans)) -> capacity_increase() & while(decay)\
 \
 In company get investment cashflows the factor increase is wrong but works well\
 \

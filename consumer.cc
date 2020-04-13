@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "functions.h"
 #include "clock.h"
@@ -218,7 +219,7 @@ double Consumer::get_borrow() {
     double available_capital = 0;
     
     interest = bank_ -> get_interest();
-    available_capital = bank_ -> get_sum_to_borrow();//get_assets();
+    available_capital = bank_ -> get_max_customer_borrow();//get_assets();
     
     amount = get_desired_borrow(); //borrowwill_*capital_/(0.3+interest);
     
@@ -421,41 +422,100 @@ double Consumer::buy() {
     double amount_cash = 0;
     double amount_bank = 0;
     double total_amount = 0;
+    double actual_amount = 0;
     double price = 0;
-    double quantity = 0;
+    int desired_items = 0;
+    int actual_items = 0;
     
-    if (capital_ > 0) {
-        amount_cash = capital_ * spendwill_;
-        amount_bank = loans_ * spendwill_;
-        total_amount = amount_bank + amount_cash;
-    }
+    int max_items = 0;
     
     price = market_ -> get_price_out();
-    quantity = total_amount/price;
+    max_items = market_ -> get_items();
     
+    
+    //Desired amount to purchase
+    amount_cash = capital_ * spendwill_;
+    amount_bank = loans_ * spendwill_;
+	total_amount = amount_bank + amount_cash;
+   	desired_items = fmax(0, total_amount/price);
+   	
+   	//Actual amount purchased
+   	actual_items = market_ -> customer_buy_items(total_amount);
+   	actual_amount = actual_items*price;
+   	
+   	if(actual_amount < amount_cash) {
+   		amount_cash = actual_amount;
+   		amount_bank = 0;
+   	}
+   	else {
+   		amount_bank = actual_amount - amount_cash;
+   	
+   	}
+   	
+   	//Changing inventory and money
+    items_ += actual_items;
+   
     /*
      * Have to check if the market has got enough intems to sell 
      */
+    //cout << "I cons buy Amount cash: " << amount_cash << " Amount bank: " << amount_bank << " Total amount: " << actual_amount << endl;
     
-    if (market_ -> get_items() > quantity && total_amount > 0) {
+    change_capital(-amount_cash);
+    change_loans(-amount_bank);
+    bank_ -> customer_withdraw_money(amount_bank);
         
-        items_ += quantity;
-        market_ -> change_capital(total_amount);
-        market_ -> change_items(-quantity);
-        
-        change_capital(-amount_cash);
-        change_loans(-amount_bank);
-        bank_ -> change_deposits(-amount_bank);
-        
-        log_transaction_full(name_, "Market", total_amount, "Purchase", get_time());
-        log_transaction(name_, total_amount, "Purchase", get_time());
-        log_transaction(name_, amount_bank, "Deposit", get_time());
-        
-    }
+    log_transaction_full(name_, "Market", actual_amount, "Purchase", get_time());
+    log_transaction(name_, actual_amount, "Purchase", get_time());
+    log_transaction(name_, amount_bank, "Deposit", get_time());
     
     
-    return total_amount;
+    return actual_amount;
 }
+
+// double Consumer::buy() {
+//     
+//     double amount_cash = 0;
+//     double amount_bank = 0;
+//     double total_amount = 0;
+//     double price = 0;
+//     double quantity = 0;
+//     
+//     int max_items = 0;
+//     
+//     price = market_ -> get_price_out();
+//     max_items = market_ -> get_items();
+//     
+//     if (capital_ > 0) {
+//         amount_cash = capital_ * spendwill_;
+//         amount_bank = loans_ * spendwill_;
+//         total_amount = amount_bank + amount_cash;
+//    		 quantity = fmax(0, fmin(total_amount/price, max_items));
+//     }
+//     
+//    
+//     /*
+//      * Have to check if the market has got enough intems to sell 
+//      */
+//     
+//     if (max_items > quantity && total_amount > 0) {
+//         
+//         items_ += quantity;
+//         market_ -> change_capital(total_amount);
+//         market_ -> change_items(-quantity);
+//         
+//         change_capital(-amount_cash);
+//         change_loans(-amount_bank);
+//         bank_ -> customer_withdraw_money(amount_bank);
+//         
+//         log_transaction_full(name_, "Market", total_amount, "Purchase", get_time());
+//         log_transaction(name_, total_amount, "Purchase", get_time());
+//         log_transaction(name_, amount_bank, "Deposit", get_time());
+//         
+//     }
+//     
+//     
+//     return total_amount;
+// }
 
 
 void Consumer::deposit_and_borrow_from_bank() {
@@ -463,22 +523,30 @@ void Consumer::deposit_and_borrow_from_bank() {
     if(trustworthy_ && bank_ -> get_trustworthy()) {
         double sum_to_deposit = 0;
         double sum_to_borrow = 0;
+        double max_sum_to_borrow = 0;
         
+        
+        //Loand = depostit
         sum_to_deposit = get_desired_loans();
         
-        
         change_loans(sum_to_deposit);
-        bank_ -> change_deposits(sum_to_deposit);
+        change_capital(-sum_to_deposit);
+        bank_ -> customer_deposit_money(sum_to_deposit);
         
+        
+        
+        //Borrow
         sum_to_borrow = get_desired_borrow();
         
-        change_capital(-sum_to_deposit);
-        change_capital(sum_to_borrow);
-        change_debts(sum_to_borrow);
-        bank_ -> change_loans(sum_to_borrow);
+        max_sum_to_borrow = bank_ -> customer_borrow_money(sum_to_borrow);
+        
+        change_capital(max_sum_to_borrow);
+        change_debts(max_sum_to_borrow);
+        //cout << "I cons dep & bor, des bor: " << sum_to_borrow << " max sum: " << max_sum_to_borrow << endl;
+        
         
         log_transaction_full(name_, "Bank", sum_to_deposit, "Deposit", get_time());
-        log_transaction_full(name_, "Bank", sum_to_borrow, "Loan", get_time());
+        log_transaction_full(name_, "Bank", max_sum_to_borrow, "Loan", get_time());
     }
     
     
@@ -493,7 +561,9 @@ void Consumer::deposit_to_bank() {
         
         change_capital(-amount);
         change_loans(amount);
-        bank_ -> change_deposits(amount);
+        bank_ -> customer_deposit_money(amount);
+        
+      
     }
 }
 
@@ -512,7 +582,7 @@ void Consumer::borrow_from_bank() {
         
         change_capital(amount);
         change_debts(amount);
-        bank_ -> change_loans(amount);
+        bank_ -> customer_borrow_money(amount);
     }
 }
 
@@ -539,7 +609,7 @@ void Consumer::repay_to_bank() {
         change_capital(-amount);
         change_debts(-amount);
         //bank_ -> change_assets(amount);
-        bank_ -> change_loans(-amount);
+        bank_ -> customer_repay_loans(amount);
         
         log_transaction_full(name_, "Bank", amount, "Amortization", get_time());
     }
@@ -553,8 +623,8 @@ void Consumer::get_repayment_from_bank() {
         payback_time = bank_ -> get_payback_time();
         amount = loans_/(payback_time*12);
         
-        if(amount > bank_ -> get_assets()) {
-            amount = bank_ -> get_assets();
+        if(amount > bank_ -> get_capital()) {
+            amount = bank_ -> get_capital();
             bank_ -> set_trustworthy(false);
             //	cout << "Not enough money in bank to repay to cvonsumer (in consumer get repayment)" << endl;
         }
@@ -569,27 +639,23 @@ void Consumer::get_repayment_from_bank() {
         log_transaction_full("Bank", name_, amount, "Amortization", get_time());
         
         //bank_ -> change_assets(-amount);
-        bank_ -> change_deposits(-amount);
+        bank_ -> customer_withdraw_money(amount);
     }
 }
 
 void Consumer::get_interest() {
     double interest = 0;
     double amount = 0;
-    double bank_sum_to_borrow = 0;
-    
-    bank_sum_to_borrow = bank_ -> get_sum_to_borrow();
+    double amount_available = 0;
     
     if(trustworthy_) {
         interest = bank_ -> get_interest();
         amount = interest*loans_;
         
-        if(amount > bank_sum_to_borrow && bank_sum_to_borrow > 0) {
-            amount = bank_sum_to_borrow;
-            bank_ -> set_trustworthy(false);
-        }
-        else if (bank_sum_to_borrow < 0) {
-            amount = 0;
+       	amount_available =  bank_ -> customer_get_interest(amount);
+        
+        if(amount > amount_available) {
+            amount = amount_available;
             bank_ -> set_trustworthy(false);
         }
         else {
@@ -597,10 +663,36 @@ void Consumer::get_interest() {
         }
         
         change_capital(amount);
-        bank_ -> change_assets(-amount);
+        
         
         log_transaction_full("Bank", name_, amount, "Interest", get_time());
     }
+    
+    
+    
+   //  max_bank_payback = bank_ -> get_max_customer_borrow();
+//     
+//     if(trustworthy_) {
+//         interest = bank_ -> get_interest();
+//         amount = interest*loans_;
+//         
+//         if(amount > max_bank_payback && max_bank_payback > 0) {
+//             amount = max_bank_payback;
+//             bank_ -> set_trustworthy(false);
+//         }
+//         else if (max_bank_payback < 0) {
+//             amount = 0;
+//             bank_ -> set_trustworthy(false);
+//         }
+//         else {
+//             bank_ -> set_trustworthy(true);
+//         }
+//         
+//         change_capital(amount);
+//         bank_ -> customer_get_interest(amount);
+//         
+//         log_transaction_full("Bank", name_, amount, "Interest", get_time());
+//     }
 }
 
 
@@ -626,7 +718,7 @@ void Consumer::pay_interest() {
         }
         
         change_capital(-amount);
-        bank_ -> change_assets(amount);
+        bank_ -> customer_pay_interest(amount);
         
         log_transaction_full(name_, "Bank", amount, "Interest", get_time());
     }

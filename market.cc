@@ -1,6 +1,7 @@
 #include <iostream> 
 #include <iomanip>
 #include <string>
+#include <cmath>
 
 #include "market.h"
 
@@ -15,7 +16,8 @@ Market::Market() :
   capital_(1000000),
   price_in_(10),
   price_out_(10),
-  div_ratio_(0.5)
+  div_ratio_(0.5), 
+  excess_demand_items_(0)
 {}
 
 void Market::info() {
@@ -43,6 +45,10 @@ long double Market::get_price_in() {
 
 long double Market::get_price_out() {
   return price_out_;
+}
+
+int Market::get_excess_demand_items() {
+	return excess_demand_items_;
 }
 
 void Market::set_items(double items) {
@@ -78,6 +84,11 @@ void Market::set_price_out(double price) {
   }
 }
 
+void Market::reset_excess_demand_items() {
+	excess_demand_items_ = 0;
+
+}
+
 bool Market::change_items(double ch) {
   //  if(items_ >= -ch || ch > 0) {
     items_ += ch;
@@ -87,6 +98,35 @@ bool Market::change_items(double ch) {
     // cout << "Imarket ch_it och ch = " << ch << endl << "I = " << items_ << endl;
     // return false;
     //  }
+}
+
+int Market::customer_buy_items(double money) {
+
+	int items_wanted = 0;
+	int items_sold = 0;
+	int items_available = 0;
+	double purchase_amount = 0;
+	
+	items_wanted = money/price_out_;
+	
+	items_available = items_;
+	
+	items_sold = fmax(0,fmin(items_wanted, items_available));
+	purchase_amount = items_sold*price_out_;
+	
+	if(items_available < items_wanted) {
+	
+		excess_demand_items_ += (items_wanted - items_available);
+	
+	}
+	
+	//cout << "I Market customer buy, items: " << items_sold << " Purch amount: " << purchase_amount << " wanted amount: " << money << endl;
+	
+	items_ -= items_sold;
+	capital_ += purchase_amount;
+
+	return items_sold;
+
 }
 
 void Market::change_marginal(double ch) {

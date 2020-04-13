@@ -10,7 +10,7 @@
 using namespace std;
 
 Clock::Clock() :
-  time_(0)
+  time_(0) //
 {}
 
 int Clock::get_time() {

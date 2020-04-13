@@ -499,11 +499,11 @@ void Consumer_list::bank_business() {
   
   for(p = list_; p; p = p -> next_){
   	Consumer * consumer = p -> get_consumer();
-    consumer -> get_interest();
-    consumer -> pay_interest();
-  	consumer -> repay_to_bank();
-	consumer -> get_repayment_from_bank();
-	consumer -> deposit_and_borrow_from_bank();
+    consumer -> get_interest(); //Check, some error
+    consumer -> pay_interest(); //Check
+  	consumer -> repay_to_bank(); //Check
+	//consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
+	consumer -> deposit_and_borrow_from_bank(); //Check
   
   }
 }

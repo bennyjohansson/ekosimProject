@@ -20,6 +20,7 @@ class Market {
 
   void info();
   double get_items();
+  int get_excess_demand_items();
   double get_marginal();
   double get_capital();
   long double get_price_in();
@@ -37,15 +38,18 @@ class Market {
   bool change_capital(double);
   void change_price_in(double);
   void change_price_out(double);
+  void reset_excess_demand_items();
 
   void negotiate_price(double);
   double pay_dividends();
+  int customer_buy_items(double); //input money output items
 
 
  private:
 
   string name_;
   double items_;
+  double excess_demand_items_;
   double marginal_;
   double capital_;  
   double price_in_;

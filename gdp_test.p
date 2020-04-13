@@ -8,7 +8,7 @@
    set output "money_test.eps"
    #set xrange[x_start:x_end]
    set xrange[*:*]
-   set yrange[*:0.3e7]
+   set yrange[*:*]
    set size 1,1
    set key right
    set title "Money in Bennyland" font "Helvetica,24"
@@ -65,7 +65,7 @@
 	    set output "diverse.eps"
 	   #set xrange[x_start:x_end]
    set xrange[*:*]
-   set yrange [*:10]
+   set yrange [-6:6]
 	    
 	    set size 1,1
 	    set key right

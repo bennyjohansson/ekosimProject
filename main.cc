@@ -130,6 +130,7 @@ int main() {
     cout << "------------------------------------------------------------------------------------" << endl;
         
     cout << endl << "PRICING, EMPLYEES & PRODUCING" << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     bennyland.update_employees();
     bennyland.negotiate_market_price();
@@ -143,8 +144,8 @@ int main() {
 	timer1 = stopwatch();// - timer0;
 
     cout << endl << "UPDATING COMPANIES, BUYING & SELLING" << endl;
-
-   
+    cout << "Money: " << bennyland.get_capital_sum() << endl;
+    
     if(invest) {
       bennyland.update_companies();
     }
@@ -189,6 +190,7 @@ int main() {
 	timer2 = stopwatch();
 	
 	cout << endl << "INTERST RATE & INVESTING" << endl;
+	cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     
     if(invest) { 
@@ -208,9 +210,8 @@ int main() {
 	//Timer checkpoint update interest & invest
 	timer3 = stopwatch();
 	
-	cout << endl << "BANK BUSINESS" << endl;
-	
-	
+	cout << endl << "BANK BUSINESS" << endl;	
+    cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     if(invest) {
     
@@ -231,6 +232,7 @@ int main() {
 		timer4 = stopwatch();
  
     cout << endl << "DIVIDENDS" << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << endl;
 
  
 	//Pay stolen dividends

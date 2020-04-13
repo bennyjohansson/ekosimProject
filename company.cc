@@ -377,11 +377,11 @@ double Company::get_desired_loans() {
     desired_investment = get_desired_investment();
     price_out = market_ -> get_price_out();
     
-    desired_loans = desired_investment*price_out - capital_to_invest;
+    desired_loans = fmax(0,desired_investment*price_out - capital_to_invest);
     
-    if(desired_loans < 0) {
-        desired_loans = 0;
-    }
+    //if(desired_loans < 0) {
+    //    desired_loans = 0;
+    //}
     
     return desired_loans;
     
@@ -702,16 +702,17 @@ void Company::sell_to_market() {
 
 double Company::invest() {
     
-    double max_items = 0;
-    double items2 = 0;
-    double items = 0;
+    int max_items = 0;
+    int actual_items = 0;
+    int desired_items = 0;
     double cost = 0;
+    double actual_amount = 0;
     double loans = 0;
     double loans2 = 0;
     double desired_loans = 0;
     double available_capital = 0;
     double available_bank_financing = 0;
-    double capital_to_invest = 0;
+    double own_capital_to_invest = 0;
     double income = 0;
     double price_out = 0;
     double value = 0;
@@ -723,52 +724,71 @@ double Company::invest() {
     max_items = market_ -> get_items();
     
     //Getting the desired investment for the company (after max leverage) and available items
-    items = fmax(0, fmin(max_items, get_desired_investment()));
+    desired_items = fmax(0, get_desired_investment());
     
     //Calculating cost of the desired investment and available capital 
-    cost = items*price_out;
-    available_capital = capital_*pbr_;
+    cost = desired_items*price_out;
+    available_capital = fmax(capital_*pbr_, 0);
     loans = fmax(0,cost - available_capital);
-    available_bank_financing = fmax(0, bank_ -> get_assets());
     
-    //loans2 = get_desired_loans();
-    
-    //double capital_old = capital_;
-    
-   
     
     //If not all money available in the bank
+     available_bank_financing = fmax(0, bank_ -> get_max_customer_borrow());
+
+
     if(available_bank_financing < loans) {
-        cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
+        //cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
         loans = fmax(0,available_bank_financing);
-        items = (available_capital + available_bank_financing)/price_out;
-        cost = items*price_out;
-        cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
+        cost = (available_capital + loans);
+        desired_items = cost/price_out;
+        cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << desired_items << " Max items " << max_items << endl;
 
     }
     
     //Total amount to invest from own money
-    capital_to_invest = cost - loans;
+    own_capital_to_invest = cost - loans;
+    
+
+    
+     //Paying market for goods
+    
+    actual_items = market_ -> customer_buy_items(own_capital_to_invest + loans);
+    actual_amount = actual_items*price_out;
+    
+    cout << "I comp inv, des items: " << desired_items << " actual items: " << actual_items << " Actual Cost: " << actual_amount << " available own cap: " << available_capital << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Max items " << max_items << " Name: " << name_ << endl;
+
+    
+    if(actual_amount < available_capital) {
+    	own_capital_to_invest = actual_amount;
+    	loans = 0;
+    }
+    else { //Need loans as well
+    	loans = actual_amount - own_capital_to_invest;
+    
+    }
+    
+    change_capital(-own_capital_to_invest);
+    
+    //Getting items from market
+    change_stock(actual_items);
+    //market_ -> change_items(-items);
     
     //Updating loans from bank
     change_debts(loans);
-    bank_ -> change_loans(loans);
+    bank_ -> customer_borrow_money(loans);
     
-    //Paying market for goods
-    change_capital(-capital_to_invest);
-    market_ -> change_capital(capital_to_invest + loans);
+   
     
-    //Getting items from market
-    change_stock(items);
-    market_ -> change_items(-items);
+    
+   
     
     log_transaction_full(name_, "Bank", loans, "Loan", clock_ ->  get_time());
-    log_transaction_full(name_, "Market", capital_to_invest + loans, "Investment", clock_ ->  get_time());
+    log_transaction_full(name_, "Market", own_capital_to_invest + loans, "Investment", clock_ ->  get_time());
     
     
     //Increasing capacity and efficiency    
-    capacity_change = capacity_increase(items, capacity_);
-    factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
+    capacity_change = capacity_increase(actual_items, capacity_);
+    factor_change = factor_increase(actual_items, prod_const_skill_, prod_const_motivation_, capacity_);
     
     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
 	//cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
@@ -778,12 +798,100 @@ double Company::invest() {
     change_capacity(capacity_change);  
 
     //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
-    cout << "I comp inv items: " << items << " Cost: " << cost << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
+    //cout << "I comp inv items: " << actual_items << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
     
-    investments_.push_front(cost);
+    investments_.push_front(actual_amount);
     
     return cost;
 }
+
+// double Company::invest() {
+//     
+//     double max_items = 0;
+//     double items2 = 0;
+//     double items = 0;
+//     double cost = 0;
+//     double loans = 0;
+//     double loans2 = 0;
+//     double desired_loans = 0;
+//     double available_capital = 0;
+//     double available_bank_financing = 0;
+//     double own_capital_to_invest = 0;
+//     double income = 0;
+//     double price_out = 0;
+//     double value = 0;
+//     double capacity_change = 0;
+//     double factor_change = 0;
+//     bool increase = true;
+//     
+//     price_out = market_ -> get_price_out();
+//     max_items = market_ -> get_items();
+//     
+//     //Getting the desired investment for the company (after max leverage) and available items
+//     items = fmax(0, fmin(max_items, get_desired_investment()));
+//     
+//     //Calculating cost of the desired investment and available capital 
+//     cost = items*price_out;
+//     available_capital = fmax(capital_*pbr_, 0);
+//     loans = fmax(0,cost - available_capital);
+//     
+//    
+//     
+//     //loans2 = get_desired_loans();
+//     
+//     //double capital_old = capital_;
+//     
+//    
+//     
+//     //If not all money available in the bank
+//      available_bank_financing = fmax(0, bank_ -> get_max_customer_borrow());
+//      
+//     if(available_bank_financing < loans) {
+//         //cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
+//         loans = fmax(0,available_bank_financing);
+//         cost = (available_capital + loans);
+//         items = cost/price_out;
+//         cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
+// 
+//     }
+//     
+//     //Total amount to invest from own money
+//     own_capital_to_invest = cost - loans;
+//     
+//     //Updating loans from bank
+//     change_debts(loans);
+//     bank_ -> customer_borrow_money(loans);
+//     
+//     //Paying market for goods
+//     change_capital(-own_capital_to_invest);
+//     market_ -> change_capital(own_capital_to_invest + loans);
+//     
+//     //Getting items from market
+//     change_stock(items);
+//     market_ -> change_items(-items);
+//     
+//     log_transaction_full(name_, "Bank", loans, "Loan", clock_ ->  get_time());
+//     log_transaction_full(name_, "Market", own_capital_to_invest + loans, "Investment", clock_ ->  get_time());
+//     
+//     
+//     //Increasing capacity and efficiency    
+//     capacity_change = capacity_increase(items, capacity_);
+//     factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
+//     
+//     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
+// 	//cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
+//     
+//     change_prod_const_skill(factor_change);
+//     change_prod_const_motivation(factor_change);
+//     change_capacity(capacity_change);  
+// 
+//     //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
+//     cout << "I comp inv items: " << items << " Cost: " << cost << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
+//     
+//     investments_.push_front(cost);
+//     
+//     return cost;
+// }
 
 double Company::get_desired_investment() {
     
@@ -1082,7 +1190,7 @@ void Company::pay_interest() {
     amount = debts_*interest;
     
     change_capital(-amount);
-    bank_-> change_assets(amount);
+    bank_-> customer_pay_interest(amount);
 
 	log_transaction_full(name_, "Bank", amount, "Interest", clock_ ->  get_time());
 }
@@ -1102,7 +1210,7 @@ void Company::repay_to_bank() {
     change_capital(-amount);
     change_debts(-amount);
     //  bank_ -> change_assets(amount);
-    bank_ -> change_loans(-amount);
+    bank_ -> customer_repay_loans(amount);
     
     log_transaction_full(name_, "Bank", amount, "Amortization", clock_ ->  get_time());
     
@@ -1129,20 +1237,26 @@ double Company::pay_dividends() {
 }
 
 void Company::buy_items_for_production() {
-    double items = 0;
+    int desired_items = 0;
+    int actual_items = 0;
     double price = 0;
-    double amount = 0;
+    double desired_amount = 0;
+    double actual_amount = 0; 
     
-    items = get_items_for_production();
+    desired_items = get_items_for_production();
     price = market_ -> get_price_out();
-    amount = items*price;
+    desired_amount = desired_items*price;
+    
     //  cout << "I comapny buy items, cost = " << items << endl; 
     
-    change_capital(-amount);
-    market_ -> change_capital(amount);
-    market_ -> change_items(-items);
+    actual_items = market_ -> customer_buy_items(desired_amount);
+    actual_amount = actual_items*price;
     
-    log_transaction_full(name_, "Market", amount, "Inventory", clock_ ->  get_time());
+    change_capital(-actual_amount);
+    //market_ -> change_capital(amount);
+    //market_ -> change_items(-items);
+    
+    log_transaction_full(name_, "Market", actual_amount, "Inventory", clock_ ->  get_time());
     
 }
 
