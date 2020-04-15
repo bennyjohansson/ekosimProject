@@ -476,14 +476,16 @@ void Consumer_list::update() {
 
 }
 
-void Consumer_list::consumers_buy() {
+double Consumer_list::consumers_buy() {
    double sum = 0;
   Element_consumer * p;
   
   for(p = list_; p; p = p -> next_){
     sum += (p -> get_consumer()) -> buy();
   }
-  cout << "I cons list, actual consumption: " << sum << " $BJ" << endl;
+  //cout << "I cons list, actual consumption: " << sum << " $BJ" << endl;
+  
+  return sum;
 }
 
 void Consumer_list::deposit_and_borrow_from_bank() {

@@ -74,7 +74,7 @@ class Consumer_list {
        */
 
       void update();  
-      void consumers_buy();
+      double consumers_buy();
       void deposit_and_borrow_from_bank();
       void deposit_money_to_bank();
       void borrow_money_from_bank();

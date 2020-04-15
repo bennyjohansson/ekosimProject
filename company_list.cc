@@ -320,17 +320,19 @@ void Company_list::remove_usless_employees() {
  * Functions to operate on the companies
  */
 
-void Company_list::produce() {
+double Company_list::produce() {
     
     Element_company * p;
     double sum = 0;
-    cout << "I company list, items needed for production: (items): " <<get_items_for_production_sum() << endl;
+    cout << "I company list, items needed for production: (items): " << get_items_for_production_sum() << endl;
     
     for(p = list_; p; p = p -> next_) {
         sum += (p -> get_company()) -> produce();
     }
     
-    cout << "I company list, actual production (items): " << sum << endl;
+    //cout << "I company list, actual production (items): " << sum << endl;
+    
+    return sum;
 }
 
 void Company_list::sell_to_market() {

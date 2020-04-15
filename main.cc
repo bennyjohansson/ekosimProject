@@ -125,11 +125,12 @@ int main() {
   	timer0 = stopwatch();
 
     double time_year = bennyland.get_time();
-    cout << "------------------------------------------------------------------------------------" << endl;
+    cout << "---------------------------------------------------------------------------------------------------" << endl;
     cout << "Year: " << time_year << endl;
-    cout << "------------------------------------------------------------------------------------" << endl;
+    cout << "---------------------------------------------------------------------------------------------------" << endl;
         
     cout << endl << "PRICING, EMPLYEES & PRODUCING" << endl;
+    cout << 		"-----------------------------" << endl;
     cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     bennyland.update_employees();
@@ -144,6 +145,7 @@ int main() {
 	timer1 = stopwatch();// - timer0;
 
     cout << endl << "UPDATING COMPANIES, BUYING & SELLING" << endl;
+    cout << 		"------------------------------------" << endl;
     cout << "Money: " << bennyland.get_capital_sum() << endl;
     
     if(invest) {
@@ -190,6 +192,7 @@ int main() {
 	timer2 = stopwatch();
 	
 	cout << endl << "INTERST RATE & INVESTING" << endl;
+	cout << 		"------------------------" << endl;
 	cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     
@@ -211,6 +214,7 @@ int main() {
 	timer3 = stopwatch();
 	
 	cout << endl << "BANK BUSINESS" << endl;	
+	cout << 		"-------------" << endl;
     cout << "Money: " << bennyland.get_capital_sum() << endl;
 
     if(invest) {
@@ -232,6 +236,7 @@ int main() {
 		timer4 = stopwatch();
  
     cout << endl << "DIVIDENDS" << endl;
+    cout << 		"---------" << endl;
     cout << "Money: " << bennyland.get_capital_sum() << endl;
 
  
@@ -250,6 +255,7 @@ int main() {
     //Timer checkpoint last part
     timer5 = stopwatch();// - timer4;
 	cout << endl << "SAVING DATA" << endl;
+	cout << 		"-----------" << endl;
 
     
     bennyland.save_money_data();
@@ -268,6 +274,7 @@ int main() {
    
    
    cout << endl << "TIME MEASUREMENTS" << endl;
+   cout << 		"--------------------" << endl;
  	cout << "Produce:  " << timer1/10000 << endl;
  	cout << "Buy/sell: " << timer2/10000 << endl;
  	cout << "Int & Iv: " << timer3/10000 << endl;

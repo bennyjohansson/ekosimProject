@@ -272,7 +272,7 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
 double get_consumer_borrow(double borrowwill, double capital, double loans, double debt, double interest) {
     
     double amount = 0;
-    //double factor = 5;
+    double factor = 5;
     double max_leverage = 1;
     
     int function_select = 2;
@@ -289,7 +289,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
             break;
 		case 2:
             if(capital > 0) {
-                amount = fmax(borrowwill/(1+100*interest)*((1+max_leverage)*(capital + loans) - debt), 0);
+                amount = fmax(borrowwill/(1+interest*0.1)*((1+max_leverage)*(capital + loans) - debt), 0);
             }
             else {
                 amount = 0;

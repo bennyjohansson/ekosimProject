@@ -26,7 +26,7 @@ liquidity_(0),
 safety_(0.4),
 trustworthy_(true),
 payback_time_(payback_time),
-div_ratio_(0.00)
+div_ratio_(0.05)
 {}
 
 /*
@@ -316,15 +316,15 @@ double Bank::pay_dividends() {
     
     
     
-    if(deposits_ < loans_) {
+    //if(deposits_ < loans_) {
         
-        dividends = fmax(0, capital_ - safety_amount) * div_ratio_;
+    dividends = fmax(0, fmin(liquidity_, capital_ - safety_amount)) * div_ratio_;
         //dividends = capital_ * div_ratio_;
-    }
-    else {
+    //}
+    //else {
         
-        dividends = 0;
-    }
+    //    dividends = 0;
+    //}
     
     capital_ -= dividends;
     

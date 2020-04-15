@@ -594,6 +594,8 @@ void City::update_interest_rate() {
     double ir_add_on_test = -0.5;
     int number_of_iterations = 20; //20 works fine
     
+    cout << endl << "Updating interest rate" << endl << endl;
+    
         
     interest = bank_ -> get_interest();
     initial_interest = interest;
@@ -611,7 +613,9 @@ void City::update_interest_rate() {
     prev_flows_to_bank = sum_flows_to_bank;
     
     //If we are outside tolerance (diff_limit), do something, else do nothing
-    if (sum_flows_to_bank > diff_limit) {
+    if (abs(sum_flows_to_bank) > abs(diff_limit)) {
+    
+    	cout << "I City update interest, interest needs to be updated" << endl;
 	    
 	    //Setting ir_change_factor
     	if(sum_flows_to_bank > 0) {
@@ -654,7 +658,7 @@ void City::update_interest_rate() {
     	//d_sum_di = delta_sum/(prev_interest - interest);
     	
     	if(d_sum_di == 0) {
-    		cout << "d_sum_di: " << d_sum_di << endl;
+    		cout << "d_sum_di: " << d_sum_di << " Counter " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << " delta sum: " << delta_sum << endl; 
     		d_sum_di = 100000;
     	}
     	
@@ -698,7 +702,7 @@ void City::update_interest_rate() {
 	}
 	
 	//If divergence and initial interest better than final
-	if(initial_flows_to_bank < sum_flows_to_bank && counter == 20) {
+	if(abs(initial_flows_to_bank) < abs(sum_flows_to_bank) && counter == 20) {
 		cout << "Final divergence and worse than initial IR, setting initial IR of: " << initial_interest << " vs " << interest << " and initial flows: " << initial_flows_to_bank << " vs flows " << sum_flows_to_bank << endl;
 		bank_ -> set_interest(initial_interest);
 	
@@ -1131,7 +1135,15 @@ void City::save_flash(int time) {
  */
 
 void City::produce() {
-    company_list_ -> produce();
+
+	double production_items = 0;
+	double price = 0;
+	
+	price = market_ -> get_price_out();
+	
+    production_items = company_list_ -> produce();
+    
+    cout << "Actual production: " << production_items*price << " $BJ and items: " << production_items << endl;
 }
 
 void City::sell_to_market() {
@@ -1139,12 +1151,22 @@ void City::sell_to_market() {
 }
 
 void City::consumers_buy() {
-    consumers_ -> consumers_buy();
+
+	double demand_money = 0;
+	double price = 0;
+	
+	price = market_ -> get_price_out();
+	
+    demand_money = consumers_ -> consumers_buy();
+    
+    cout << "Consumer demand: " << demand_money << " $BJ and items: " << demand_money/price << endl;
 }
 
 void City::invest(bool invest) {
     double invested_capital = 0;
     double price = 0;
+    
+    cout << endl << "Companies investing" << endl << endl;
     
     price = market_ -> get_price_out();
     
@@ -1363,6 +1385,9 @@ void City::company_pay_dividends() {
     //consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
     //consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
     consumers_ -> pay_all_dividends_log(total_profit_c/size, total_profit_m/size, total_profit_b/size);
+    
+    cout << endl << "Company dividends: " << total_profit_c << " $BJ" << endl << "Bank dividends: " << total_profit_b << " $BJ" << endl << "Market dividends: " << total_profit_m << " $BJ" << endl << endl;
+    
     
 }
 
