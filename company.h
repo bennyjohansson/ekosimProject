@@ -57,7 +57,8 @@ public:
     double get_estimated_wages(double);
     double get_wage_change_limit();
     double get_investment_cashflow(double, double);
-    double get_desired_investment();
+    int get_desired_investment();
+
     double get_desired_loans();
     double get_expected_net_flow_to_bank();
     

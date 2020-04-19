@@ -142,10 +142,12 @@ double Company_list::get_capacity_sum() {
 
 double Company_list::get_investment_sum() {
     Element_company * p;
-    double sum = 0;
+    int sum = 0;
+    //double sum2 = 0;
     
     for (p = list_; p; p = p -> next_) {
         sum += p -> get_company() -> get_desired_investment();
+        //sum2 += p -> get_company() -> get_desired_investment_old();
     }
     //   cout << "I company_list invest: " << sum << endl;
     return sum;

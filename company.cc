@@ -807,59 +807,52 @@ double Company::invest() {
 
 
 
-double Company::get_desired_investment() {
-    
-    double max_items = 0;
-    double items_temp = 1;
-    double items = 0;
-    double cost = 0;
-    double income = 0;
-    double price_out = 0;
-    double NPV = 0;
-    double capacity_change = 0;
-    double loans = 0;
-    bool increase = true;
-    
-    price_out = market_ -> get_price_out();
-    max_items = market_ -> get_items();
-    
-    while(increase) {
-        
-        
-        //Cost of the investment
-        cost = price_out * items_temp;
-        
-        
-        //This misses max leverage - TO BE CORRECTED
-        if(cost > capital_*pbr_) {
-            loans = cost - capital_*pbr_;
+
+
+int Company::get_desired_investment(){
+
+	double invested_items = 0;
+	double item_increase = 0;
+	double price_out = 0;
+	double cost_of_investment = 0;
+	double NPV = 0;
+	double discounted_cashflows = 0;
+	double borrow = 0;
+	
+	invested_items = 1;
+	item_increase = 100;
+	
+	price_out = market_ -> get_price_out();
+	
+	while (NPV >= 0 && (debts_ + borrow)/capital_ - 1 < max_leverage_) {
+	
+		//Cost of investment
+		cost_of_investment = price_out * invested_items;
+		
+		//If not sufficient own capital for investment, borrow money
+		if(cost_of_investment > capital_*pbr_) {
+            borrow = cost_of_investment - capital_*pbr_;
         }
+		
+		//calculating NPV of investment
+		discounted_cashflows = get_investment_cashflow(invested_items, borrow);  //items NET PRESENT VALUE OF FUTURE CASHFLOWS
         
-        income = get_investment_cashflow(items_temp, loans);  //items NET PRESENT VALUE OF FUTURE CASHFLOWS
-        NPV = income - cost;
+        NPV = discounted_cashflows - cost_of_investment;
         
-        //cout << "I comp des inv " << " income (NPV): " << income << " cost: " << cost << "  debt: " << debts_   << "  Loans: " << loans << " items: " << items_temp << endl; 
+        //cout << "I comp des inv new items: " << invested_items_temp << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl; 
+
         
-        
-        //if (income - cost > value && (debts_ + loans)/capital_ - 1 < max_leverage_) {
-        
-        if (NPV > 0 && (debts_ + loans)/capital_ - 1 < max_leverage_) {
-            
-            //NPV = income - cost;
-            items = items_temp;
-            increase = true;
-        }
-        else {
-            increase = false;
-        }
-        
-        items_temp += 100; //Should be 100
-        //cout << "I comp des invest " << increase << " " << items_temp << endl;
-        
-    }
-    
-    return items;
-    
+        invested_items += item_increase;
+	
+	}
+	
+	//Adjusting for two extra loops
+	invested_items = invested_items - 2*item_increase;
+	
+	return invested_items;
+	
+
+
 }
 
 // double Company::get_investment() {

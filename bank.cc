@@ -19,7 +19,7 @@ div_ratio_(0)
 Bank::Bank(string name, double interest, int payback_time) :
 name_(name),
 interest_rate_(interest),
-capital_(0),
+capital_(250000),
 deposits_(0),
 loans_(0),
 liquidity_(0), 
@@ -327,6 +327,7 @@ double Bank::pay_dividends() {
     //}
     
     capital_ -= dividends;
+    liquidity_ -=dividends;
     
     return dividends;
     

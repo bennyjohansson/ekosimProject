@@ -41,9 +41,7 @@ int main() {
    * Have a look at the file init_company.cc to change company parameters. 
    */
 
-  //City * land = 0;  
-  //land = &bennyland;
-  //init_companies(land);
+
   bennyland.load_company("bempa_AB");
   bennyland.load_company("bempa_co");
   bennyland.load_company("benny_inc");
@@ -79,7 +77,7 @@ int main() {
    */
    
 	bennyland.load_launder_parameters();
-	cout << "Param1: " << bennyland.get_laundry_factor() << endl;
+	//cout << "Param1: " << bennyland.get_laundry_factor() << endl;
   
   /*
    * Starting the main loop, the functions in it are quite 
@@ -106,7 +104,7 @@ int main() {
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 
-	double simulation_years = 500;
+	double simulation_years = 3000;
   bool invest = false;
   int flashtime = 5;
   string theThiefString = "";
@@ -131,7 +129,7 @@ int main() {
         
     cout << endl << "PRICING, EMPLYEES & PRODUCING" << endl;
     cout << 		"-----------------------------" << endl;
-    cout << "Money: " << bennyland.get_capital_sum() << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
     bennyland.update_employees();
     bennyland.negotiate_market_price();
@@ -146,7 +144,7 @@ int main() {
 
     cout << endl << "UPDATING COMPANIES, BUYING & SELLING" << endl;
     cout << 		"------------------------------------" << endl;
-    cout << "Money: " << bennyland.get_capital_sum() << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
     
     if(invest) {
       bennyland.update_companies();
@@ -193,7 +191,7 @@ int main() {
 	
 	cout << endl << "INTERST RATE & INVESTING" << endl;
 	cout << 		"------------------------" << endl;
-	cout << "Money: " << bennyland.get_capital_sum() << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
     
     if(invest) { 
@@ -215,7 +213,7 @@ int main() {
 	
 	cout << endl << "BANK BUSINESS" << endl;	
 	cout << 		"-------------" << endl;
-    cout << "Money: " << bennyland.get_capital_sum() << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
     if(invest) {
     
@@ -237,7 +235,7 @@ int main() {
  
     cout << endl << "DIVIDENDS" << endl;
     cout << 		"---------" << endl;
-    cout << "Money: " << bennyland.get_capital_sum() << endl;
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
  
 	//Pay stolen dividends
@@ -256,7 +254,7 @@ int main() {
     timer5 = stopwatch();// - timer4;
 	cout << endl << "SAVING DATA" << endl;
 	cout << 		"-----------" << endl;
-
+    cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
     
     bennyland.save_money_data();
     

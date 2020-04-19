@@ -540,7 +540,7 @@ void City::negotiate_market_price() {
     price_out = demand/items;
     price_in = price_out/(1 + marginal);
     
-    cout << "I City negotiate price, market_Excess demand: " << market_excess_demand << " Price: " << price_out << " Price without excess: " << (demand - market_excess_demand)/items << endl;
+    cout << "I City neg. price" << " Tot dmd: " << demand << " items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand)/items << endl;
 
     
     market_ -> set_price_out(price_out);
@@ -1052,6 +1052,7 @@ void City::save_money_data() {
     
     double consumer_capital = 0;
     double company_capital = 0;
+    double company_debts = 0;
     double bank_capital = 0;
     double bank_loans = 0;
     double bank_deposits = 0;
@@ -1067,6 +1068,7 @@ void City::save_money_data() {
     consumer_debts = consumers_ -> get_debts_sum(); 
     consumer_deposits = consumers_ -> get_loans_sum();
     company_capital = company_list_ -> get_capital_sum();
+    company_debts = company_list_ -> get_debts_sum();
     
     bank_capital = bank_ -> get_capital();
     market_capital = market_ -> get_capital();
@@ -1093,7 +1095,7 @@ void City::save_money_data() {
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
-    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << endl;
+    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << endl;
 	
     
 }
@@ -1306,7 +1308,7 @@ void City::adjust_money() {
     money_change = total_money*money_change_factor*scale_factor;
     
     
-    //cout << "I city adjust money, mone increase factor: " << money_change/total_money << " Total money " << total_money << " Money change " << money_change <<  endl;
+    cout << "I city adj. money, inflation: " << inflation << " money ch %: " << money_change/total_money << " Total money " << total_money << " Money change " << money_change <<  endl;
     //money_change = (1-average_items/items_a)*total_money;
     
     //if(price_a > average_price) {
