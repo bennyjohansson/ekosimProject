@@ -4,6 +4,11 @@
 #Ignore logs
 transactions_full.txt
 transactions.txt
+transactions*
+flash.txt
+gdp_test.txt
+gdp.txt
+money_test.txt
 
 #Ignore .eps files
 *.eps
@@ -18,3 +23,4 @@ transactions.txt
 /test/*
 /working/*
 /backup/*
+/Long-run-example/*
