@@ -32,6 +32,7 @@ name_(name),
 consumers_(new Consumer_list("CONSUMERS")),
 company_list_(new Company_list("COMPANIES")),
 labour_market_(new Consumer_list("LABOUR MARKET")),
+capital_owners_(new Consumer_list("CAPITAL OWNERS")),
 market_(new Market()),
 bank_(new Bank("BENNYBANK", 0.05, 3)),
 clock_(new Clock()),
@@ -330,9 +331,43 @@ void City::set_time_to_steal(int years) {
 /*
  * Functions for adding consumers and companies to bennyland
  */
+ 
 
 void City::add_consumer(Consumer * consumer) {
     consumers_ -> add_first(consumer);
+}
+
+void City::add_random_consumers(int number_of_consumers){
+	
+	for(int i = 0; i < number_of_consumers; i++) {    
+    	
+    	Consumer * benny = random_consumer(market_, bank_, clock_);
+    	benny -> set_name("Consumer" + std::to_string(i));
+    	add_consumer(benny);    
+  }
+  
+  cout << "I City, added consumers, total numeber of consumers: " <<  consumers_ -> get_size() << endl;
+  
+
+}
+
+
+void City::add_capital_owners(double share_of_population){
+	int total_number_of_consumers = 0;
+	int number_of_capital_owners = 0;
+	
+	total_number_of_consumers = consumers_ -> get_size();
+	
+	number_of_capital_owners = total_number_of_consumers*fmin(1, share_of_population);
+	
+	for(int i = 0; i < number_of_capital_owners; i++) {    
+    	
+    	Consumer * consumer = consumers_ -> get_random_consumer();
+    	capital_owners_ -> add_first(consumer);    
+  }
+	
+	cout << "I city add cap owners, added: " << capital_owners_ -> get_size() << " capital owners" << endl;
+
 }
 
 void City::add_company(Company * company) {
@@ -568,11 +603,13 @@ void City::update_companies() {
 }
 
 
+
 void City::update_interest_rate() {
 
 	int counter = 0;
 	
 	double interest = 0.05;
+	double target_interest = 0;
 	double prev_interest = 0.05;
 	double initial_interest = 0;
     double ir_change_factor = 0.3;
@@ -581,6 +618,7 @@ void City::update_interest_rate() {
     double consumer_sum = 0;
     double company_sum = 0;
     double bank_sum = 0;
+    double max_bank_borrow_to_consumers = 0;
     
     double diff_limit = 1000; //500 works fine
     double sum_flows_to_bank = 0;
@@ -593,19 +631,43 @@ void City::update_interest_rate() {
     double ir_delta = 0.0005;
     double ir_add_on_test = -0.5;
     int number_of_iterations = 20; //20 works fine
+    int ir_method_select = 1;
     
     cout << endl << "Updating interest rate" << endl << endl;
     
-        
+    
+    //Reading interest rates
+    target_interest = bank_ -> get_target_interest();
     interest = bank_ -> get_interest();
     initial_interest = interest;
     prev_interest = interest;
+    max_bank_borrow_to_consumers = bank_ -> get_max_customer_borrow();
     
-    consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
-    company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
-    bank_sum = (bank_ -> get_sum_to_borrow());
+    //Interest rate method, target or market
+     switch (ir_method_select) {
+        case 1: //Market interest rate
+        
+        	//Calculating capital sums
+        	
+    		consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    		company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    		bank_sum = (bank_ -> get_sum_to_borrow());
+    		
+        	break;
+		
+		case 2: //Target interest rate
+		
+			bank_ -> set_interest(target_interest);
+			consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    		company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+			
+			bank_sum = fmin(-(consumer_sum + company_sum), max_bank_borrow_to_consumers);
+			cout << "Target interest rate: " << target_interest << " comp & cons sum: " << company_sum + consumer_sum << " bank sum: " << bank_sum << " bank max: " << max_bank_borrow_to_consumers << endl; 
+			
+			break;
+    }
     
-   
+
     
    //Getting estimated flows to the bank before interest change
     sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
@@ -643,7 +705,9 @@ void City::update_interest_rate() {
     	
     	company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
     	
-    	bank_sum = (bank_ -> get_sum_to_borrow());
+    	
+    	//COMMENT THIS LINE IN TO GET BACK TO NON-TARGET IR SETTING
+    	//bank_sum = (bank_ -> get_sum_to_borrow());
     	
     	//Calculating cash-flow deltas after interest update
     	delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
@@ -1067,20 +1131,21 @@ void City::save_money_data() {
     consumer_capital = consumers_ -> get_capital_sum();
     consumer_debts = consumers_ -> get_debts_sum(); 
     consumer_deposits = consumers_ -> get_loans_sum();
+    
     company_capital = company_list_ -> get_capital_sum();
     company_debts = company_list_ -> get_debts_sum();
     
     bank_capital = bank_ -> get_capital();
-    market_capital = market_ -> get_capital();
     bank_liquidity = bank_ -> get_liquidity();
-	
+    bank_loans = bank_ -> get_loans();
+    bank_deposits = bank_ -> get_deposits();
+
+	market_capital = market_ -> get_capital();
     
     //consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_assets();
     
-    bank_loans = bank_ -> get_loans();
-    bank_deposits = bank_ -> get_deposits();
     
-    total_capital = get_capital_sum(); //consumer_capital + consumer_deposits + company_capital + bank_capital + market_capital;
+    total_capital = get_capital_sum(); //    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum() 
     time = clock_ -> get_time();
     //  cout << "I city save money data, time: " << clock_ -> get_time() << "  assets: " << bank_capital << endl;
 	
@@ -1095,7 +1160,7 @@ void City::save_money_data() {
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
-    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << endl;
+    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << endl;
 	
     
 }
@@ -1191,7 +1256,7 @@ void City::adjust_money() {
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.1;
+    double scale_factor = 0.25;
     
     double MAX_CHANGE_FACTOR = 0.01;
     
@@ -1373,9 +1438,9 @@ void City::company_pay_dividends() {
     double total_profit_m = 0;
     double total_profit_b = 0;
     double amount = 0;	
-    int size = 0;
+    int number_of_capital_owners = 0;
     
-    size = consumers_ -> get_size();
+    number_of_capital_owners = capital_owners_ -> get_size();
     
     total_profit_c = company_list_ -> pay_dividends() ;
     total_profit_b = bank_ -> pay_dividends();
@@ -1386,7 +1451,7 @@ void City::company_pay_dividends() {
     //consumers_ -> pay_dividends_log(total_profit_c/size, "Company");
     //consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
     //consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
-    consumers_ -> pay_all_dividends_log(total_profit_c/size, total_profit_m/size, total_profit_b/size);
+    capital_owners_ -> pay_all_dividends_log(total_profit_c/number_of_capital_owners, total_profit_m/number_of_capital_owners, total_profit_b/number_of_capital_owners);
     
     cout << endl << "Company dividends: " << total_profit_c << " $BJ" << endl << "Bank dividends: " << total_profit_b << " $BJ" << endl << "Market dividends: " << total_profit_m << " $BJ" << endl << endl;
     

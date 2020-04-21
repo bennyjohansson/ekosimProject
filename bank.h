@@ -22,6 +22,7 @@ class Bank {
       void info();
 
       double get_interest();
+      double get_target_interest();
       double get_capital();
       double get_deposits();
       double get_loans();
@@ -34,6 +35,7 @@ class Bank {
       bool get_trustworthy();
       
       void set_interest(double);
+      void set_target_interest(double);
       void set_capital(double);
       void set_deposits(double);
       void set_loans(double);
@@ -42,6 +44,7 @@ class Bank {
       void set_trustworthy(bool);
       
       void change_interest(double);
+      void change_target_interest(double);
       void change_capital(double);
       void change_deposits(double);
       void change_loans(double);
@@ -74,6 +77,7 @@ class Bank {
       double safety_;
       double trustworthy_;
       double div_ratio_;
+      double target_interest_;
 };
 
 #endif

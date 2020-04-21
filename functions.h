@@ -19,6 +19,9 @@ double get_price(double excess);
 double get_price(double, double);
 double get_prod(double, double, double, double, double, double);
 double get_prod(Consumer *, double);
+double get_consumer_demand_deposit(double, double, double);
+double get_consumer_demand_cash(double, double);
+
 double change_motivation();
 double get_consumer_loan(double, double, double);
 double get_consumer_borrow(double, double, double, double, double);

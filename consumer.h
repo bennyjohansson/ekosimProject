@@ -46,6 +46,7 @@ class Consumer {
       double get_desired_loans();
       double get_desired_borrow();
       double get_borrow();
+      double get_demand();
       bool get_employment_status();
       bool get_trustworthy();
       string get_name();

@@ -31,7 +31,7 @@
 
   
    
-   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 2, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7, "money_test.txt" using 1:9 title "Consumer debts" with lines ls 8, "money_test.txt" using 1:10 title "Consumer deposits" with lines ls 9, "money_test.txt" using 1:11 title "Company debts" with lines ls 10
+   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 10, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7, "money_test.txt" using 1:9 title "Consumer debts" with lines ls 8, "money_test.txt" using 1:10 title "Consumer deposits" with lines ls 9, "money_test.txt" using 1:11 title "Company debts" with lines ls 2, "money_test.txt" using 1:12 title "Bank liquidity" with lines ls 12
       
      
       
@@ -43,7 +43,7 @@
       
       set size 1,1
       set key right
-      set title "GDP & stuff in Bennyland" font "Helvetica,24"
+      set title "GDP in number of items" font "Helvetica,24"
       set ylabel "GDP / $BJ" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
       plot "gdp_test.txt" using 1:2 title "Real GDP / items" with lines ls 1
@@ -53,26 +53,27 @@
 	 set output "gdp_invest.eps"
 	 #set xrange[x_start:x_end]
    set xrange[*:*]
+   set yrange [*:*]
 	 
 	 set size 1,1
 	 set key right
 	 set title "GDP & stuff in Bennyland" font "Helvetica,24"
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
-	 plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:10 title "GDP" with lines ls 8
+	 plot "gdp_test.txt" using 1:($9*20) title "Investments" with lines ls 5, "gdp_test.txt" using 1:($10/4) title "GDP" with lines ls 8, "gdp_test.txt" using 1:($5*400000) title "Price" with lines ls 3, "gdp_test.txt" using 1:($8*100000) title "100*Interest rate" with lines ls 7, "gdp_test.txt" using 1:2 title "Real GDP / items" with lines ls 1
 	    
 	    set nomultiplot
 	    set output "diverse.eps"
 	   #set xrange[x_start:x_end]
    set xrange[*:*]
-   set yrange [-1:4]
+   set yrange [*:*]
 	    
 	    set size 1,1
 	    set key right
 	    set title "Prices, wages & stuff in Bennyland" font "Helvetica,24"
       set ylabel "GDP / 	$BJ" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
-	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:7 title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "100*Interest rate" with lines ls 7 #,  "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
+	    plot "gdp_test.txt" using 1:5 title "Price" with lines ls 3, "gdp_test.txt" using 1:($7/20) title "Wages" with lines ls 6, "gdp_test.txt" using 1:8 title "100*Interest rate" with lines ls 7 ,  "gdp_test.txt" using 1:($6/500) title "Employed" with lines ls 4
 	       
  
  		set nomultiplot
@@ -86,6 +87,6 @@
       set title "Employment Bennyland" font "Helvetica,24"
       set ylabel "Employed" font "Helvetica,18"
       set xlabel "time" font "Helvetica,18"
-      plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:6 title "Employed" with lines ls 4
+      plot "gdp_test.txt" using 1:9 title "Investments" with lines ls 5, "gdp_test.txt" using 1:($6*10) title "Employed" with lines ls 4
 	   
 	 

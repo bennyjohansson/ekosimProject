@@ -416,12 +416,30 @@ void Consumer::update_motivation() {
     normalize(motivation_);
 }
 
+double Consumer::get_demand() {
+
+	double demand_cash = 0;
+	double demand_bank = 0;
+	double demand_total = 0;
+	double interest = 0;
+	
+	interest = bank_ -> get_interest();
+	demand_bank = get_consumer_demand_deposit(spendwill_, loans_, interest);
+	demand_cash = get_consumer_demand_cash(spendwill_, capital_);
+	
+	demand_total = demand_bank + demand_cash;
+	
+	return demand_total;
+	
+}
+
 
 double Consumer::buy() {
     
     double amount_cash = 0;
     double amount_bank = 0;
     double total_amount = 0;
+    double interest = 0;
     double actual_amount = 0;
     double price = 0;
     int desired_items = 0;
@@ -431,12 +449,17 @@ double Consumer::buy() {
     
     price = market_ -> get_price_out();
     max_items = market_ -> get_items();
+    interest = bank_ -> get_interest();
     
     
     //Desired amount to purchase
-    amount_cash = capital_ * spendwill_;
-    amount_bank = loans_ * spendwill_;
+    //amount_cash = capital_ * spendwill_;
+    //amount_bank = loans_ * spendwill_;
+	//total_amount = amount_bank + amount_cash;
+	amount_bank = fmin(get_consumer_demand_deposit(spendwill_, loans_, interest), bank_ -> get_max_customer_borrow());
+	amount_cash = get_consumer_demand_cash(spendwill_, capital_);
 	total_amount = amount_bank + amount_cash;
+	
    	desired_items = fmax(0, total_amount/price);
    	
    	//Actual amount purchased
@@ -463,6 +486,7 @@ double Consumer::buy() {
     change_capital(-amount_cash);
     change_loans(-amount_bank);
     bank_ -> customer_withdraw_money(amount_bank);
+    
         
     log_transaction_full(name_, "Market", actual_amount, "Purchase", get_time());
     log_transaction(name_, actual_amount, "Purchase", get_time());

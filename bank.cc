@@ -19,10 +19,11 @@ div_ratio_(0)
 Bank::Bank(string name, double interest, int payback_time) :
 name_(name),
 interest_rate_(interest),
-capital_(250000),
+target_interest_(0.04),
+capital_(2500000),
 deposits_(0),
 loans_(0),
-liquidity_(0), 
+liquidity_(2500000), 
 safety_(0.4),
 trustworthy_(true),
 payback_time_(payback_time),
@@ -45,6 +46,10 @@ void Bank::info() {
 
 double Bank::get_interest() {
     return interest_rate_;
+}
+
+double Bank::get_target_interest() {
+    return target_interest_;
 }
 
 double Bank::get_capital() {
@@ -99,13 +104,13 @@ double Bank::get_sum_to_borrow() {
     //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
     safety_amount = loans_*safety_;
     
-    if(safety_amount > capital_ && capital_ > 0) {
-        safety_amount = capital_;
-        sum = capital_ - safety_amount;
+    if(safety_amount > liquidity_ && liquidity_ > 0) {
+        //safety_amount = liquidity_;
+        sum = liquidity_ - safety_amount;
         //sum = safety_amount - capital_;
     }
-    else if (capital_ <= 0){
-        sum = -capital_;
+    else if (liquidity_ <= 0){
+        sum = -liquidity_;
     }
     
     return sum;
@@ -126,6 +131,8 @@ double Bank::get_max_customer_borrow() {
         sum = 0;
     }
     
+    sum = fmin(liquidity_, sum);
+    
     return sum;
 }
 
@@ -141,6 +148,10 @@ bool Bank::get_trustworthy() {
 
 void Bank::set_interest(double interest) {
     interest_rate_ = interest;
+}
+
+void Bank::set_target_interest(double target_interest) {
+    target_interest_ = target_interest;
 }
 
 void Bank::set_capital(double capital) {
@@ -218,14 +229,22 @@ void Bank::customer_deposit_money(double ch) {
 double Bank::customer_withdraw_money(double ch) {
 
 	double sum = 0; 
+	double max_amount = 0;
+	
 
-	if(deposits_ > ch) {
-		sum = ch;
-		
-	}
-	else {
-		sum = 0;
-	}
+	// if(deposits_ > ch) {
+// 		sum = ch;
+// 		
+// 	}
+// 	else {
+// 		sum = 0;
+// 	}
+	
+	 max_amount = get_max_customer_borrow();
+    
+    //safety_amount = loans_*safety_;
+    
+    sum = fmax(fmin(max_amount, ch),0);
 	
 	deposits_ -=  sum;
 	liquidity_ -= sum;
@@ -318,7 +337,7 @@ double Bank::pay_dividends() {
     
     //if(deposits_ < loans_) {
         
-    dividends = fmax(0, fmin(liquidity_, capital_ - safety_amount)) * div_ratio_;
+    dividends = fmax(0, fmin(liquidity_ - safety_amount, capital_ - safety_amount)) * div_ratio_;
         //dividends = capital_ * div_ratio_;
     //}
     //else {

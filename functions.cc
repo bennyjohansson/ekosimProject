@@ -74,6 +74,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
         
             
         default:
+        	cout << "I functions get_prod, no valid production function set" << endl;
             prod = 0;
             break;
     } 
@@ -195,7 +196,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double sk = 0.5;
     double cap = 100; 
     double spe = 0.7;
-    double save = 0.05; //1-spe; Was 0.05 2020-03-26
+    double save = 0.5; //1-spe; Was 0.05 2020-03-26
     double borrow = 0.010; //Was 0.02 2020-04-01
     
     
@@ -266,6 +267,29 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
     
     return amount;
     
+}
+
+double get_consumer_demand_cash(double spendwill, double capital) {
+
+	double amount_cash = 0;
+	
+	amount_cash = capital * spendwill;
+	
+	
+	return amount_cash;
+
+}
+
+double get_consumer_demand_deposit(double spendwill, double loans, double interest) {
+
+	double amount_bank = 0;
+	
+	amount_bank = loans * spendwill*fmin(1,1/(1+10*interest));
+	//amount_bank = loans_ * spendwill_;
+	
+	
+	return amount_bank;
+
 }
 
 

@@ -30,6 +30,7 @@ name_(name),
 capital_(10000),
 stock_(0),
 invest_(0.6),
+production_function_(1), 
 prod_const_skill_(60),
 prod_const_motivation_(40),
 wage_const_(0.1),
@@ -144,6 +145,15 @@ double Company::get_wage_change_limit() {
 /*
  * Calls the get_prod() function in functions.cc
  */
+
+
+
+
+int Company::get_production_function() {
+    return production_function_;
+}
+
+
 
 double Company::get_production() {
     
@@ -424,6 +434,12 @@ double Company::get_expected_net_flow_to_bank() {
 
 void Company::set_capital(double capital) {
     capital_ = capital;
+}
+
+
+
+void Company::set_production_function(int pf) {
+    production_function_ = pf;
 }
 
 void Company::set_prod_const_skill(double skill) {

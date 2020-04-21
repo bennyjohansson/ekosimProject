@@ -78,6 +78,8 @@ class City {
        */ 
 
       void add_consumer(Consumer * consumer);
+      void add_random_consumers(int);
+      void add_capital_owners(double);
       void add_company(Company * company);
       void add_company(string name);
       void load_company(string); 
@@ -151,6 +153,7 @@ class City {
 
       Consumer_list * consumers_;
       Consumer_list * labour_market_;
+      Consumer_list * capital_owners_;
       Company_list * company_list_;
       Market * market_;
       Bank * bank_;
