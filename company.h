@@ -136,7 +136,7 @@ public:
 private:
     string name_;  
     double capital_;
-    double stock_;
+    int stock_;
     double capacity_;
     double capacity_0_;
     double debts_;

@@ -13,9 +13,9 @@ Market::Market() :
   name_("MARKET"),  
   items_(10),
   marginal_(0.05),
-  capital_(1000000),
-  price_in_(10),
-  price_out_(10),
+  capital_(200000),
+  price_in_(5),
+  price_out_(5),
   div_ratio_(0.5), 
   excess_demand_items_(0)
 {}
@@ -129,6 +129,42 @@ int Market::customer_buy_items(double money) {
 
 }
 
+double Market::market_buy_items(int items) {
+
+	
+	//double cost_of_items = 0;
+	int max_items_to_be_bought = 0;
+	double max_cost = 0;
+	double desired_amount_cost = 0;
+	int items_bought = 0;
+	double price_in = 0;
+	
+	price_in = get_price_in();
+	//double actual_cost = 0;
+	
+	desired_amount_cost = items*price_in;
+	
+	max_cost = fmax(0, fmin(desired_amount_cost, capital_));
+	max_items_to_be_bought = max_cost/price_in;
+	
+	//cout << "I markt sell to mkt, cost: " << max_cost << " items: " << max_items_to_be_bought << " and price: " << price_in << endl;
+
+	if(max_items_to_be_bought < items) {
+		cout << "I Market market_buy_items, not enough money in market, des cost: " << desired_amount_cost << " actual cost: " << max_cost << endl;
+	
+	}
+	
+	//items_ += max_items_to_be_bought;
+	//capital_ -= max_cost;
+	
+	items_ += items;
+	capital_ -= desired_amount_cost;
+	
+
+	return desired_amount_cost; //max_cost;
+
+}
+
 void Market::change_marginal(double ch) {
   marginal_ += ch;
 }
@@ -163,10 +199,13 @@ void Market::negotiate_price(double items) {
 double Market::pay_dividends() {
 
   double dividends = 0;
+  double safety_amount = 0;
+  
+  safety_amount = 10*fmax(0, excess_demand_items_)*price_out_;
 
   if(capital_ > 0) {
 
-    dividends = capital_ * div_ratio_;
+    dividends = fmax((capital_ -  safety_amount), 0)* div_ratio_;
 
   }
   else {

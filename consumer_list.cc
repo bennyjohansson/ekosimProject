@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <tuple>
+
 
 //#include "element_consumer.h"
 #include "consumer_list.h"
@@ -32,7 +34,7 @@ void Consumer_list::info() {
   double total_spendwill = 0;
   double average_skill = 0;
   double average_motivation = 0;
-  int items = 0;
+  long items = 0;
   int employed = 0;
   int unemployed = 0;
   int size = 0;
@@ -134,7 +136,7 @@ double Consumer_list::get_capital_sum() {
   }
 }
 
-double Consumer_list::get_loans_sum() {
+double Consumer_list::get_deposit_sum() {
  Element_consumer * p;
   double sum = 0;
   
@@ -197,6 +199,41 @@ double Consumer_list::get_motivation_sum() {
   return sum;
 }
 
+
+std::tuple<double, double, double, double, double> Consumer_list::get_misc_sum() {
+
+//auto [quotient, remainder] = divide(14, 3);
+
+  //  cout << quotient << ',' << remainder << endl;
+
+	double capital_sum = 0;
+	double deposit_sum = 0;
+	double borrow_sum = 0;
+	double loanwill_sum = 0;
+	double borrowwill_sum = 0;
+	
+	Element_consumer * p;
+  	double sum = 0;
+  
+	if(list_) {
+    	for(p = list_; p -> next_; p = p -> next_) {
+      		capital_sum += p -> get_consumer() -> get_capital();
+      		deposit_sum += p -> get_consumer()-> get_loans();
+      		borrow_sum += p -> get_consumer()-> get_borrow();
+      		loanwill_sum += p -> get_consumer()-> get_savewill();
+      		borrowwill_sum += p -> get_consumer() -> get_borrowwill();
+    	}
+  	}
+  	else {
+    	sum = 0;
+  	}
+  	
+  	return  std::make_tuple(capital_sum, deposit_sum, borrow_sum, loanwill_sum, borrowwill_sum);
+	
+	
+
+}
+
 double Consumer_list::get_total_demand() {
   
   Element_consumer * p;
@@ -221,12 +258,12 @@ double Consumer_list::get_total_demand() {
   return sum;
 }
 
-double Consumer_list::get_desired_loans_sum() {
+double Consumer_list::get_desired_deposit_sum() {
  Element_consumer * p;
  double sum = 0;
   
   for(p = list_; p; p = p -> next_) {
-      sum += p -> get_consumer() -> get_desired_loans();
+      sum += p -> get_consumer() -> get_desired_deposit();
   }
   return sum;
 }
@@ -250,6 +287,8 @@ double Consumer_list::get_expected_net_flow_to_bank_sum() {
    }
    return sum;
 }
+
+
 
 int Consumer_list::get_employed() {
   Element_consumer * p;

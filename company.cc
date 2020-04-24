@@ -424,6 +424,8 @@ double Company::get_expected_net_flow_to_bank() {
     loans_from_bank = get_desired_loans();
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
     
+    cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
+    
     return sum;
 }
 
@@ -702,15 +704,20 @@ double Company::produce() {
 
 void Company::sell_to_market() {
     double price = 0;
+    int actual_items = 0;
+    double actual_cost = 0;
     
     price = market_ -> get_price_in();
     
-    change_capital(price*stock_);
-    market_ -> change_capital(-price*stock_);
-    market_ -> change_items(stock_);
-    change_stock(-stock_);
+    actual_cost = market_ -> market_buy_items(stock_);
+    actual_items = actual_cost/price;
     
-    log_transaction_full(name_, "market", price*stock_, "Inventory", clock_ ->  get_time());
+    //cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items  << " and price: " << price << endl;
+    
+    change_capital(actual_cost);
+    change_stock(-actual_items);
+    
+    log_transaction_full(name_, "market", actual_cost, "Inventory", clock_ ->  get_time());
     
 }
 
@@ -757,7 +764,7 @@ double Company::invest() {
         loans = fmax(0,available_bank_financing);
         cost = (available_capital + loans);
         desired_items = cost/price_out;
-        cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << desired_items << " Max items " << max_items << endl;
+        cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items: " << desired_items << " Max items " << max_items << endl;
 
     }
     

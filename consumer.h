@@ -39,11 +39,13 @@ class Consumer {
       double get_skill();
       double get_capital();
       double get_spendwill();
+      double get_borrowwill();
+      double get_savewill();
       double get_income();
       double get_items();
       double get_loans();
       double get_debts();
-      double get_desired_loans();
+      double get_desired_deposit();
       double get_desired_borrow();
       double get_borrow();
       double get_demand();

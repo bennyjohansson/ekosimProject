@@ -43,7 +43,7 @@ class Market {
   void negotiate_price(double);
   double pay_dividends();
   int customer_buy_items(double); //input money output items
-
+	double market_buy_items(int);
 
  private:
 
@@ -55,6 +55,7 @@ class Market {
   double price_in_;
   double price_out_;
   double div_ratio_;
+  double turnover_;
 
 };
 #endif

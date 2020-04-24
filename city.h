@@ -49,6 +49,7 @@ class City {
       Bank * get_bank();
       double get_consumer_capital_sum();
       double get_company_capacity_sum();
+      double get_expected_consumer_net_flow_to_bank_sum();
       int get_no_companies(); 
       double get_capital_sum(); 
       double get_loans_to_bank();

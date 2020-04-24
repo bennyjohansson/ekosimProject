@@ -5,6 +5,7 @@
 #include <cmath>
 #include <fstream>
 #include <ctime>
+#include <tuple>
 
 
 #include "city.h"
@@ -116,6 +117,7 @@ int main() {
   
   		//Timer checkpoint
   		timer0 = stopwatch();
+  		
 
     	double time_year = bennyland.get_time();
     	cout << "---------------------------------------------------------------------------------------------------" << endl;
@@ -147,11 +149,13 @@ int main() {
     	}
 
     	bennyland.save_data();
+
     	bennyland.sell_to_market();
     	bennyland.save_flash(flashtime);
+
     	bennyland.consumers_buy();
     	bennyland.save_flash(flashtime);
-       
+
     	//Initiating theft
     	if(fmod(time_year,time_to_steal) == 0) {
     

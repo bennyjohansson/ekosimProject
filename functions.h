@@ -23,7 +23,7 @@ double get_consumer_demand_deposit(double, double, double);
 double get_consumer_demand_cash(double, double);
 
 double change_motivation();
-double get_consumer_loan(double, double, double);
+double get_consumer_deposit(double, double, double);
 double get_consumer_borrow(double, double, double, double, double);
 void log_transaction(string, double, string, double);
 void log_transaction_full(string, string, double, string, double, int fraud = 0);

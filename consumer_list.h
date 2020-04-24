@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <tuple>
 
 #include "element_consumer.h"
 #include "consumer.h"
@@ -32,11 +33,12 @@ class Consumer_list {
       double get_skill_sum();
       double get_motivation_sum();
       double get_capital_sum();
-      double get_loans_sum();
+      double get_deposit_sum();
     double get_debts_sum();
       double get_spendwill_sum();
       double get_item_sum();
-      double get_desired_loans_sum();
+      std::tuple<double, double, double, double, double> get_misc_sum();
+      double get_desired_deposit_sum();
       double get_desired_borrow_sum();
       double get_expected_net_flow_to_bank_sum();
       double get_total_demand();

@@ -1,5 +1,5 @@
-CCC = g++
-CCFLAGS = -g -Wall # Kompilera för avlusning main : 
+CCC = c++ #g++
+CCFLAGS = -g -Wall -std=c++17 # Kompilera för avlusning main : 
 OBJECTS_CC = consumer.cc  consumer_list.cc functions.cc city.cc company.cc company_list.cc clock.cc
 OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o
 

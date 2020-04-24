@@ -131,7 +131,7 @@ double Bank::get_max_customer_borrow() {
         sum = 0;
     }
     
-    sum = fmin(liquidity_, sum);
+    sum = fmax(fmin(liquidity_, sum), 0);
     
     return sum;
 }

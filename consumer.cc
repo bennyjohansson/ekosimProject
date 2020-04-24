@@ -134,6 +134,15 @@ double Consumer::get_spendwill(){
     return spendwill_;
 }
 
+double Consumer::get_savewill(){
+    return savewill_;
+}
+
+double Consumer::get_borrowwill(){
+    return borrowwill_;
+}
+
+
 double Consumer::get_income() {
     return income_;
 }
@@ -167,7 +176,7 @@ double Consumer::get_time() {
 	return clock_ -> get_time();
 } 
 
-double Consumer::get_desired_loans() {
+double Consumer::get_desired_deposit() {
     double amount = 0;
     double interest = 0;
     
@@ -175,7 +184,7 @@ double Consumer::get_desired_loans() {
     
     ///if(capital_ > 0) {
     
-    amount = get_consumer_loan(savewill_, capital_, interest);
+    amount = get_consumer_deposit(savewill_, capital_, interest);
     
     //savewill_*capital_*10*interest;
     //}
@@ -195,10 +204,6 @@ double Consumer::get_desired_borrow() {
     available_capital = bank_ -> get_sum_to_borrow();
     
     amount = get_consumer_borrow(borrowwill_, capital_, loans_, debts_, interest);
-    //amount = get_consumer_borrow(borrowwill_, capital_, interest); 
-    //borrowwill_*capital_/(0.1+interest);
-    //amount = borrowwill_*capital_/(interest);
-    //  cout << "I consumer get_desired_borrow: " << available_capital << "  Desired borrow: " << amount << endl;
     
     if(amount > available_capital && available_capital > 0) {
         amount = available_capital;
@@ -471,7 +476,7 @@ double Consumer::buy() {
    		amount_bank = 0;
    	}
    	else {
-   		amount_bank = actual_amount - amount_cash;
+   		amount_bank = fmax(actual_amount - amount_cash, 0);
    	
    	}
    	
@@ -551,7 +556,7 @@ void Consumer::deposit_and_borrow_from_bank() {
         
         
         //Loand = depostit
-        sum_to_deposit = get_desired_loans();
+        sum_to_deposit = get_desired_deposit();
         
         change_loans(sum_to_deposit);
         change_capital(-sum_to_deposit);
@@ -581,7 +586,7 @@ void Consumer::deposit_to_bank() {
     if(trustworthy_ && bank_ -> get_trustworthy()) {
         double amount = 0;
         
-        amount = get_desired_loans();
+        amount = get_desired_deposit();
         
         change_capital(-amount);
         change_loans(amount);
@@ -774,7 +779,7 @@ double Consumer::get_expected_net_flow_to_bank() {
         interest_from_bank = interest*loans_;
         
         loans_from_bank = get_desired_borrow();
-        loans_to_bank = get_desired_loans();
+        loans_to_bank = get_desired_deposit();
     }
     
     sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + loans_to_bank - loans_from_bank;

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cmath>
 #include <random>
+#include <tuple>
 
 //#include "consumer.h"
 #include "functions.h"
@@ -255,6 +256,60 @@ double City::get_loans_to_bank() {
     return loans_to_bank_;
 }
 
+double City::get_expected_consumer_net_flow_to_bank_sum() {
+
+	//double capital_sum = 0;
+	//double deposit_sum = 0;
+	//double borrow_sum = 0;
+	//double total_sum = 0;
+	//double savewill_sum = 0;
+	//double borrowwill_sum = 0;
+	double total_sum = 0;
+	double interest = 0;
+	int payback_time = 0;
+	double borrow_from_bank = 0;
+	double deposit_to_bank = 0;
+	double available_bank_capital = 0;
+	double repayment_to_bank = 0;
+	double repayment_from_bank = 0;
+	double interest_to_bank = 0;
+	double interest_from_bank = 0;
+	
+	payback_time = bank_ -> get_payback_time();
+    interest = bank_ -> get_interest();
+    available_bank_capital = bank_ -> get_sum_to_borrow();
+ 
+    auto [capital_sum, deposit_sum, borrow_sum, savewill_sum, borrowwill_sum] = consumers_ -> get_misc_sum(); //bennyland.get_expected_consumer_net_flow_to_bank_sum();
+    
+    
+    borrowwill_sum = fmax(fmin(borrowwill_sum, available_bank_capital), 0);
+    
+    if(bank_ -> get_trustworthy()) {
+        repayment_to_bank = borrow_sum/(payback_time*12);
+        interest_to_bank = interest*borrow_sum;
+    }
+            
+    borrow_from_bank = get_consumer_borrow(borrowwill_sum, capital_sum, deposit_sum, borrow_sum, interest);
+    deposit_to_bank = get_consumer_deposit(savewill_sum, capital_sum, interest);
+    
+    total_sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + deposit_to_bank - borrow_from_bank;
+    
+    cout << "I City get cons flow, rtb " << repayment_to_bank << " rfb " << repayment_from_bank << " itb " << interest_to_bank << " ifb " << interest_from_bank << " dtb " << deposit_to_bank << " bfb " << borrow_from_bank << endl;
+    
+        
+    // if(amount > available_capital && available_capital > 0) {
+//         amount = available_capital;
+//         cout << "In consumer, not enough money to borrow" << endl;
+//     }
+//     else if (available_capital < 0) {
+//         amount = 0;
+//     }
+
+    
+    return total_sum;
+
+}
+
 Company * City::get_company(string name) {
     return company_list_ -> get_company(name);
 }
@@ -392,6 +447,7 @@ void City::load_company(string nameactual) {
     double invest;
     double pbr;
     double decay;
+    int production_function;
     string name;
     
     string line;
@@ -447,6 +503,11 @@ void City::load_company(string nameactual) {
         getline (myfile,line);
         strcpy(char_name, line.c_str());
         decay = atof(char_name);
+        
+        getline (myfile,line);
+        strcpy(char_name, line.c_str());
+        production_function = atof(char_name);
+        
         
     }
     else {
@@ -614,8 +675,10 @@ void City::update_interest_rate() {
 	double initial_interest = 0;
     double ir_change_factor = 0.3;
     double est_ir_change = 0.005;
+    double best_iterest_so_far = 0;
     
     double consumer_sum = 0;
+    double minumum_flow_so_far = 0;
     double company_sum = 0;
     double bank_sum = 0;
     double max_bank_borrow_to_consumers = 0;
@@ -646,7 +709,7 @@ void City::update_interest_rate() {
     //Interest rate method, target or market
      switch (ir_method_select) {
         case 1: //Market interest rate
-        
+        	cout << "Using Market Interest method" << endl;
         	//Calculating capital sums
         	
     		consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
@@ -656,10 +719,11 @@ void City::update_interest_rate() {
         	break;
 		
 		case 2: //Target interest rate
-		
+        	cout << "Using Target Interest method" << endl;
 			bank_ -> set_interest(target_interest);
-			consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
     		company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+			consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+			consumer_sum2 = get_expected_consumer_net_flow_to_bank_sum() ;
 			
 			bank_sum = fmin(-(consumer_sum + company_sum), max_bank_borrow_to_consumers);
 			cout << "Target interest rate: " << target_interest << " comp & cons sum: " << company_sum + consumer_sum << " bank sum: " << bank_sum << " bank max: " << max_bank_borrow_to_consumers << endl; 
@@ -730,7 +794,6 @@ void City::update_interest_rate() {
     	prev_flows_to_bank = sum_flows_to_bank;
     	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     	
-    	
     	//If flows to bank increases we have risk of divergence, changing back half a step
     	if(abs(prev_flows_to_bank) <= abs(sum_flows_to_bank)){
     	
@@ -741,8 +804,7 @@ void City::update_interest_rate() {
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
 
-    	cout << "In city upd. ir: " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
-    		
+    	cout << "In city upd. flows to bank ir: " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
     	
     	//Changint interest rate
     	prev_interest = interest;
@@ -1130,7 +1192,7 @@ void City::save_money_data() {
     
     consumer_capital = consumers_ -> get_capital_sum();
     consumer_debts = consumers_ -> get_debts_sum(); 
-    consumer_deposits = consumers_ -> get_loans_sum();
+    consumer_deposits = consumers_ -> get_deposit_sum();
     
     company_capital = company_list_ -> get_capital_sum();
     company_debts = company_list_ -> get_debts_sum();

@@ -52,12 +52,12 @@ double get_prod(double sk_sum, double sk, double mot_sum,
 
     double prod = 0;
     
-    int prod_function = 4;
+    int prod_function = 1;
     //cout << "in functins get prod " << capacity << endl;
     switch (prod_function) {
             
         case 1:
-            prod = capacity*atan(((rate1*sk_sum*sk) + (rate1*mot_sum*mot)));
+            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate4);
             break;
             
         case 2:
@@ -69,7 +69,7 @@ double get_prod(double sk_sum, double sk, double mot_sum,
             break;
              
         case 4:
-            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate4);
+            prod = capacity*atan(((rate1*sk_sum*sk) + (rate1*mot_sum*mot)));
             break;    
         
             
@@ -229,7 +229,7 @@ double item_cost(double production) {
 
 
 
-double get_consumer_loan(double loanwill, double capital, double interest) {
+double get_consumer_deposit(double loanwill, double capital, double interest) {
     
     double amount = 0;
     int function_select = 1;
@@ -269,30 +269,6 @@ double get_consumer_loan(double loanwill, double capital, double interest) {
     
 }
 
-double get_consumer_demand_cash(double spendwill, double capital) {
-
-	double amount_cash = 0;
-	
-	amount_cash = capital * spendwill;
-	
-	
-	return amount_cash;
-
-}
-
-double get_consumer_demand_deposit(double spendwill, double loans, double interest) {
-
-	double amount_bank = 0;
-	
-	amount_bank = loans * spendwill*fmin(1,1/(1+10*interest));
-	//amount_bank = loans_ * spendwill_;
-	
-	
-	return amount_bank;
-
-}
-
-
 double get_consumer_borrow(double borrowwill, double capital, double loans, double debt, double interest) {
     
     double amount = 0;
@@ -329,6 +305,32 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
     }
     return amount;
 }
+
+double get_consumer_demand_cash(double spendwill, double capital) {
+
+	double amount_cash = 0;
+	
+	amount_cash = capital * spendwill;
+	
+	
+	return amount_cash;
+
+}
+
+double get_consumer_demand_deposit(double spendwill, double loans, double interest) {
+
+	double amount_bank = 0;
+	
+	amount_bank = loans * spendwill*fmin(1,1/(1+10*interest));
+	//amount_bank = loans_ * spendwill_;
+	
+	
+	return amount_bank;
+
+}
+
+
+
 
 
 void log_transaction(string party, double amount, string type, double time) {
