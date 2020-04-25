@@ -208,7 +208,7 @@ double Company::get_items_for_production() {
     double mot_sum = 0;
     double skill_sum = 0;
     
-    if (emplyees_){
+    if (employees_){
     	size = employees_ -> get_size();
    	 	skill_sum = employees_ -> get_skill_sum();
     	mot_sum = employees_ -> get_motivation_sum();
