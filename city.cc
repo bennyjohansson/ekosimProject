@@ -7,6 +7,7 @@
 #include <cmath>
 #include <random>
 #include <tuple>
+#include <cstring>
 
 //#include "consumer.h"
 #include "functions.h"
