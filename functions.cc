@@ -175,12 +175,12 @@ double get_price(double excess) {
 
 double get_price(double excess, double sum_spend) {
     
-    double price;
+    double price = 0;
     if(excess != 0) {
         return price = sum_spend/excess;
     }
     else {
-        return INT_MAX;
+        return 1000000;
     }
 }
 
