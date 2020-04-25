@@ -124,6 +124,8 @@ int main() {
     	cout << "Year: " << time_year << endl;
    		cout << "---------------------------------------------------------------------------------------------------" << endl;
         
+        
+        
     	cout << endl << "PRICING, EMPLYEES & PRODUCING" << endl;
     	cout << 		"-----------------------------" << endl;
     	cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
@@ -276,7 +278,24 @@ int main() {
    
    		//Timer checkpoint last part
 		timer6 = stopwatch();// - timer5;
-   
+		
+		cout << endl << "ADDING COMPETITION & CONSUMERS" << endl;
+    	cout << 		"------------------------------" << endl;
+    	if(time_year == 10) {
+        	bennyland.invest_in_new_company("sara_inc", 25000);
+        	bennyland.add_random_consumers(100, 0);
+
+        }
+        if(time_year == 100) {
+        	bennyland.invest_in_new_company("morran_inc", 25000);
+        	bennyland.invest_in_new_company("werner_inc", 25000);
+        	
+        	bennyland.add_random_consumers(200, 0);
+   		}
+   		if(time_year == 500) {
+        	bennyland.add_random_consumers(500, 0);
+
+        }
    
    		cout << endl << "TIME MEASUREMENTS" << endl;
    		cout << 		"--------------------" << endl;
@@ -301,6 +320,7 @@ int main() {
   	bennyland.print_company_list();  
   	bennyland.market_info();
   	bennyland.consumer_info();
+  	bennyland.capital_owners_info();
   	bennyland.bank_info();  
 
   	/*

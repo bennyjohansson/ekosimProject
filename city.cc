@@ -61,6 +61,10 @@ void City::consumer_info() {
     consumers_-> info();
 }
 
+void City::capital_owners_info() {
+    capital_owners_-> info();
+}
+
 void City::labour_info() {
     labour_market_ -> info();
 }
@@ -394,10 +398,32 @@ void City::add_consumer(Consumer * consumer) {
 
 void City::add_random_consumers(int number_of_consumers){
 	
+	double money_before = 0;
+	money_before = get_capital_sum();
+	
 	for(int i = 0; i < number_of_consumers; i++) {    
     	
     	Consumer * benny = random_consumer(market_, bank_, clock_);
     	benny -> set_name("Consumer" + std::to_string(i));
+    	add_consumer(benny);    
+  }
+  
+  cout << "I City, added consumers, total numeber of consumers: " <<  consumers_ -> get_size() << endl;
+  
+
+}
+
+
+void City::add_random_consumers(int number_of_consumers, double capital){
+	
+	double money_before = 0;
+	money_before = get_capital_sum();
+	
+	for(int i = 0; i < number_of_consumers; i++) {    
+    	
+    	Consumer * benny = random_consumer(market_, bank_, clock_);
+    	benny -> set_name("Consumer" + std::to_string(i));
+    	benny -> set_capital(capital);
     	add_consumer(benny);    
   }
   
@@ -433,6 +459,34 @@ void City::add_company(string name) {
     Company * company = new Company(name, market_, clock_);
     company_list_ -> add_company(company); 
 } 
+
+double City::invest_in_new_company(string nameactual, double capital) {
+
+
+	double max_capital = 0;
+	int capital_owner_size = 0;
+	
+	//Getting max investment
+	max_capital = capital_owners_ -> get_capital_sum();
+	capital = fmax(fmin(capital, max_capital), 0);
+	
+	//Number of investrs
+	capital_owner_size = capital_owners_ -> get_size();
+	
+	//Creating a new company from file
+	load_company(nameactual);
+	
+	//Setting capital to new company
+	company_list_ -> get_company(nameactual) -> set_capital(capital); 
+	
+	//Charging capital owners with "reverse dividend"
+	capital_owners_ -> pay_dividends(-capital/capital_owner_size);
+	
+	cout << "Added company" << endl;
+	company_list_ -> get_company(nameactual) -> info();
+
+
+}  
 
 void City::load_company(string nameactual) {
     
@@ -723,7 +777,6 @@ void City::update_interest_rate() {
 			bank_ -> set_interest(target_interest);
     		company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
 			consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
-			consumer_sum2 = get_expected_consumer_net_flow_to_bank_sum() ;
 			
 			bank_sum = fmin(-(consumer_sum + company_sum), max_bank_borrow_to_consumers);
 			cout << "Target interest rate: " << target_interest << " comp & cons sum: " << company_sum + consumer_sum << " bank sum: " << bank_sum << " bank max: " << max_bank_borrow_to_consumers << endl; 
@@ -773,9 +826,35 @@ void City::update_interest_rate() {
     	//COMMENT THIS LINE IN TO GET BACK TO NON-TARGET IR SETTING
     	//bank_sum = (bank_ -> get_sum_to_borrow());
     	
+    	//Updating flows to bank
+    	prev_flows_to_bank = sum_flows_to_bank;
+    	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
+    	
     	//Calculating cash-flow deltas after interest update
-    	delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
+    	//delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
+    	delta_sum = sum_flows_to_bank - prev_flows_to_bank;
     	ir_delta = (prev_interest - interest);
+    	
+    	
+    	
+    	//If flows to bank increases we have risk of divergence, changing back half a step
+    	if(abs(prev_flows_to_bank) <= abs(sum_flows_to_bank)){
+    		
+    		cout << "In city upd. re, divergence: " << counter << " interest: " << interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    		//Changing back interest rate half way
+    		bank_ -> change_interest(-est_ir_change*ir_change_factor/2);
+    		
+    		//Updating cashflows
+    		consumer_sum = consumers_ -> get_expected_net_flow_to_bank_sum();
+    		company_sum = company_list_ -> get_expected_net_flow_to_bank_sum();
+    		
+    		prev_flows_to_bank = sum_flows_to_bank;
+    		sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
+    		delta_sum = sum_flows_to_bank - prev_flows_to_bank;
+    		
+    		ir_delta = est_ir_change*ir_change_factor/2;
+    		cout << "In city upd. re, divergence: " << counter << " interest: " << bank_ -> get_interest() << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
+    	}
     	
     	if(ir_delta == 0) {
     		//cout << "I city updte IR, IR delta: " << ir_delta << " Prev: " << prev_interest << " Current: " << interest << endl;
@@ -790,21 +869,12 @@ void City::update_interest_rate() {
     		d_sum_di = 100000;
     	}
     	
-    	//Updating flows to bank
-    	prev_flows_to_bank = sum_flows_to_bank;
-    	sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     	
-    	//If flows to bank increases we have risk of divergence, changing back half a step
-    	if(abs(prev_flows_to_bank) <= abs(sum_flows_to_bank)){
-    	
-    		
-    		ir_change_factor = ir_change_factor/2;
-    		//cout << "In city upd. re, divergence: " << counter << " interest: " << interest << "  prev interest" << prev_interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl; 
-    	}
     	
     	est_ir_change = sum_flows_to_bank/d_sum_di;
-
-    	cout << "In city upd. flows to bank ir: " << counter << " ir: " << interest << "  cons sum " << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
+		//cout << fixed << setprecision(2) << setfill(' ');
+		
+    	cout << "In city upd. flows to bank ir: " << counter << " ir: " <<  interest << "  cons sum " << setw(6) << consumer_sum << " comp sum "  << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
     	
     	//Changint interest rate
     	prev_interest = interest;

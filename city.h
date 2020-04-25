@@ -30,6 +30,7 @@ class City {
       void print_employees(string company);
       void print_labour_market();
       void consumer_info();
+      void capital_owners_info();
       void labour_info();
       void print_company_info(string name);  //EJ GJORD
       void market_info();
@@ -80,10 +81,12 @@ class City {
 
       void add_consumer(Consumer * consumer);
       void add_random_consumers(int);
+      void add_random_consumers(int, double);
       void add_capital_owners(double);
       void add_company(Company * company);
       void add_company(string name);
       void load_company(string); 
+      double invest_in_new_company(string, double);
       void load_launder_parameters();
 
       /*

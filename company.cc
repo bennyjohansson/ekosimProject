@@ -424,7 +424,7 @@ double Company::get_expected_net_flow_to_bank() {
     loans_from_bank = get_desired_loans();
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
     
-    cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
+    //cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
     
     return sum;
 }

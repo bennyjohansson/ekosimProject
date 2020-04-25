@@ -150,7 +150,7 @@ double Market::market_buy_items(int items) {
 	//cout << "I markt sell to mkt, cost: " << max_cost << " items: " << max_items_to_be_bought << " and price: " << price_in << endl;
 
 	if(max_items_to_be_bought < items) {
-		cout << "I Market market_buy_items, not enough money in market, des cost: " << desired_amount_cost << " actual cost: " << max_cost << endl;
+		//cout << "I Market market_buy_items, not enough money in market, des cost: " << desired_amount_cost << " actual cost: " << max_cost << endl;
 	
 	}
 	
