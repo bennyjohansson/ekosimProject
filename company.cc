@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <cstring>
 #include <list>
 
 //#include "consumer.h"
