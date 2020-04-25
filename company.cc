@@ -581,7 +581,7 @@ void Company::remove_usless_employees() {
         }
     }
     catch(std:: exception b) {
-        cout << b.what() << endl << "Error i company rem usless" << endl;  
+        cout << b.what() << endl << "Error i company rem usless" << name_ << endl;  
     }
 }
 
