@@ -87,7 +87,16 @@ void Consumer_list::print_list() {
  */
 
 int Consumer_list::get_size() {
-  return size_;
+	int size = 0;
+	
+	if(size_) {
+		size = size_;
+	}
+	else {
+		size = 0;
+	}
+
+  return size;
 }
 
 double Consumer_list::get_item_sum() {
