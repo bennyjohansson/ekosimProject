@@ -92,7 +92,7 @@ int Consumer_list::get_size() {
 	if(size_) {
 		size = size_;
 	}
-	else {
+	else  {
 		size = 0;
 	}
 
