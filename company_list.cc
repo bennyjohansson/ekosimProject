@@ -122,10 +122,11 @@ double Company_list::get_capital_sum() {
 double Company_list::get_item_sum() {
     Element_company * p;
     double sum = 0;
-    
-    for (p = list_; p; p = p -> next_) {
-        sum += p -> get_company() -> get_stock();
-    }
+    if(list_) {
+    	for (p = list_; p; p = p -> next_) {
+        	sum += p -> get_company() -> get_stock();
+    	}
+   	} 
     return sum;
 }
 
