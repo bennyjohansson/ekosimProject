@@ -208,9 +208,11 @@ double Company::get_items_for_production() {
     double mot_sum = 0;
     double skill_sum = 0;
     
-    size = employees_ -> get_size();
-    skill_sum = employees_ -> get_skill_sum();
-    mot_sum = employees_ -> get_motivation_sum();
+    if (emplyees_){
+    	size = employees_ -> get_size();
+   	 	skill_sum = employees_ -> get_skill_sum();
+    	mot_sum = employees_ -> get_motivation_sum();
+    }
     
     production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, size, capacity_);
     
