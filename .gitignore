@@ -9,6 +9,7 @@ flash.txt
 gdp_test.txt
 gdp.txt
 money_test.txt
+launder_data.txt
 
 #Ignore .eps files
 *.eps
