@@ -190,7 +190,7 @@ double Company::get_production(Consumer * consumer) {
 } 
 
 double Company::get_stock() {
-	cout << name_ << " i cmp get stock: " << stock_ << endl;
+	//cout << name_ << " i cmp get stock: " << stock_ << endl;
     return stock_;
 }
 

@@ -491,17 +491,17 @@ double City::invest_in_new_company(string nameactual, double capital) {
 
 void City::load_company(string nameactual) {
     
-    double capital;
-    double stock;
-    double capacity;
-    double debts; 
-    double p_c_skill;
-    double p_c_mot;
-    double wage_const;
-    double wage_change_limit;
-    double invest;
-    double pbr;
-    double decay;
+    double capital = 0;
+    long stock = 0;
+    double capacity = 0;
+    double debts = 0; 
+    double p_c_skill = 0;
+    double p_c_mot = 0;
+    double wage_const = 0;
+    double wage_change_limit = 0;
+    double invest = 0;
+    double pbr = 0;
+    double decay = 0;
     int production_function;
     string name;
     
