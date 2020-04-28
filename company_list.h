@@ -72,7 +72,7 @@ class Company_list {
 
   double produce();
   void sell_to_market();
-  void pay_employees();
+  double pay_employees(double);
   double pay_dividends();
   void pay_interest();
   void repay_to_bank();

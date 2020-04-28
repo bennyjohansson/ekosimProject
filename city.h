@@ -60,8 +60,17 @@ class City {
       Consumer * get_optimal_consumer(double mot_we, double skill_we);
       double get_shareToSteal();
       double get_laundry_factor();
+      double get_capital();
+      double get_vat();
+      double get_income_tax();
       int get_no_years_laundry();
       int get_time_to_steal();
+      
+      /*
+       * Change-functions
+       */
+       
+       void change_capital(double);
 
       /*
        * Set-functions
@@ -73,6 +82,8 @@ class City {
       void set_laundry_factor(double);
       void set_no_years_laundry(int);
       void set_time_to_steal(int);
+      void set_vat(double);
+      void set_income_tax(double);
 
 
       /*
@@ -121,6 +132,7 @@ class City {
       void adjust_money();
 
       void pay_company_employees();
+      void pay_transfers();
       void company_pay_dividends();
       void company_pay_dividends(string, string, double);
       void company_pay_interest();
@@ -164,6 +176,10 @@ class City {
       Clock * clock_;
       int flash_counter_;
       double loans_to_bank_;
+      double vat_;
+      double income_tax_; 
+      double capital_;
+      
     
     
     //Launder parameters  

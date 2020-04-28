@@ -258,6 +258,7 @@ int main() {
     	
 
     	bennyland.company_pay_dividends();
+    	bennyland.pay_transfers();
     
 		//Timer checkpoint last part
     	timer5 = stopwatch();// - timer4;
@@ -281,22 +282,11 @@ int main() {
 		
 		cout << endl << "ADDING COMPETITION & CONSUMERS" << endl;
     	cout << 		"------------------------------" << endl;
-    	if(time_year == 10) {
-        	bennyland.invest_in_new_company("sara_inc", 25000);
-        	bennyland.add_random_consumers(100, 0);
+    // if(time_year == 100) {
+//         	bennyland.invest_in_new_company("sara_inc", 25000);
+//         	bennyland.add_random_consumers(100, 0);
+// 		}
 
-        }
-        if(time_year == 100) {
-        	bennyland.invest_in_new_company("morran_inc", 25000);
-        	bennyland.invest_in_new_company("werner_inc", 25000);
-        	
-        	bennyland.add_random_consumers(200, 0);
-   		}
-   		if(time_year == 500) {
-        	bennyland.add_random_consumers(500, 0);
-
-        }
-   
    		cout << endl << "TIME MEASUREMENTS" << endl;
    		cout << 		"--------------------" << endl;
  		cout << "Produce:  " << timer1/10000 << endl;

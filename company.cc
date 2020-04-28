@@ -735,14 +735,14 @@ double Company::invest() {
     double cost = 0;
     double actual_amount = 0;
     double loans = 0;
-    double loans2 = 0;
-    double desired_loans = 0;
+    //double loans2 = 0;
+    //double desired_loans = 0;
     double available_capital = 0;
     double available_bank_financing = 0;
     double own_capital_to_invest = 0;
-    double income = 0;
+    //double income = 0;
     double price_out = 0;
-    double value = 0;
+    //double value = 0;
     double capacity_change = 0;
     double factor_change = 0;
     bool increase = true;
@@ -782,7 +782,7 @@ double Company::invest() {
     actual_items = market_ -> customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items*price_out;
     
-    cout << "I comp inv, des items: " << desired_items << " Act. items: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max items " << max_items << " Name: " << name_ << endl;
+    cout << "I cmp inv, des it: " << desired_items << " Act. ite: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
 
     
     if(actual_amount < available_capital) {
@@ -1041,7 +1041,7 @@ double Company::get_estimated_wages(double production) {
     double price = 0;
     double wages = 0;
     double price_out = 0;
-    
+        
     size = employees_ -> get_size();
     
     price = market_->get_price_in();
@@ -1052,12 +1052,12 @@ double Company::get_estimated_wages(double production) {
     return wages;
 }
 
-void Company::pay_employees_individual() {
+double Company::pay_employees_individual(double income_tax) {
     double size = 0;
     double wage_tot = 0;
     double wage = 0;
     double price = 0;
-    double sum_after = 0;
+    double income_tax_sum = 0;
 	double skill_sum = 0;
 	double motivation_sum = 0;
     
@@ -1072,15 +1072,17 @@ void Company::pay_employees_individual() {
     
     if (size) {
         wage = wage_tot/size;
-        employees_ -> pay_employees_individual(wage_tot, skill_sum, motivation_sum, name_);
+        income_tax_sum = employees_ -> pay_employees_individual(wage_tot, skill_sum, motivation_sum, income_tax, name_);
         capital_ -= wage_tot;
 		//log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
     
     
-    //  cout << name_ << "    "  << "     I company pay wage employ2: " << wage << endl;  
+    //cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;  
     wages_.push_front(wage);
     employees_no_.push_front(size);
+    
+    return income_tax_sum; 
     
     //cout << "I company pay employ23" << endl;  
 } 
@@ -1090,7 +1092,7 @@ void Company::pay_employees() {
     double wage_tot = 0;
     double wage = 0;
     double price = 0;
-    double sum_after = 0;
+    //double sum_after = 0;
 	
     
     price = market_ -> get_price_in();

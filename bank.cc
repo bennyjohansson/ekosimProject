@@ -123,7 +123,7 @@ double Bank::get_max_customer_borrow() {
     
     //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
     safety_amount = loans_*safety_;
-    
+        
     if(capital_ > safety_amount && capital_ > 0) {
         sum = capital_ - safety_amount;
     }
@@ -195,23 +195,36 @@ void Bank::change_interest(double ch) {
 void Bank::change_capital(double ch) {
     //  cout << "capital" << endl;
     capital_ += ch;
+    
+    if(capital_ < 0) {
+    	cout << "I bank capital, capital < 0, changed with: " << ch << " to: " << capital_ << endl;
+	}
 }
 
 void Bank::change_liquidity(double ch) {
-    //  cout << "capital" << endl;
     liquidity_ += ch;
+    
+    if(liquidity_ < 0) {
+    	cout << "I bank liquidity, liquidity < 0, changed with: " << ch << " to: " << liquidity_ << endl;
+	}
 }
 
 void Bank::change_deposits(double ch) {
     //cout << "deposits" << endl;
     deposits_ += ch;
-    change_liquidity(ch);
+    if(deposits_ < 0) {
+    	cout << "I bank deposits, deposits < 0, changed with: " << ch << " to: " << deposits_ << endl;
+	}
+    //change_liquidity(ch);
 }
 
 void Bank::change_loans(double ch) {
     //cout << "Loans change" << ch << endl;
     loans_ += ch;
-    change_liquidity(-ch);
+    if(loans_ < 0) {
+    	cout << "I bank loans, loans < 0, changed with: " << ch << " to: " << loans_ << endl;
+	}
+    //change_liquidity(-ch);
 }
 
 void Bank::change_payback_time(double ch) {
@@ -221,8 +234,14 @@ void Bank::change_payback_time(double ch) {
 
 void Bank::customer_deposit_money(double ch) {
 
-	deposits_ +=  ch;
-	liquidity_ += ch;
+	//deposits_ +=  ch;
+	//liquidity_ += ch;
+	change_deposits(ch);
+	change_liquidity(ch);
+	
+	if(deposits_ < 0) {
+		cout << "I bank cust deposit, depo: " << ch << " deposits: " << deposits_ << endl;
+	}
 
 }
 
@@ -246,8 +265,14 @@ double Bank::customer_withdraw_money(double ch) {
     
     sum = fmax(fmin(max_amount, ch),0);
 	
-	deposits_ -=  sum;
-	liquidity_ -= sum;
+	//deposits_ -=  sum;
+	//liquidity_ -= sum;
+	change_deposits(-sum);
+	change_liquidity(-sum);
+	
+	if(deposits_ < 0) {
+		cout << "I bank cust withdraw, depo: " << ch << " deposits: " << deposits_ << endl;
+	}
 	
 	return sum;
 }
@@ -264,8 +289,10 @@ double Bank::customer_borrow_money(double borrow_amount) {
     
     sum = fmax(fmin(max_amount, borrow_amount),0);
      
-    loans_ += sum;
-    liquidity_ -= sum;
+    //loans_ += sum;
+    //liquidity_ -= sum;
+    change_loans(sum);
+	change_liquidity(-sum);
     
     //cout << "I bank cust bor, amount: " << sum << " des amount " << borrow_amount << endl;
 
@@ -276,8 +303,10 @@ double Bank::customer_borrow_money(double borrow_amount) {
 void Bank::customer_repay_loans(double ch) {
 
 
-	loans_ -=  ch;
-	liquidity_ += ch;
+	//loans_ -=  ch;
+	//liquidity_ += ch;
+	change_loans(-ch);
+	change_liquidity(ch);
 
 
 }
@@ -291,7 +320,7 @@ double Bank::customer_get_interest(double interest) {
     
     //safety_amount = loans_*safety_;
     
-    sum = fmin(max_amount, interest);
+    sum = fmax(fmin(max_amount, interest), 0);
     
     //
     // if(capital_ -  interest > safety_amount && capital_ > 0) {
@@ -302,9 +331,10 @@ double Bank::customer_get_interest(double interest) {
 //         sum = 0;
 //     }
 
-
-	capital_ -=  sum;
-	liquidity_ -= sum;
+	change_capital(-sum);
+	change_liquidity(-sum);
+	//capital_ -=  sum;
+	//liquidity_ -= sum;
 
 	return sum;
 
@@ -314,8 +344,10 @@ double Bank::customer_get_interest(double interest) {
 
 void Bank::customer_pay_interest(double interest) {
 
-	capital_ +=  interest;
-	liquidity_ += interest;
+	change_capital(interest);
+	change_liquidity(interest);
+	//capital_ +=  interest;
+	//liquidity_ += interest;
 
 
 }
@@ -326,8 +358,8 @@ double Bank::pay_dividends() {
     double dividends = 0;
     double safety_amount = 0;
     
-    cout << "I bank pay_dividends, unchecked changes here and in get_sum_to_borrow. Change interest had min of 0" << endl;
-    cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
+    //cout << "I bank pay_dividends, unchecked changes here and in get_sum_to_borrow. Change interest had min of 0" << endl;
+    //cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
     
     //Safety amount
     safety_amount = loans_*safety_;
@@ -344,9 +376,10 @@ double Bank::pay_dividends() {
         
     //    dividends = 0;
     //}
-    
-    capital_ -= dividends;
-    liquidity_ -=dividends;
+    change_capital(-dividends);
+	change_liquidity(-dividends);
+    //capital_ -= dividends;
+    //liquidity_ -=dividends;
     
     return dividends;
     

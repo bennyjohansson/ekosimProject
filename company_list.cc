@@ -347,13 +347,25 @@ void Company_list::sell_to_market() {
     }
 }
 
-void Company_list::pay_employees() {
+// void Company_list::pay_employees() {
+//     
+//     Element_company * p;
+//     
+//     for(p = list_; p; p = p -> next_) {
+//         (p -> get_company()) -> pay_employees_individual();
+//     }
+// }
+
+double Company_list::pay_employees(double income_tax) {
     
     Element_company * p;
+    double income_tax_sum = 0;
     
     for(p = list_; p; p = p -> next_) {
-        (p -> get_company()) -> pay_employees_individual();
+        income_tax_sum += (p -> get_company()) -> pay_employees_individual(income_tax);
     }
+    
+    return income_tax_sum;
 }
 
 double Company_list::pay_dividends() {

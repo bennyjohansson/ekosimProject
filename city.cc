@@ -42,6 +42,9 @@ flash_counter_(0),
 shareToSteal_(0.95),
 laundry_factor_(0.95),
 no_years_laundry_(4),
+capital_(0),
+vat_(0.2),
+income_tax_(0.3),
 time_to_steal_(7919) 
 {}
 
@@ -248,7 +251,7 @@ Consumer * City::get_random_consumer() {
 
 double City::get_capital_sum() {
     double csum = 0;
-    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum() 
+    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity() + get_capital();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum() 
     
     return csum;
 }
@@ -259,6 +262,18 @@ int City::get_no_companies() {
 
 double City::get_loans_to_bank() {
     return loans_to_bank_;
+}
+
+double City::get_capital() {
+    return capital_;
+}
+
+double City::get_vat() {
+    return vat_;
+}
+
+double City::get_income_tax() {
+    return income_tax_;
 }
 
 double City::get_expected_consumer_net_flow_to_bank_sum() {
@@ -361,6 +376,14 @@ int City::get_time_to_steal() {
 
 
 /*
+ * Change-functions
+ */
+ 
+ void City::change_capital(double ch) {
+    capital_ += ch;
+}
+
+/*
  * Set-functions
  */
 
@@ -385,6 +408,14 @@ void City::set_no_years_laundry(int years) {
 
 void City::set_time_to_steal(int years) {
     time_to_steal_ = years;
+}
+
+void City::set_vat(double vat) {
+    vat_ = vat;
+}
+
+void City::set_income_tax(double income_tax) {
+    income_tax_ = income_tax;
 }
 
 
@@ -481,7 +512,7 @@ double City::invest_in_new_company(string nameactual, double capital) {
 	company_list_ -> get_company(nameactual) -> set_capital(capital); 
 	
 	//Charging capital owners with "reverse dividend"
-	capital_owners_ -> pay_dividends(-capital/capital_owner_size);
+	capital_owners_ -> pay_dividends_log(-capital/capital_owner_size, nameactual);
 	
 	cout << "Added company" << endl;
 	company_list_ -> get_company(nameactual) -> info();
@@ -745,7 +776,7 @@ void City::update_interest_rate() {
         
     double delta_sum = 0;
     double d_sum_di = 1;
-    double max_interest_rate = 5;
+    double max_interest_rate = 2;
     double ir_delta = 0.0005;
     double ir_add_on_test = -0.5;
     int number_of_iterations = 20; //20 works fine
@@ -1249,6 +1280,7 @@ void City::save_money_data() {
     
     double consumer_capital = 0;
     double company_capital = 0;
+    double city_capital = 0;
     double company_debts = 0;
     double bank_capital = 0;
     double bank_loans = 0;
@@ -1267,6 +1299,8 @@ void City::save_money_data() {
     
     company_capital = company_list_ -> get_capital_sum();
     company_debts = company_list_ -> get_debts_sum();
+    
+    city_capital = get_capital();
     
     bank_capital = bank_ -> get_capital();
     bank_liquidity = bank_ -> get_liquidity();
@@ -1293,7 +1327,7 @@ void City::save_money_data() {
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
-    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << endl;
+    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << " " << city_capital << endl;
 	
     
 }
@@ -1389,9 +1423,9 @@ void City::adjust_money() {
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.25;
+    double scale_factor = 0.50;
     
-    double MAX_CHANGE_FACTOR = 0.01;
+    double MAX_CHANGE_FACTOR = 0.03;
     
     
     /*
@@ -1406,6 +1440,7 @@ void City::adjust_money() {
     double items_a = 0;
     double price_a = 0;
     double wages_a = 0;
+    int payment_function_select = 1;
 
     double sum = 0;
     double sum_items = 0;
@@ -1494,9 +1529,11 @@ void City::adjust_money() {
 
     if (money_change_factor > MAX_CHANGE_FACTOR) {
         money_change_factor = MAX_CHANGE_FACTOR;
+        cout << "I City adjust money, reaching max change factor" << endl;
     }
     else if( -money_change_factor > MAX_CHANGE_FACTOR) {
         money_change_factor = -MAX_CHANGE_FACTOR;
+        cout << "I City adjust money, reaching max change factor" << endl;
     }
     
     if (clock_ -> get_time() < 10) {
@@ -1524,14 +1561,34 @@ void City::adjust_money() {
     }
     */
     
-    bank_ -> change_capital(money_change);
-    bank_ -> change_liquidity(money_change);
-    loans_to_bank_ += money_change;
+    
+    
+    switch (payment_function_select) {
+    
+    	case 0:
+    		bank_ -> change_capital(money_change);
+			bank_ -> change_liquidity(money_change);
+    		loans_to_bank_ += money_change;
+    	
+    		break;
+    	case 1:
+    		change_capital(money_change);
+    		loans_to_bank_ += money_change;
+    		break;
+    }
     
 }
 
 void City::pay_company_employees() {
-    company_list_ -> pay_employees();
+	double income_tax_sum = 0;
+    //company_list_ -> pay_employees();
+    income_tax_sum = company_list_ -> pay_employees(income_tax_);
+
+    cout << "I city pay employees, actual income tax: " << income_tax_sum << endl;
+    
+    change_capital(income_tax_sum);
+    
+    //NEED TO UPDATEESTIMATED WAGES or add A tAX ESTIMATE!!!
 }
 
 void City::company_pay_interest() {
@@ -1560,7 +1617,7 @@ void City::consumer_get_and_pay_interest() {
 
 
 /*
- * Assuming that all the consumers owns an equal share of 
+ * Assuming that all the capital_owners owns an equal share of 
  * each company.
  */
 
@@ -1586,7 +1643,7 @@ void City::company_pay_dividends() {
     //consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
     capital_owners_ -> pay_all_dividends_log(total_profit_c/number_of_capital_owners, total_profit_m/number_of_capital_owners, total_profit_b/number_of_capital_owners);
     
-    cout << endl << "Company dividends: " << total_profit_c << " $BJ" << endl << "Bank dividends: " << total_profit_b << " $BJ" << endl << "Market dividends: " << total_profit_m << " $BJ" << endl << endl;
+    cout << endl << "Company dividends: " << total_profit_c << " $BJ" << endl << "Bank dividends: " << total_profit_b << " $BJ" << endl << "Market dividends: " << total_profit_m << " $BJ" << endl;
     
     
 }
@@ -1621,6 +1678,26 @@ void City::company_pay_dividends(string theCompanyString, string theConsumerStri
 
 }
 
+void City::pay_transfers() {
+	
+	double number_of_consumers = 0;
+	double total_transfers = 0;
+	
+	number_of_consumers = consumers_ -> get_size();
+	
+	total_transfers = fmax(capital_, 0);
+	
+	if(total_transfers > 0) {
+		
+		consumers_ -> pay_dividends_log(total_transfers/number_of_consumers, name_);
+	
+	}
+	
+	change_capital(-total_transfers);
+
+	cout << "Transfers: " << total_transfers << " $BJ" << endl;
+
+}
 void City::consumers_deposit_and_borrow_from_bank() {
     consumers_ -> deposit_and_borrow_from_bank();
     

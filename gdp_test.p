@@ -7,7 +7,7 @@
    set terminal postscript eps color enhanced solid
    set output "money_test.eps"
    #set xrange[x_start:x_end]
-   set xrange[*:*]
+   set xrange[:]
    set yrange[*:*]
    set size 1,1
    set key right
@@ -31,7 +31,7 @@
 
   
    
-   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 10, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7, "money_test.txt" using 1:9 title "Consumer debts" with lines ls 8, "money_test.txt" using 1:10 title "Consumer deposits" with lines ls 9, "money_test.txt" using 1:11 title "Company debts" with lines ls 2, "money_test.txt" using 1:12 title "Bank liquidity" with lines ls 12
+   plot "money_test.txt" using 1:2 title "Bank Capital" with lines  ls 1, "money_test.txt" using 1:3 title "Bank loans" with lines ls 10, "money_test.txt" using 1:4 title "Bank debts" with lines ls 3, "money_test.txt" using 1:5 title "Conusmer capital" with lines  ls 4,  "money_test.txt" using 1:6 title "Company capital" with lines ls 5, "money_test.txt" using 1:7 title "Market capital" with lines ls 6, "money_test.txt" using 1:8 title "Total capital" with lines ls 7, "money_test.txt" using 1:9 title "Consumer debts" with lines ls 8, "money_test.txt" using 1:10 title "Consumer deposits" with lines ls 9, "money_test.txt" using 1:11 title "Company debts" with lines ls 2, "money_test.txt" using 1:12 title "Bank liquidity" with lines ls 12,  "money_test.txt" using 1:13 title "City capital" with lines ls 13
       
      
       
@@ -65,7 +65,7 @@
 	    set nomultiplot
 	    set output "diverse.eps"
 	   #set xrange[x_start:x_end]
-   set xrange[*:*]
+   set xrange[:]
    set yrange [*:*]
 	    
 	    set size 1,1

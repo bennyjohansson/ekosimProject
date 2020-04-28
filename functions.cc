@@ -196,7 +196,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double sk = 0.5;
     double cap = 100; 
     double spe = 0.7;
-    double save = 0.5; //1-spe; Was 0.05 2020-03-26
+    double save = 0.8; //1-spe; Was 0.05 2020-03-26
     double borrow = 0.010; //Was 0.02 2020-04-01
     
     
@@ -204,7 +204,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     randomize(sk, 0.7);
     randomize(cap, 1);
     randomize(spe, 0.5);
-    randomize(save, 0.4);
+    randomize(save, 0.5);
     randomize(borrow, 0.2);
     normalize(spe);
     normalize(sk);
@@ -229,7 +229,7 @@ double item_cost(double production) {
 
 
 
-double get_consumer_deposit(double loanwill, double capital, double interest) {
+double get_consumer_deposit(double savewill, double capital, double interest) {
     
     double amount = 0;
     int function_select = 1;
@@ -238,7 +238,7 @@ double get_consumer_deposit(double loanwill, double capital, double interest) {
     switch (function_select) {
         case 1:
             if(capital > 0) {
-                amount = loanwill*capital*interest;
+                amount = fmax(savewill*capital*interest, 0);
             }
             else {
                 amount = 0;
@@ -247,7 +247,7 @@ double get_consumer_deposit(double loanwill, double capital, double interest) {
             break;
         case 2:
             if(capital > 0) {
-                amount = loanwill*capital*atan(10*interest)/(3.1415/2);
+                amount = fmax(savewill*capital*atan(10*interest)/(3.1415/2), 0);
             }
             else {
                 amount = 0;
@@ -280,7 +280,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
     switch (function_select) {
         case 1:
             if(capital > 0) {
-                amount = borrowwill*capital/(1+100*interest);
+                amount = fmax(borrowwill*capital/(1+100*interest), 0);
             }
             else {
                 amount = 0;
