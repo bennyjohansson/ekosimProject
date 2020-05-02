@@ -339,8 +339,8 @@ void Consumer::update_values() {
 }
 
 void Consumer::update_skill() {
-    int skill_change;
-    double EMP_CONST = 0.05;
+    //int skill_change;
+    //double EMP_CONST = 0.05;
     
     //bool emp = get_employment_status();
     //if(emp) {
@@ -350,7 +350,7 @@ void Consumer::update_skill() {
     //  skill_ *= (1 - EMP_CONST);
     // }
     
-    double time = clock_ -> get_time();
+    //double time = clock_ -> get_time();
     //  if(time == 330) {
     //  skill_ = 1.15*skill_;
     //}
@@ -610,7 +610,7 @@ double Consumer::accept_deposit(double amount) {
     bank_ -> customer_deposit_money(amount);
 	
 	
-
+	return amount;
 
 }
 

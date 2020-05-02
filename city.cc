@@ -241,7 +241,7 @@ Market * City::get_market() {
 }
 
 Consumer * City::get_random_consumer() {
-    consumers_ -> get_random_consumer();
+    return consumers_ -> get_random_consumer();
 }
 
 double City::get_capital_sum() {
@@ -349,6 +349,7 @@ Consumer * City::get_optimal_consumer(double mot_we, double skill_we) {
     catch(no_return_error) {
         cout << "No optimal consumer" << endl;
     }
+    return 0;
     
 }
 
@@ -512,6 +513,7 @@ double City::invest_in_new_company(string nameactual, double capital) {
 	cout << "Added company" << endl;
 	company_list_ -> get_company(nameactual) -> info();
 
+	return capital;	
 
 }  
 
@@ -606,10 +608,10 @@ void City::load_company(string nameactual) {
 
 void City::load_launder_parameters() {
 
-    double shareToSteal;
-   	double laundry_factor;
-    double no_years_laundry;
-   	double time_to_steal; 
+    //double shareToSteal;
+   	//double laundry_factor;
+    //double no_years_laundry;
+   	//double time_to_steal; 
     
     string nameactual = "launder_parameters.txt";
     
@@ -664,7 +666,7 @@ void City::negotiate_market_price() {
     double demand = 0;
     double consumer_demand = 0;
     double investment_demand = 0;
-    double average_investment = 0;
+    //double average_investment = 0;
     double expected_investment = 0;
     double production_demand = 0;
     double market_items = 0;
@@ -677,7 +679,7 @@ void City::negotiate_market_price() {
     double price_in = 0;
     double price_old = 0;
     int size = 0;
-    int i = 0;
+    //int i = 0;
     list<double>::iterator invest; // = NULL;//list::end();
     
     invest = investments_.begin();
@@ -773,7 +775,6 @@ void City::update_interest_rate() {
     double d_sum_di = 1;
     double max_interest_rate = 2;
     double ir_delta = 0.0005;
-    double ir_add_on_test = -0.5;
     int number_of_iterations = 20; //20 works fine
     int ir_method_select = 1;
     
@@ -933,13 +934,7 @@ void City::update_interest_rate() {
 		bank_ -> set_interest(initial_interest);
 	
 	}
-	
-// 	Testing response to increasing interest rate
-//     if(clock_ -> get_time() >= 20 && clock_ -> get_time() < 25 ) {
-//     	cout << "In city update interest, setting extra ir with: " << ir_add_on_test << endl;
-//     	bank_ -> change_interest(ir_add_on_test);
-//    }
-    	
+	    	
 	
 	cout << "I city update interest rate " << "Market rate: " << interest << "  Total cashflow to bank: " << sum_flows_to_bank << "   Company sum: " << company_sum << "  consumer_sum: " << consumer_sum << "    Bank sum: "<< bank_sum << endl;
 
@@ -1224,7 +1219,7 @@ void City::save_data() {
     double growth = 0;
     double item = 0;
     int time = 0;
-    double gdp = 0;
+    //double gdp = 0;
     double nominal_gdp = 0;
     double price_out = 0;
     double interest_rate = 0;
@@ -1629,7 +1624,7 @@ void City::company_pay_dividends() {
     double total_profit_c = 0;
     double total_profit_m = 0;
     double total_profit_b = 0;
-    double amount = 0;	
+    //double amount = 0;	
     int number_of_capital_owners = 0;
     
     number_of_capital_owners = capital_owners_ -> get_size();

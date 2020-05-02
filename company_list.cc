@@ -265,6 +265,8 @@ bool Company_list::update_employees(Consumer * opt) {
     for(p = list_; p; p = p -> next_) {
         return p -> get_company() -> update_employees(opt);
     }
+
+    return false;
     
 }
 

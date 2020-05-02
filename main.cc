@@ -104,7 +104,7 @@ int main() {
   	string theFraudCompanyString = "benny_enterprises";
   	double amount_to_launder = 0;
   	double start_investing = 5;
-  	unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5= 0, timer6 = 0, timer7 = 0, timer8 = 0;
+  	unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5= 0, timer6 = 0;
 
 
   	/*
