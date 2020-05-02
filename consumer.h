@@ -102,6 +102,7 @@ class Consumer {
       void get_interest();
       void pay_interest();
       void pay_and_get_interest();
+      double accept_deposit(double);
       double get_expected_net_flow_to_bank();
       double get_time();
    private:

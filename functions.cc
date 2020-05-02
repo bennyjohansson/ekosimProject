@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <string>
+#include <cstring>
 #include <vector>
 #include <cmath>
 #include <cstdlib>
@@ -289,7 +289,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
             break;
 		case 2:
             if(capital > 0) {
-                amount = fmax(borrowwill/(1+interest*0.1)*((1+max_leverage)*(capital + loans) - debt), 0);
+                amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_leverage)*(capital + loans) - debt), 0);
             }
             else {
                 amount = 0;
@@ -321,7 +321,7 @@ double get_consumer_demand_deposit(double spendwill, double loans, double intere
 
 	double amount_bank = 0;
 	
-	amount_bank = loans * spendwill*fmin(1,1/(1+10*interest));
+	amount_bank = loans * spendwill*fmin(1,exp(-interest));
 	//amount_bank = loans_ * spendwill_;
 	
 	
@@ -367,6 +367,7 @@ void log_launder_parameters(double shareToSteal, double laundry_factor, int no_y
 }
 
 unsigned int stopwatch() {
+
 
 	static auto start_time = chrono::steady_clock::now();
 	

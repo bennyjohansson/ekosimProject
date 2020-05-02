@@ -1,12 +1,11 @@
 #include <iostream>
 #include <iomanip>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <cmath>
 #include <fstream>
 #include <ctime>
-#include <tuple>
-
 
 #include "city.h"
 #include "functions.h"
@@ -88,7 +87,7 @@ int main() {
    	ofstream empty_transactions_full("transactions_full.txt");
   	empty_transactions_full << " " << endl;
   	empty_transactions_full.close();
-
+	
   	ofstream  file2 ("money_test.txt");
    	file2 << "bank_capital" << " " << "bank_loans"  << " " << "bank_debts"  << " " << "consumer_capital"  << " "
 	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
@@ -225,16 +224,11 @@ int main() {
     	cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
     	if(invest) {
-    
-			//bennyland.consumer_get_and_pay_interest();  		
-   			bennyland.consumers_bank_business();
-			//bennyland.consumers_deposit_and_borrow_from_bank();
     	
+    
+   			bennyland.consumers_bank_business();
  			bennyland.company_pay_interest();
  			bennyland.company_repay_to_bank();
-
-
-    		//bennyland.save_flash(flashtime);  
           
     	}
     
@@ -266,11 +260,11 @@ int main() {
 		cout << 		"-----------" << endl;
     	cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
     
-    	bennyland.save_money_data();
     
 
     	bennyland.save_flash(flashtime);
 
+    	bennyland.save_money_data();
     	bennyland.adjust_money();
     	bennyland.save_flash(flashtime);
     	bennyland.update_consumer_list();

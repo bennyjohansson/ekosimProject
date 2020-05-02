@@ -1,20 +1,15 @@
 #include <iostream>
 #include <iomanip>
-#include <string>
+#include <cstring>
 #include <vector>
 #include <list>
 #include <fstream>
 #include <cmath>
 #include <random>
-#include <tuple>
 #include <cstring>
 
-//#include "consumer.h"
 #include "functions.h"
 #include "city.h"
-//#include "consumer_list.h"
-//#include "company.h"
-//#include "company_list.h"
 #include "error_no_return.h"
 
 using namespace std;
@@ -276,59 +271,59 @@ double City::get_income_tax() {
     return income_tax_;
 }
 
-double City::get_expected_consumer_net_flow_to_bank_sum() {
+// double City::get_expected_consumer_net_flow_to_bank_sum() {
 
-	//double capital_sum = 0;
-	//double deposit_sum = 0;
-	//double borrow_sum = 0;
-	//double total_sum = 0;
-	//double savewill_sum = 0;
-	//double borrowwill_sum = 0;
-	double total_sum = 0;
-	double interest = 0;
-	int payback_time = 0;
-	double borrow_from_bank = 0;
-	double deposit_to_bank = 0;
-	double available_bank_capital = 0;
-	double repayment_to_bank = 0;
-	double repayment_from_bank = 0;
-	double interest_to_bank = 0;
-	double interest_from_bank = 0;
+// 	//double capital_sum = 0;
+// 	//double deposit_sum = 0;
+// 	//double borrow_sum = 0;
+// 	//double total_sum = 0;
+// 	//double savewill_sum = 0;
+// 	//double borrowwill_sum = 0;
+// 	double total_sum = 0;
+// 	double interest = 0;
+// 	int payback_time = 0;
+// 	double borrow_from_bank = 0;
+// 	double deposit_to_bank = 0;
+// 	double available_bank_capital = 0;
+// 	double repayment_to_bank = 0;
+// 	double repayment_from_bank = 0;
+// 	double interest_to_bank = 0;
+// 	double interest_from_bank = 0;
 	
-	payback_time = bank_ -> get_payback_time();
-    interest = bank_ -> get_interest();
-    available_bank_capital = bank_ -> get_sum_to_borrow();
+// 	payback_time = bank_ -> get_payback_time();
+//     interest = bank_ -> get_interest();
+//     available_bank_capital = bank_ -> get_sum_to_borrow();
  
-    auto [capital_sum, deposit_sum, borrow_sum, savewill_sum, borrowwill_sum] = consumers_ -> get_misc_sum(); //bennyland.get_expected_consumer_net_flow_to_bank_sum();
+//     auto [capital_sum, deposit_sum, borrow_sum, savewill_sum, borrowwill_sum] = consumers_ -> get_misc_sum(); //bennyland.get_expected_consumer_net_flow_to_bank_sum();
     
     
-    borrowwill_sum = fmax(fmin(borrowwill_sum, available_bank_capital), 0);
+//     borrowwill_sum = fmax(fmin(borrowwill_sum, available_bank_capital), 0);
     
-    if(bank_ -> get_trustworthy()) {
-        repayment_to_bank = borrow_sum/(payback_time*12);
-        interest_to_bank = interest*borrow_sum;
-    }
+//     if(bank_ -> get_trustworthy()) {
+//         repayment_to_bank = borrow_sum/(payback_time*12);
+//         interest_to_bank = interest*borrow_sum;
+//     }
             
-    borrow_from_bank = get_consumer_borrow(borrowwill_sum, capital_sum, deposit_sum, borrow_sum, interest);
-    deposit_to_bank = get_consumer_deposit(savewill_sum, capital_sum, interest);
+//     borrow_from_bank = get_consumer_borrow(borrowwill_sum, capital_sum, deposit_sum, borrow_sum, interest);
+//     deposit_to_bank = get_consumer_deposit(savewill_sum, capital_sum, interest);
     
-    total_sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + deposit_to_bank - borrow_from_bank;
+//     total_sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + deposit_to_bank - borrow_from_bank;
     
-    cout << "I City get cons flow, rtb " << repayment_to_bank << " rfb " << repayment_from_bank << " itb " << interest_to_bank << " ifb " << interest_from_bank << " dtb " << deposit_to_bank << " bfb " << borrow_from_bank << endl;
+//     cout << "I City get cons flow, rtb " << repayment_to_bank << " rfb " << repayment_from_bank << " itb " << interest_to_bank << " ifb " << interest_from_bank << " dtb " << deposit_to_bank << " bfb " << borrow_from_bank << endl;
     
         
-    // if(amount > available_capital && available_capital > 0) {
-//         amount = available_capital;
-//         cout << "In consumer, not enough money to borrow" << endl;
-//     }
-//     else if (available_capital < 0) {
-//         amount = 0;
-//     }
+//     // if(amount > available_capital && available_capital > 0) {
+// //         amount = available_capital;
+// //         cout << "In consumer, not enough money to borrow" << endl;
+// //     }
+// //     else if (available_capital < 0) {
+// //         amount = 0;
+// //     }
 
     
-    return total_sum;
+//     return total_sum;
 
-}
+// }
 
 Company * City::get_company(string name) {
     return company_list_ -> get_company(name);
@@ -823,10 +818,13 @@ void City::update_interest_rate() {
     initial_flows_to_bank = sum_flows_to_bank;
     prev_flows_to_bank = sum_flows_to_bank;
     
+    cout << "In city upd. flows to bank ir: " << -1 << " ir: " <<  interest << "  cons sum " << setw(6) << consumer_sum << " comp sum "  << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl; 
+
+    
     //If we are outside tolerance (diff_limit), do something, else do nothing
     if (abs(sum_flows_to_bank) > abs(diff_limit)) {
     
-    	cout << "I City update interest, interest needs to be updated" << endl;
+    	//cout << "I City update interest, interest needs to be updated" << endl;
 	    
 	    //Setting ir_change_factor
     	if(sum_flows_to_bank > 0) {
@@ -1291,7 +1289,11 @@ void City::save_money_data() {
     double time = 0;
     double consumer_debts = 0;
     double consumer_deposits = 0;
+    list<double>::iterator Money_start;
+    double money_start = 0;
+    Money_start = total_capital_.end();
     
+	money_start = *Money_start;
     
     consumer_capital = consumers_ -> get_capital_sum();
     consumer_debts = consumers_ -> get_debts_sum(); 
@@ -1327,15 +1329,15 @@ void City::save_money_data() {
     
     ofstream  file2 ("money_test.txt", ios::app);
     file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
-    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << " " << city_capital << endl;
+    << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << " " << city_capital << " " << loans_to_bank_ + money_start << endl;
 	
     
 }
 
 
 /*
- * save_flash(double time) registrerar alla transaktioner i bennyland i ett tidsschema så att man kan se hur
- * pengar flödar mellan olika instanser under en "månad". 
+ * save_flash(double time) registrerar alla transaktioner i bennyland i ett tidsschema sï¿½ att man kan se hur
+ * pengar flï¿½dar mellan olika instanser under en "mï¿½nad". 
  */
 
 void City::save_flash(int time) {

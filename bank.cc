@@ -1,6 +1,6 @@
 #include <iostream>
 #include <iomanip>
-#include <string>
+#include <cstring>
 #include <vector>
 #include <cmath>
 
@@ -342,13 +342,21 @@ double Bank::customer_get_interest(double interest) {
 
 }
 
-void Bank::customer_pay_interest(double interest) {
+double Bank::customer_pay_interest(double interest) {
 
-	change_capital(interest);
-	change_liquidity(interest);
+	double max_amount = 0;
+    double sum = 0;
+
+	max_amount = get_max_customer_borrow();
+    sum = fmax(fmin(max_amount, interest), 0);
+    //safety_amount = loans_*safety_;
+    
+
+	change_capital(sum);
+	change_liquidity(sum);
 	//capital_ +=  interest;
 	//liquidity_ += interest;
-
+	return sum;
 
 }
 

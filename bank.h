@@ -55,7 +55,7 @@ class Bank {
       double customer_withdraw_money(double);
       double customer_borrow_money(double);
       void customer_repay_loans(double);
-      void customer_pay_interest(double);
+      double customer_pay_interest(double);
       double customer_get_interest(double);
       
 

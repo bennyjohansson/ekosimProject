@@ -10,7 +10,7 @@
    set xrange[:]
    set yrange[*:*]
    set size 1,1
-   set key right
+   set key left
    set title "Money in Bennyland" font "Helvetica,24"
 #set title '{/Symbol=18 \\362@_{/=9.6 0}^{/=16 x}} {/Helvetica e^{-{/Symbol m}^2/2} d}{/Symbol m}'
    set ylabel "GDP / $BJ" font "Helvetica,18"
@@ -65,8 +65,8 @@
 	    set nomultiplot
 	    set output "diverse.eps"
 	   #set xrange[x_start:x_end]
-   set xrange[:]
-   set yrange [*:*]
+   set xrange[*:*]
+   set yrange [-2:5]
 	    
 	    set size 1,1
 	    set key right

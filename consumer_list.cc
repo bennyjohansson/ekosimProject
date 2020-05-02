@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <tuple>
+//#include <tuple>
 
 
 //#include "element_consumer.h"
@@ -209,39 +209,39 @@ double Consumer_list::get_motivation_sum() {
 }
 
 
-std::tuple<double, double, double, double, double> Consumer_list::get_misc_sum() {
+// std::tuple<double, double, double, double, double> Consumer_list::get_misc_sum() {
 
-//auto [quotient, remainder] = divide(14, 3);
+// //auto [quotient, remainder] = divide(14, 3);
 
-  //  cout << quotient << ',' << remainder << endl;
+//   //  cout << quotient << ',' << remainder << endl;
 
-	double capital_sum = 0;
-	double deposit_sum = 0;
-	double borrow_sum = 0;
-	double loanwill_sum = 0;
-	double borrowwill_sum = 0;
+// 	double capital_sum = 0;
+// 	double deposit_sum = 0;
+// 	double borrow_sum = 0;
+// 	double loanwill_sum = 0;
+// 	double borrowwill_sum = 0;
 	
-	Element_consumer * p;
-  	double sum = 0;
+// 	Element_consumer * p;
+//   	double sum = 0;
   
-	if(list_) {
-    	for(p = list_; p -> next_; p = p -> next_) {
-      		capital_sum += p -> get_consumer() -> get_capital();
-      		deposit_sum += p -> get_consumer()-> get_loans();
-      		borrow_sum += p -> get_consumer()-> get_borrow();
-      		loanwill_sum += p -> get_consumer()-> get_savewill();
-      		borrowwill_sum += p -> get_consumer() -> get_borrowwill();
-    	}
-  	}
-  	else {
-    	sum = 0;
-  	}
+// 	if(list_) {
+//     	for(p = list_; p -> next_; p = p -> next_) {
+//       		capital_sum += p -> get_consumer() -> get_capital();
+//       		deposit_sum += p -> get_consumer()-> get_loans();
+//       		borrow_sum += p -> get_consumer()-> get_borrow();
+//       		loanwill_sum += p -> get_consumer()-> get_savewill();
+//       		borrowwill_sum += p -> get_consumer() -> get_borrowwill();
+//     	}
+//   	}
+//   	else {
+//     	sum = 0;
+//   	}
   	
-  	return  std::make_tuple(capital_sum, deposit_sum, borrow_sum, loanwill_sum, borrowwill_sum);
+//   	return  std::make_tuple(capital_sum, deposit_sum, borrow_sum, loanwill_sum, borrowwill_sum);
 	
 	
 
-}
+// }
 
 double Consumer_list::get_total_demand() {
   
@@ -290,7 +290,7 @@ double Consumer_list::get_desired_borrow_sum() {
 double Consumer_list::get_expected_net_flow_to_bank_sum() {
    Element_consumer * p;
    double sum = 0;
-   
+
    for(p = list_; p; p = p -> next_) {
       sum += p -> get_consumer() -> get_expected_net_flow_to_bank();
    }
@@ -657,7 +657,8 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay) {
 
   for(p = list_; p; p = p -> next_) {
     Consumer * consumer = p -> get_consumer();
-    consumer -> change_capital(amount);
+    //consumer -> change_capital(amount);
+    consumer -> accept_deposit(amount);
     log_transaction_full(party_pay, consumer -> get_name(), amount, "Dividends", consumer ->  get_time());
   }
 }
@@ -668,7 +669,8 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay) {
 
   for(p = list_; p; p = p -> next_) {
     Consumer * consumer = p -> get_consumer();
-    consumer -> change_capital(amount);
+    //consumer -> change_capital(amount);
+    consumer -> accept_deposit(amount);
     log_transaction_full(party_pay, consumer -> get_name(), amount, "Dividends", consumer ->  get_time());
   }
 }

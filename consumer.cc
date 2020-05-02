@@ -583,7 +583,11 @@ void Consumer::deposit_and_borrow_from_bank() {
 }
 
 void Consumer::deposit_to_bank() {
-    if(trustworthy_ && bank_ -> get_trustworthy()) {
+
+	bool trustworthy = 1;
+	//trustworthy = bank_ -> get_trustworthy();
+	
+    if(trustworthy_ && trustworthy) {
         double amount = 0;
         
         amount = get_desired_deposit();
@@ -596,15 +600,32 @@ void Consumer::deposit_to_bank() {
     }
 }
 
+double Consumer::accept_deposit(double amount) {
+	
+	double sum = 0;
+	
+	sum = fmax(amount, 0);
+	
+    change_loans(amount);
+    bank_ -> customer_deposit_money(amount);
+	
+	
+
+
+}
+
+
 void Consumer::borrow_from_bank() {
     
+    bool trustworthy = 1;
+    trustworthy = bank_ -> get_trustworthy();
     
     if(!employed_) {
         trustworthy_ = false;
     }
     
     
-    if(trustworthy_ && bank_ -> get_trustworthy()) {
+    if(trustworthy_ && trustworthy) {
         double amount = 0;
         
         amount = get_borrow();
@@ -618,8 +639,11 @@ void Consumer::borrow_from_bank() {
 void Consumer::repay_to_bank() {
     double amount = 0;
     double payback_time = 0;
+    bool trustworthy = 1;
     
-    if (bank_ -> get_trustworthy()) {
+    //trustworthy = bank_ -> get_trustworthy()
+    
+    if (trustworthy) {
         payback_time = bank_ -> get_payback_time();
         amount = debts_/(payback_time*12);
         
@@ -646,6 +670,7 @@ void Consumer::repay_to_bank() {
 
 void Consumer::get_repayment_from_bank() {
     double amount = 0;
+    double max_amount = 0;
     double payback_time = 0;
     
     if(trustworthy_) {
@@ -654,21 +679,20 @@ void Consumer::get_repayment_from_bank() {
         
         if(amount > bank_ -> get_capital()) {
             amount = bank_ -> get_capital();
-            bank_ -> set_trustworthy(false);
+            //bank_ -> set_trustworthy(false);
             //	cout << "Not enough money in bank to repay to cvonsumer (in consumer get repayment)" << endl;
         }
         else {
             bank_ -> set_trustworthy(true);
         }
         
-        
+        max_amount = bank_ -> customer_withdraw_money(amount);
         change_capital(amount);
         change_loans(-amount);
         
         log_transaction_full("Bank", name_, amount, "Amortization", get_time());
         
         //bank_ -> change_assets(-amount);
-        bank_ -> customer_withdraw_money(amount);
     }
 }
 
@@ -676,6 +700,7 @@ void Consumer::get_interest() {
     double interest = 0;
     double amount = 0;
     double amount_available = 0;
+    
     
     if(trustworthy_) {
         interest = bank_ -> get_interest();
@@ -685,13 +710,13 @@ void Consumer::get_interest() {
         
         if(amount > amount_available) {
             amount = amount_available;
-            bank_ -> set_trustworthy(false);
+            //bank_ -> set_trustworthy(false);
         }
         else {
             bank_ -> set_trustworthy(true);
         }
         
-        change_capital(amount);
+        change_capital(amount_available);
         
         
         log_transaction_full("Bank", name_, amount, "Interest", get_time());
@@ -726,10 +751,16 @@ void Consumer::get_interest() {
 
 
 void Consumer::pay_interest() {
+
+	double amount_available = 0;
+	double interest = 0;
+    double amount = 0;
+    bool trustworthy = 1;
+	
+	//trustworthy = bank_ -> get_trustworthy()
     
-    if(bank_ -> get_trustworthy()) {
-        double interest = 0;
-        double amount = 0;
+    if(trustworthy) {
+        
         
         interest = bank_ -> get_interest();
         amount = interest*debts_;
@@ -746,10 +777,12 @@ void Consumer::pay_interest() {
             trustworthy_ = true;
         }
         
-        change_capital(-amount);
-        bank_ -> customer_pay_interest(amount);
+        amount_available = bank_ -> customer_pay_interest(amount);
         
-        log_transaction_full(name_, "Bank", amount, "Interest", get_time());
+        change_capital(-amount_available);
+        //bank_ -> customer_pay_interest(amount_available);
+        
+        log_transaction_full(name_, "Bank", amount_available, "Interest", get_time());
     }
 }
 
@@ -764,12 +797,15 @@ double Consumer::get_expected_net_flow_to_bank() {
     double interest = 0;
     double sum = 0;
     int payback_time = 0;
+    bool trustworthy = 1;
+	
+	//trustworthy = bank_ -> get_trustworthy()
     
     payback_time = bank_ -> get_payback_time();
     interest = bank_ -> get_interest();
     
     
-    if(bank_ -> get_trustworthy()) {
+    if(trustworthy) {
         repayment_to_bank = debts_/(payback_time*12);
         interest_to_bank = interest*debts_;
     }
@@ -782,6 +818,7 @@ double Consumer::get_expected_net_flow_to_bank() {
         loans_to_bank = get_desired_deposit();
     }
     
+    cout << "Cons net flow rtb: " << repayment_to_bank << " rfb: " <<  repayment_from_bank << "itb: " <<  interest_to_bank << "ifb: " <<  interest_from_bank << "ltb: " <<  loans_to_bank << "lfb: " <<  loans_from_bank << " b tw: " << bank_ -> get_trustworthy() << endl;
     sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + loans_to_bank - loans_from_bank;
     
     return sum;
