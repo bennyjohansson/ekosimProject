@@ -36,22 +36,23 @@ name_("")
 {}
 
 Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, Market * m, Bank *b, Clock * c) :
+name_(""), 
 motivation_(mot),
 skill_(sk),
 capital_(cap),
 spendwill_(spe),
 savewill_(save),
 borrowwill_(borrow),
-employed_(false),
-income_(0),
 items_(0),
 loans_(0), 
 debts_(0),
-market_(m),
+income_(0),
+employed_(false),
+trustworthy_(true),
 bank_(b),
 clock_(c),
-trustworthy_(true), 
-name_("")
+market_(m)
+
 {}
 
 /*
@@ -182,15 +183,9 @@ double Consumer::get_desired_deposit() {
     
     interest = bank_ -> get_interest();
     
-    ///if(capital_ > 0) {
     
     amount = get_consumer_deposit(savewill_, capital_, interest);
     
-    //savewill_*capital_*10*interest;
-    //}
-    //else {
-    //  amount = 0;
-    //}
     
     return amount;
 }
@@ -281,6 +276,10 @@ void Consumer::set_debts(double debts) {
 
 void Consumer::set_name(string name) {
     name_ = name;
+}
+
+void Consumer::set_trustworthy(bool tw) {
+    trustworthy_ = tw;
 }
 
 
@@ -637,35 +636,53 @@ void Consumer::borrow_from_bank() {
 }
 
 void Consumer::repay_to_bank() {
-    double amount = 0;
-    double payback_time = 0;
-    bool trustworthy = 1;
+
+	double repayment = 0;
+    double max_amount = 0;
+    double withdrawal = 0;
+	
+	max_amount = fmax(capital_ + loans_, 0);
     
-    //trustworthy = bank_ -> get_trustworthy()
+    repayment = bank_ -> customer_repay_loans(debts_, max_amount, 1);
     
-    if (trustworthy) {
-        payback_time = bank_ -> get_payback_time();
-        amount = debts_/(payback_time*12);
-        
-        if(amount > capital_ && capital_ > 0) {
-            amount = capital_;
-            cout << "I consumer, not enoutgh money to repay to bank" << endl;
-            trustworthy_ = false;
-        }
-        else if(capital_ < 0) {
-            amount = 0;
-        }
-        else {
-            trustworthy_ = true;
-        }
-        
-        change_capital(-amount);
-        change_debts(-amount);
-        //bank_ -> change_assets(amount);
-        bank_ -> customer_repay_loans(amount);
-        
-        log_transaction_full(name_, "Bank", amount, "Amortization", get_time());
+    //If repayment is max amount most likely the consumer ca't pay the full amount
+    if(repayment == max_amount && debts_ > 0) {
+    	set_trustworthy(false);
     }
+    else {
+    	set_trustworthy(true);
+    }
+    
+    if(repayment <= loans_ && repayment != 0) {
+    	
+    	//Withdrawal to repay
+    	withdrawal = bank_ -> customer_withdraw_money(repayment);
+    	change_loans(-withdrawal);
+    	
+    	//Repayment done
+        change_debts(-withdrawal);
+        
+    }
+    else if (repayment != 0) {
+    
+    	//Withdraw all deposits to repay, the rest in from cash
+    	withdrawal = bank_ -> customer_withdraw_money(loans_);
+        change_loans(-withdrawal);
+        
+        //Withdraw rest from cash
+        change_capital(-(repayment - withdrawal));
+        
+        //Repayment done
+        change_debts(-repayment);
+        //cout << "I cons pay interest, need both cash and deposits to repay interest: " << interest << " withdrawal: " << withdrawal << -withdrawal - (interest - withdrawal) << endl;
+
+    }
+    
+ 
+        //change_capital(-amount);
+        //change_debts(-amount);
+        //bank_ -> change_assets(amount);        
+        log_transaction_full(name_, "Bank", repayment, "Amortization", get_time());
 }
 
 void Consumer::get_repayment_from_bank() {
@@ -696,94 +713,67 @@ void Consumer::get_repayment_from_bank() {
     }
 }
 
-void Consumer::get_interest() {
+double Consumer::get_interest() {
     double interest = 0;
-    double amount = 0;
-    double amount_available = 0;
+    double max_customer_amount = 0;
+    double deposits = 0;
+    
+    max_customer_amount = fmax(capital_ + loans_, 0);
     
     
-    if(trustworthy_) {
-        interest = bank_ -> get_interest();
-        amount = interest*loans_;
-        
-       	amount_available =  bank_ -> customer_get_interest(amount);
-        
-        if(amount > amount_available) {
-            amount = amount_available;
-            //bank_ -> set_trustworthy(false);
-        }
-        else {
-            bank_ -> set_trustworthy(true);
-        }
-        
-        change_capital(amount_available);
-        
-        
-        log_transaction_full("Bank", name_, amount, "Interest", get_time());
-    }
+    //Max customer amount here can be wrong in some cases
     
+    interest =  bank_ -> customer_get_interest(loans_, max_customer_amount, 1);
     
+    bank_ -> customer_deposit_money(interest);        
+    change_loans(interest);
     
-   //  max_bank_payback = bank_ -> get_max_customer_borrow();
-//     
-//     if(trustworthy_) {
-//         interest = bank_ -> get_interest();
-//         amount = interest*loans_;
-//         
-//         if(amount > max_bank_payback && max_bank_payback > 0) {
-//             amount = max_bank_payback;
-//             bank_ -> set_trustworthy(false);
-//         }
-//         else if (max_bank_payback < 0) {
-//             amount = 0;
-//             bank_ -> set_trustworthy(false);
-//         }
-//         else {
-//             bank_ -> set_trustworthy(true);
-//         }
-//         
-//         change_capital(amount);
-//         bank_ -> customer_get_interest(amount);
-//         
-//         log_transaction_full("Bank", name_, amount, "Interest", get_time());
-//     }
+    log_transaction_full("Bank", name_, interest, "Interest", get_time());
+        
+    return interest;
+    
 }
 
 
-void Consumer::pay_interest() {
+double Consumer::pay_interest() {
 
-	double amount_available = 0;
+	//double amount_available = 0;
 	double interest = 0;
-    double amount = 0;
-    bool trustworthy = 1;
+    double max_amount = 0;
+    double withdrawal = 0;
 	
-	//trustworthy = bank_ -> get_trustworthy()
+	max_amount = fmax(capital_ + loans_, 0);
     
-    if(trustworthy) {
-        
-        
-        interest = bank_ -> get_interest();
-        amount = interest*debts_;
-        
-        if(amount > capital_ && capital_ > 0) {
-            amount = capital_;
-            trustworthy_ = false;
-        }
-        else if (capital_ < 0) {
-            amount = 0;
-            trustworthy_ = false;
-        }
-        else {
-            trustworthy_ = true;
-        }
-        
-        amount_available = bank_ -> customer_pay_interest(amount);
-        
-        change_capital(-amount_available);
+    interest = bank_ -> customer_pay_interest(debts_, max_amount, 1);
+    
+    //cout << "I cons pay interest: " << interest << " loans: " << loans_ << " capital: " << capital_ << " max_amount: " << max_amount << endl;
+    
+    
+    //If interest is max amount most likely the consumer ca't pay the full amount
+    if(interest == max_amount && debts_ > 0) {
+    	set_trustworthy(false);
+    }
+    else {
+    	set_trustworthy(true);
+    }
+    
+    if(interest <= loans_ && interest != 0) {
+    	withdrawal = bank_ -> customer_withdraw_money(interest);
+        change_loans(-withdrawal);
+    }
+    else if (interest != 0) {
+    	withdrawal = bank_ -> customer_withdraw_money(loans_);
+        change_loans(-withdrawal);
+        change_capital(-(interest - withdrawal));
+        //cout << "I cons pay interest, need both cash and deposits to repay interest: " << interest << " withdrawal: " << withdrawal << -withdrawal - (interest - withdrawal) << endl;
+    }
+    
+    log_transaction_full(name_, "Bank", interest, "Interest", get_time());
+    
+    return interest;
         //bank_ -> customer_pay_interest(amount_available);
         
-        log_transaction_full(name_, "Bank", amount_available, "Interest", get_time());
-    }
+        
 }
 
 double Consumer::get_expected_net_flow_to_bank() {
@@ -818,7 +808,7 @@ double Consumer::get_expected_net_flow_to_bank() {
         loans_to_bank = get_desired_deposit();
     }
     
-    cout << "Cons net flow rtb: " << repayment_to_bank << " rfb: " <<  repayment_from_bank << "itb: " <<  interest_to_bank << "ifb: " <<  interest_from_bank << "ltb: " <<  loans_to_bank << "lfb: " <<  loans_from_bank << " b tw: " << bank_ -> get_trustworthy() << endl;
+    //cout << "Cons net flow rtb: " << repayment_to_bank << " rfb: " <<  repayment_from_bank << "itb: " <<  interest_to_bank << "ifb: " <<  interest_from_bank << "ltb: " <<  loans_to_bank << "lfb: " <<  loans_from_bank << " b tw: " << bank_ -> get_trustworthy() << endl;
     sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + loans_to_bank - loans_from_bank;
     
     return sum;

@@ -13,9 +13,10 @@
 using namespace std;
 
 Consumer_list::Consumer_list() :
+  name_(""),
   list_(0),
-  size_(0),
-  name_("")
+  size_(0)
+  
 {}
 
 Consumer_list::Consumer_list(string name_string) :
@@ -37,7 +38,7 @@ void Consumer_list::info() {
   long items = 0;
   int employed = 0;
   int unemployed = 0;
-  int size = 0;
+  //int size = 0;
   int trustworthy = 0;
   
   if (list_) {
@@ -247,9 +248,9 @@ double Consumer_list::get_total_demand() {
   
   Element_consumer * p;
   double sum = 0;
-  double sw = 0;
-  double cap = 0;
-  double loans = 0;
+  //double sw = 0;
+  //double cap = 0;
+  //double loans = 0;
   
   if(list_) {
     for(p = list_; p -> next_; p = p -> next_) {
@@ -367,9 +368,9 @@ bool Consumer_list::is_consumer(Consumer * consumer) {
   Element_consumer * p = list_;
   
   if(list_) {
-    for (p; p; p = p-> next_) {
+    for ( ; p; p = p-> next_) {
       if(consumer == p -> get_consumer()) {
-	return true;
+		return true;
       } 
     }
   }
@@ -547,17 +548,23 @@ void Consumer_list::deposit_and_borrow_from_bank() {
 }
 
 void Consumer_list::bank_business() {
- Element_consumer * p;
+ 	Element_consumer * p;
+ 	double payed_interest_sum = 0;
+ 	double received_interest_sum = 0;
+ 	//double repayments = 0;
+ 
   
-  for(p = list_; p; p = p -> next_){
-  	Consumer * consumer = p -> get_consumer();
-    consumer -> get_interest(); //Check, some error
-    consumer -> pay_interest(); //Check
-  	consumer -> repay_to_bank(); //Check
-	//consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
-	consumer -> deposit_and_borrow_from_bank(); //Check
+  	for(p = list_; p; p = p -> next_){
+  		Consumer * consumer = p -> get_consumer();
+    	received_interest_sum += consumer -> get_interest(); //Check, some error
+    	payed_interest_sum += consumer -> pay_interest(); //Check
+  		consumer -> repay_to_bank(); //Check
+		//consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
+		consumer -> deposit_and_borrow_from_bank(); //Check
   
-  }
+  	}
+  	cout << "I cons. list, payed interest: " << payed_interest_sum << endl;
+	cout << "I cons. list, rece. interest: " << received_interest_sum << endl;
 }
 
 

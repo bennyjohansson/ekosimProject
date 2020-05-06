@@ -22,6 +22,9 @@ class Bank {
       void info();
 
       double get_interest();
+      double get_interest_margin();
+      double get_interest_rate_deposits();
+      double get_interest_rate_loans();
       double get_target_interest();
       double get_capital();
       double get_deposits();
@@ -36,6 +39,7 @@ class Bank {
       
       void set_interest(double);
       void set_target_interest(double);
+      void set_interest_margin(double);
       void set_capital(double);
       void set_deposits(double);
       void set_loans(double);
@@ -54,9 +58,9 @@ class Bank {
       void customer_deposit_money(double);
       double customer_withdraw_money(double);
       double customer_borrow_money(double);
-      void customer_repay_loans(double);
-      double customer_pay_interest(double);
-      double customer_get_interest(double);
+      double customer_repay_loans(double, double, bool);
+      double customer_pay_interest(double, double, bool);
+      double customer_get_interest(double, double, bool);
       
 
       double pay_dividends();
@@ -69,15 +73,17 @@ class Bank {
 
       string name_;
       double interest_rate_;
+    double interest_margin_;
+    double target_interest_;
+    double capital_; 
       double deposits_;
-      double loans_;
-      double capital_; 
+      double loans_;    
       double liquidity_; 
-      double payback_time_;
       double safety_;
       double trustworthy_;
+      double payback_time_;
       double div_ratio_;
-      double target_interest_;
+      
 };
 
 #endif

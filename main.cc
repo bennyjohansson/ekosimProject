@@ -227,7 +227,9 @@ int main() {
     	
     
    			bennyland.consumers_bank_business();
+   			//cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
  			bennyland.company_pay_interest();
+ 			//cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
  			bennyland.company_repay_to_bank();
           
     	}

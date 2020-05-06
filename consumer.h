@@ -66,6 +66,7 @@ class Consumer {
       void set_loans(double);
       void set_debts(double);
       void set_name(string);
+      void set_trustworthy(bool);
       /*
        *Functions to change consumer parameters
        */
@@ -99,8 +100,8 @@ class Consumer {
       void borrow_from_bank();
       void repay_to_bank();
       void get_repayment_from_bank();
-      void get_interest();
-      void pay_interest();
+      double get_interest();
+      double pay_interest();
       void pay_and_get_interest();
       double accept_deposit(double);
       double get_expected_net_flow_to_bank();
@@ -117,16 +118,19 @@ class Consumer {
       double items_;
       double loans_;
       double debts_;
+    	double income_;
+    	bool employed_;
       bool trustworthy_;
       
-      Market * market_;  
+       
       Bank * bank_;
       Clock * clock_;
+      Market * market_; 
       
       //Company * employer_;
       //Employee_list employee_info_;
-      bool employed_;
-      double income_;
+      
+
       //City * city_;
       
       

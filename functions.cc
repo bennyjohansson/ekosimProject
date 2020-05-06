@@ -272,7 +272,7 @@ double get_consumer_deposit(double savewill, double capital, double interest) {
 double get_consumer_borrow(double borrowwill, double capital, double loans, double debt, double interest) {
     
     double amount = 0;
-    double factor = 5;
+    //double factor = 5;
     double max_leverage = 1;
     
     int function_select = 2;

@@ -11,14 +11,15 @@ using namespace std;
 Bank::Bank() :
 name_(""),
 interest_rate_(0),
-deposits_(0),
 capital_(0),
+deposits_(0),
 div_ratio_(0)
 {}
 
 Bank::Bank(string name, double interest, int payback_time) :
 name_(name),
 interest_rate_(interest),
+interest_margin_(0.005),
 target_interest_(0.04),
 capital_(2500000),
 deposits_(0),
@@ -47,6 +48,28 @@ void Bank::info() {
 double Bank::get_interest() {
     return interest_rate_;
 }
+
+double Bank::get_interest_margin() {
+	
+	return interest_margin_;
+}
+
+
+double Bank::get_interest_rate_deposits() {
+
+	return interest_rate_ - interest_margin_/2;
+
+}
+
+
+double Bank::get_interest_rate_loans() {
+
+	return interest_rate_ + interest_margin_/2;
+
+
+}
+
+
 
 double Bank::get_target_interest() {
     return target_interest_;
@@ -148,6 +171,10 @@ bool Bank::get_trustworthy() {
 
 void Bank::set_interest(double interest) {
     interest_rate_ = interest;
+}
+
+void Bank::set_interest_margin(double interest_margin) {
+	interest_margin_ = interest_margin;
 }
 
 void Bank::set_target_interest(double target_interest) {
@@ -263,15 +290,17 @@ double Bank::customer_withdraw_money(double ch) {
     
     //safety_amount = loans_*safety_;
     
-    sum = fmax(fmin(max_amount, ch),0);
+    sum = fmin(max_amount, ch);
 	
-	//deposits_ -=  sum;
-	//liquidity_ -= sum;
 	change_deposits(-sum);
 	change_liquidity(-sum);
 	
 	if(deposits_ < 0) {
 		cout << "I bank cust withdraw, depo: " << ch << " deposits: " << deposits_ << endl;
+	}
+	if(ch < 0) {
+		cout << "I bank customer withdraw money, withdrawal < 0: " << ch << endl;
+	
 	}
 	
 	return sum;
@@ -300,41 +329,44 @@ double Bank::customer_borrow_money(double borrow_amount) {
 	return sum;
 }
 
-void Bank::customer_repay_loans(double ch) {
+double Bank::customer_repay_loans(double loans, double max_customer_amount, bool pay) {
+
+	double max_bank_amount = 0;
+    double sum = 0;
+    double repayment = 0;
+    
+    repayment = loans/(payback_time_*12);
+	max_bank_amount = get_max_customer_borrow();
+	
+    sum = fmax(fmin(repayment, max_customer_amount), -max_bank_amount); 
 
 
-	//loans_ -=  ch;
-	//liquidity_ += ch;
-	change_loans(-ch);
-	change_liquidity(ch);
+	if(pay && sum != 0){
+		change_loans(-sum);
+		change_liquidity(sum);
+	}
 
+	return sum;
 
 }
 
-double Bank::customer_get_interest(double interest) {
+double Bank::customer_get_interest(double deposits, double max_customer_amount, bool pay) {
 
-	double max_amount = 0;
+	double max_bank_amount = 0;
     double sum = 0;
+    double interest = 0;
     
-    max_amount = get_max_customer_borrow();
     
-    //safety_amount = loans_*safety_;
+    interest = deposits * get_interest_rate_deposits();
+	max_bank_amount = get_max_customer_borrow();
+	
+    sum = fmax(fmin(interest, max_bank_amount), -max_customer_amount);
     
-    sum = fmax(fmin(max_amount, interest), 0);
-    
-    //
-    // if(capital_ -  interest > safety_amount && capital_ > 0) {
-//         sum = interest;
-//     
-//     }
-//     else {
-//         sum = 0;
-//     }
-
-	change_capital(-sum);
-	change_liquidity(-sum);
-	//capital_ -=  sum;
-	//liquidity_ -= sum;
+   
+	if(pay && sum != 0){
+		change_capital(-sum);
+		change_liquidity(-sum);
+	}
 
 	return sum;
 
@@ -342,20 +374,21 @@ double Bank::customer_get_interest(double interest) {
 
 }
 
-double Bank::customer_pay_interest(double interest) {
+double Bank::customer_pay_interest(double loans, double max_customer_amount, bool pay) {
 
-	double max_amount = 0;
+	double max_bank_amount = 0;
     double sum = 0;
-
-	max_amount = get_max_customer_borrow();
-    sum = fmax(fmin(max_amount, interest), 0);
-    //safety_amount = loans_*safety_;
+    double interest = 0;
     
+    interest = loans * get_interest_rate_loans();
+	max_bank_amount = get_max_customer_borrow();
+    sum = fmax(fmin(interest, max_customer_amount), -max_bank_amount); 
+    
+	if(pay && sum != 0){ 
+		change_capital(sum);
+		change_liquidity(sum);
+	}
 
-	change_capital(sum);
-	change_liquidity(sum);
-	//capital_ +=  interest;
-	//liquidity_ += interest;
 	return sum;
 
 }

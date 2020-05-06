@@ -1120,41 +1120,36 @@ void Company::pay_employees() {
 
 
 void Company::pay_interest() {
-    double amount = 0;
+    //double amount = 0;
     double max_amount = 0;
     double interest = 0;
     
-    interest = bank_ -> get_interest();
-    amount = debts_*interest;
+    //interest = bank_ -> get_interest();
+    //amount = debts_*interest;
     
-    max_amount = bank_-> customer_pay_interest(amount);
+    max_amount = fmax(capital_, 0); 
+    interest = bank_-> customer_pay_interest(debts_, max_amount, 1);
     
-    change_capital(-max_amount);
+    change_capital(-interest);
    
 
-	log_transaction_full(name_, "Bank", amount, "Interest", clock_ ->  get_time());
+	log_transaction_full(name_, "Bank", interest, "Interest", clock_ ->  get_time());
 }
 
 void Company::repay_to_bank() {
     
     double amount = 0;
-    double payback_time = 0;
+    double repayment = 0;
     
-    payback_time = bank_ -> get_payback_time();
-    amount = debts_/(payback_time*12);
+    //amount = fmax(amount,0);
     
-    if(amount > capital_) {
-        amount = capital_;
-    }
-    amount = fmax(amount,0);
+    repayment = bank_ -> customer_repay_loans(debts_, capital_, 1);
     
-    bank_ -> customer_repay_loans(amount);
-    
-    change_capital(-amount);
-    change_debts(-amount);
+    change_capital(-repayment);
+    change_debts(-repayment);
     //  bank_ -> change_assets(amount);
     
-    log_transaction_full(name_, "Bank", amount, "Amortization", clock_ ->  get_time());
+    log_transaction_full(name_, "Bank", repayment, "Amortization", clock_ ->  get_time());
     
 }
 
