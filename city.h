@@ -143,6 +143,9 @@ class City {
       void consumers_deposit_to_bank();
       void consumers_borrow_from_bank();
       void consumers_bank_business();
+      
+      //Database functions
+      void update_interest_parameters();
 
       list<double> GDP_;
       list<double> growth_;

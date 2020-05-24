@@ -1,12 +1,13 @@
-CCC = clang++ #g++ #g++
-CCFLAGS = -g -Wall -std=c++17 # Kompilera för avlusning main : 
-OBJECTS_CC = consumer.cc  consumer_list.cc functions.cc city.cc company.cc company_list.cc clock.cc
-OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o
+CCC = c++ #clang++ #g++ #g++
+#CCFLAGS = -g -Wall -std=c++17 # Kompilera fï¿½r avlusning main : 
+#OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o
 
-OBJECTS_O2 = element_consumer.o element_company.o company_list.o consumer_list.o employee_list.o consumer.o company.o functions.o city.o clock.o
+CCFLAGS = -g -Wall -v -std=c++17 -stdlib=libc++ -lsqlite3 -lstdc++ #-I/usr/local/include -I/usr/local/opt/sqlite/include -L/usr/local/opt/sqlite/lib 
+OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
+#OBJECTS_CC = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
 
-main : main.o $(OBJECTS_O)
-	$(CCC) $(CCFLAGS) main.o $(OBJECTS_O) -o main		
+main : main.cc $(OBJECTS_O)
+	$(CCC) $(CCFLAGS) main.cc $(OBJECTS_O) -o main		
 
 main.o : main.cc
 	$(CCC) $(CCFLAGS) -c main.cc
@@ -46,8 +47,11 @@ bank.o : bank.cc
 
 init_company.o : init_company.cc
 	$(CCC) $(CCFLAGS) -c init_company.cc
+	
+SQLfunctions.o : SQLfunctions.cc
+	$(CCC) $(CCFLAGS) -c SQLfunctions.cc
 
-# Städa arbetsmappen 
+# Stï¿½da arbetsmappen 
 clean : 
 	@ \rm -f *.o
 	@ \rm -f *~

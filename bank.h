@@ -26,6 +26,7 @@ class Bank {
       double get_interest_rate_deposits();
       double get_interest_rate_loans();
       double get_target_interest();
+      int get_interest_rate_method();
       double get_capital();
       double get_deposits();
       double get_loans();
@@ -39,6 +40,7 @@ class Bank {
       
       void set_interest(double);
       void set_target_interest(double);
+      void set_interest_rate_method(double);
       void set_interest_margin(double);
       void set_capital(double);
       void set_deposits(double);
@@ -75,6 +77,7 @@ class Bank {
       double interest_rate_;
     double interest_margin_;
     double target_interest_;
+    int interest_rate_method_;
     double capital_; 
       double deposits_;
       double loans_;    

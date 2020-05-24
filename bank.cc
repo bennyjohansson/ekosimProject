@@ -21,6 +21,7 @@ name_(name),
 interest_rate_(interest),
 interest_margin_(0.005),
 target_interest_(0.04),
+interest_rate_method_(1),
 capital_(2500000),
 deposits_(0),
 loans_(0),
@@ -73,6 +74,10 @@ double Bank::get_interest_rate_loans() {
 
 double Bank::get_target_interest() {
     return target_interest_;
+}
+
+int Bank::get_interest_rate_method() {
+    return interest_rate_method_;
 }
 
 double Bank::get_capital() {
@@ -179,6 +184,10 @@ void Bank::set_interest_margin(double interest_margin) {
 
 void Bank::set_target_interest(double target_interest) {
     target_interest_ = target_interest;
+}
+
+void Bank::set_interest_rate_method(double method) {
+    interest_rate_method_ = method;
 }
 
 void Bank::set_capital(double capital) {

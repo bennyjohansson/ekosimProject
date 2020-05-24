@@ -11,6 +11,7 @@
 #include "functions.h"
 #include "init_company.h"
 #include "functions.h"
+#include "SQLfunctions.h"
 
 using namespace std;
 
@@ -44,6 +45,13 @@ int main() {
 
   
   	bennyland.print_company_list(); 
+
+	/*
+	* Initiating Database
+	*/
+	initiateDB();
+	//vector<int> vect(13, 10); 
+	//insertMoneyData(vect);
 
 
   	/*
@@ -191,16 +199,18 @@ int main() {
 		cout << 		"------------------------" << endl;
     	cout << "Money: " << bennyland.get_capital_sum() << " Change: " << bennyland.get_capital_sum() - sum_before <<  " Added money: " << bennyland.get_loans_to_bank() << endl;
 
+		bennyland.update_interest_parameters();
+
 		//TESTING OUT INTEREST RATE
-		if (fmod(time_year, 10) == 0) {
+		// if (fmod(time_year, 10) == 0) {
 	
-			if(bennyland.get_bank() -> get_target_interest() == 0.04) {
-				bennyland.get_bank() -> set_target_interest(0.02);
-			}
-			else {
-				bennyland.get_bank() -> set_target_interest(0.04);
-			}
-		}
+		// 	if(bennyland.get_bank() -> get_target_interest() == 0.04) {
+		// 		bennyland.get_bank() -> set_target_interest(0.02);
+		// 	}
+		// 	else {
+		// 		bennyland.get_bank() -> set_target_interest(0.04);
+		// 	}
+		// }
     
    		if(invest) { 
       		bennyland.update_interest_rate();
