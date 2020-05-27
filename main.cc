@@ -57,7 +57,7 @@ int main() {
   	/*
    	* Creating random consumers. See file functions.cc for settings about the consumers.
    	*/
-		bennyland.add_random_consumers(3000);
+	bennyland.add_random_consumers(3000);
   	
   	/*
    	* Adding capital owners

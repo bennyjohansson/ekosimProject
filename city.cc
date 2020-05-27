@@ -465,6 +465,8 @@ void City::add_random_consumers(int number_of_consumers, double capital){
 void City::add_capital_owners(double share_of_population){
 	int total_number_of_consumers = 0;
 	int number_of_capital_owners = 0;
+
+    cout << "Adding capital owners, " << share_of_population*100 << " % of population" << endl;
 	
 	total_number_of_consumers = consumers_ -> get_size();
 	
