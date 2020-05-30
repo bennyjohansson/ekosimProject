@@ -335,23 +335,29 @@ double get_consumer_demand_deposit(double spendwill, double loans, double intere
 
 void log_transaction(string party, double amount, string type, double time) {
 
+    bool writeToFile = false;
 
-	ofstream  file1 ("transactions.txt", ios::app);
-	
-    file1 << time << " " << party << " " << amount << " " << type << endl;
-    
-    file1.close();
+    if(writeToFile) {
+        ofstream  file1 ("transactions.txt", ios::app);
+        
+        file1 << time << " " << party << " " << amount << " " << type << endl;
+        
+        file1.close();
+    }
 
 }
 
 void log_transaction_full(string party_pay, string party_receive, double amount, string type, double time, int fraud /* = 42 */) {
 
+     bool writeToFile = false;
 
-	ofstream  file1 ("transactions_full.txt", ios::app);
-	
-    file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << " " << fraud << endl;
-    
-    file1.close();
+    if(writeToFile) {
+        ofstream  file1 ("transactions_full.txt", ios::app);
+        
+        file1 << time << " " << amount << " " << party_pay << " " << party_receive << " "  << type << " " << fraud << endl;
+        
+        file1.close();
+    }
 
 }
 

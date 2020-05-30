@@ -1035,6 +1035,7 @@ void City::save_data() {
 
     insertTimeData(time_data);
     
+
     GDP_.push_front(item);
     growth_.push_front(growth);
     demand_.push_front(demand);
@@ -1043,12 +1044,14 @@ void City::save_data() {
     time_.push_front(clock_ -> get_time()); 
     interest_rate_.push_front(interest_rate);
    
-    
-    ofstream  file2 ("gdp_test.txt", ios::app);
-    file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " " 
-    << employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
-    
-    file2.close();
+    bool saveToFile = 0;
+    if(saveToFile) {
+        ofstream  file2 ("gdp_test.txt", ios::app);
+        file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " " 
+        << employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
+        
+        file2.close();
+    }
     
 }
 
@@ -1118,11 +1121,12 @@ void City::save_money_data() {
     market_capital_.push_front(market_capital);
     total_capital_.push_front(total_capital);
 
-    
-    ofstream  file2 ("money_test.txt", ios::app);
-    file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
+    bool saveToFile = 0;
+    if(saveToFile) {
+        ofstream  file2 ("money_test.txt", ios::app);
+        file2 << time << " " << bank_capital << " " << bank_loans  << " " << bank_deposits  << " " << consumer_capital  << " "
     << company_capital << " " << market_capital << " " << total_capital << " " << consumer_debts << " " << consumer_deposits << " " << company_debts << " " << bank_liquidity << " " << city_capital << " " << loans_to_bank_ + money_start << endl;
-	
+    }
     
 }
 
