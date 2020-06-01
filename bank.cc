@@ -26,10 +26,11 @@ capital_(2500000),
 deposits_(0),
 loans_(0),
 liquidity_(2500000), 
-safety_(0.4),
+capital_reserve_ratio_(0.2),
+liquidity_reserve_ratio_(1),
 trustworthy_(true),
 payback_time_(payback_time),
-div_ratio_(0.05)
+div_ratio_(0.2)
 {}
 
 /*
@@ -130,7 +131,7 @@ double Bank::get_sum_to_borrow() {
     
     
     //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
-    safety_amount = loans_*safety_;
+    safety_amount = loans_*capital_reserve_ratio_;
     
     if(safety_amount > liquidity_ && liquidity_ > 0) {
         //safety_amount = liquidity_;
@@ -148,9 +149,8 @@ double Bank::get_max_customer_borrow() {
     double safety_amount = 0;
     double sum = 0;
     
-    
     //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
-    safety_amount = loans_*safety_;
+    safety_amount = loans_*capital_reserve_ratio_;
         
     if(capital_ > safety_amount && capital_ > 0) {
         sum = capital_ - safety_amount;
@@ -166,9 +166,18 @@ double Bank::get_max_customer_borrow() {
 
 
 
-double Bank::get_safety() {
-    return safety_;
+double Bank::get_dividend_ratio() {
+    return div_ratio_;
 }
+
+double Bank::get_liquidity_reserve_ratio() {
+    return liquidity_reserve_ratio_;
+}
+
+double Bank::get_capital_reserve_ratio() {
+    return capital_reserve_ratio_;
+}
+
 
 bool Bank::get_trustworthy() {
     return trustworthy_;
@@ -215,6 +224,18 @@ void Bank::set_payback_time(double pb) {
 
 void Bank::set_trustworthy(bool trust) {
     trustworthy_ = trust;
+}
+
+void Bank::set_dividend_ratio(double dr) {
+    div_ratio_ = dr;
+}
+
+void Bank::set_liquidity_reserve_ratio(double rr) {
+    liquidity_reserve_ratio_ = rr;
+}
+
+void Bank::set_capital_reserve_ratio(double rr) {
+    capital_reserve_ratio_ = rr;
 }
 
 void Bank::change_interest(double ch) {
@@ -265,6 +286,18 @@ void Bank::change_loans(double ch) {
 
 void Bank::change_payback_time(double ch) {
     payback_time_ += ch;
+}
+
+void Bank::change_dividend_ratio(double ch) {
+    div_ratio_ += ch;
+}
+
+void Bank::change_liquidity_reserve_ratio(double ch) {
+    liquidity_reserve_ratio_ += ch;
+}
+
+void Bank::change_capital_reserve_ratio(double ch) {
+    capital_reserve_ratio_ += ch;
 }
 
 
@@ -412,12 +445,9 @@ double Bank::pay_dividends() {
     //cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
     
     //Safety amount
-    safety_amount = loans_*safety_;
+    safety_amount = loans_*capital_reserve_ratio_;
     
-    
-    
-    
-    //if(deposits_ < loans_) {
+
         
     dividends = fmax(0, fmin(liquidity_ - safety_amount, capital_ - safety_amount)) * div_ratio_;
         //dividends = capital_ * div_ratio_;
