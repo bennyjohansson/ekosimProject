@@ -2,7 +2,7 @@ CCC = c++ #clang++ #g++ #g++
 #CCFLAGS = -g -Wall -std=c++17 # Kompilera f�r avlusning main : 
 #OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o
 
-CCFLAGS = -g -Wall -v -std=c++17 -stdlib=libc++ -lsqlite3 -lstdc++ #-I/usr/local/include -I/usr/local/opt/sqlite/include -L/usr/local/opt/sqlite/lib 
+CCFLAGS = -g -Wall -v -std=c++17  -lsqlite3 -lstdc++ #-I/usr/local/include -I/usr/local/opt/sqlite/include -L/usr/local/opt/sqlite/lib -stdlib=libc++
 OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
 #OBJECTS_CC = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
 
