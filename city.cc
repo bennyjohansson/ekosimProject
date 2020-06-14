@@ -1686,7 +1686,7 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    const char *dir = "myDB/ekosimDB.db";
+    const char *dir = "/var/app/current/myDB/ekosimDB.db";
     sqlite3 *DB;
     double targetInteresRate = 0;
     double interestRateMethod = 0;
