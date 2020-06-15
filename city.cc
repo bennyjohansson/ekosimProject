@@ -1181,6 +1181,7 @@ void City::save_flash(int time)
 {
     int timec = 0;
     timec = clock_->get_time();
+    bool write_to_file = false;
     //If right time, do everything, else, do nothing  && timec < time + 10
     if (timec >= time)
     {
@@ -1196,11 +1197,14 @@ void City::save_flash(int time)
         market_capital = market_->get_capital();
         total_capital = get_capital_sum();
 
-        ofstream flash("flash.txt", ios::app);
 
-        flash << flash_counter_ << " " << consumer_capital << " " << company_capital << " "
+        if(write_to_file) {
+            ofstream flash("flash.txt", ios::app);
+
+            flash << flash_counter_ << " " << consumer_capital << " " << company_capital << " "
               << market_capital << " " << bank_capital << " " << total_capital << endl;
-        flash_counter_++;
+            flash_counter_++;
+        }
     }
 }
 

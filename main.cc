@@ -80,25 +80,25 @@ int main() {
   	/*
   	*Preparing output files
    	*/
- 	ofstream empty("gdp_test.txt");
-  	empty << " " << endl;
-  	empty.close();
+ 	// ofstream empty("gdp_test.txt");
+  	// empty << " " << endl;
+  	// empty.close();
   
-  	ofstream empty_flash("flash.txt");
-  	empty_flash << " " << endl;
-  	empty_flash.close();
+  	// ofstream empty_flash("flash.txt");
+  	// empty_flash << " " << endl;
+  	// empty_flash.close();
   
-  	ofstream empty_transactions("transactions.txt");
-  	empty_transactions << " " << endl;
-  	empty_transactions.close();
+  	// ofstream empty_transactions("transactions.txt");
+  	// empty_transactions << " " << endl;
+  	// empty_transactions.close();
   
-   	ofstream empty_transactions_full("transactions_full.txt");
-  	empty_transactions_full << " " << endl;
-  	empty_transactions_full.close();
+   	// ofstream empty_transactions_full("transactions_full.txt");
+  	// empty_transactions_full << " " << endl;
+  	// empty_transactions_full.close();
 	
-  	ofstream  file2 ("money_test.txt");
-   	file2 << "bank_capital" << " " << "bank_loans"  << " " << "bank_debts"  << " " << "consumer_capital"  << " "
-	 << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
+  	// ofstream  file2 ("money_test.txt");
+   	// file2 << "bank_capital" << " " << "bank_loans"  << " " << "bank_debts"  << " " << "consumer_capital"  << " "
+	//  << "company_capital" << " " << "market_capital" << " " << "total_capital" << endl;
 
 	/*
   	* Setting basic parameters
@@ -140,8 +140,6 @@ int main() {
     	bennyland.update_employees();
     	bennyland.negotiate_market_price();
 
-    	bennyland.save_flash(flashtime);
-
 	
     	bennyland.produce();
 
@@ -160,10 +158,8 @@ int main() {
     	bennyland.save_data();
 
     	bennyland.sell_to_market();
-    	bennyland.save_flash(flashtime);
 
     	bennyland.consumers_buy();
-    	bennyland.save_flash(flashtime);
 
     	//Initiating theft
     	if(fmod(time_year,time_to_steal) == 0) {
@@ -190,7 +186,6 @@ int main() {
     	}
     
     	bennyland.pay_company_employees();
-    	bennyland.save_flash(flashtime);
     
     	//Timer checkpoint buy/sell
 		timer2 = stopwatch();
@@ -217,9 +212,7 @@ int main() {
     	}
 
 
-    	bennyland.save_flash(flashtime);   
     	bennyland.invest(invest);
-    	bennyland.save_flash(flashtime);    
     
     	if(time_year >= start_investing) {
       		invest = true;
@@ -274,11 +267,9 @@ int main() {
     
     
 
-    	bennyland.save_flash(flashtime);
 
     	bennyland.save_money_data();
     	bennyland.adjust_money();
-    	bennyland.save_flash(flashtime);
     	bennyland.update_consumer_list();
 
     	bennyland.tick();
