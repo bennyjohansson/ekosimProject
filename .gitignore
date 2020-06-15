@@ -25,3 +25,6 @@ launder_data.txt
 /working/*
 /backup/*
 /Long-run-example/*
+
+#Ignore binary
+main
