@@ -1077,7 +1077,15 @@ void City::save_data()
     time_data.push_back((double)capital_reserve_ratio);
     time_data.push_back((double)bank_dividend_ratio);
 
-    insertTimeData(time_data);
+
+    try {
+        insertTimeData(time_data);
+    }    
+    catch(exception& e) {
+        cout << "Error: " << e.what() << endl;
+    }   
+
+    
 
     GDP_.push_front(item);
     growth_.push_front(growth);
@@ -1155,7 +1163,13 @@ void City::save_money_data()
     money_data.push_back((int)city_capital);
     money_data.push_back((int)total_capital);
 
-    insertMoneyData(money_data);
+    try {
+        insertMoneyData(money_data);
+    }    
+    catch(exception& e) {
+        cout << "Error: " << e.what() << endl;
+    }   
+    
 
     bank_capital_.push_front(bank_capital);
     consumer_capital_.push_front(consumer_capital);

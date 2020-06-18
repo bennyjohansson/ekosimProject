@@ -349,7 +349,7 @@ void log_transaction(string party, double amount, string type, double time) {
 
 void log_transaction_full(string party_pay, string party_receive, double amount, string type, double time, int fraud /* = 42 */) {
 
-     bool writeToFile = false;
+     bool writeToFile = true;
 
     if(writeToFile) {
         ofstream  file1 ("transactions_full.txt", ios::app);
