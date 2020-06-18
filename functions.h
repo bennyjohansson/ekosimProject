@@ -29,6 +29,7 @@ void log_transaction(string, double, string, double);
 void log_transaction_full(string, string, double, string, double, int fraud = 0);
 void log_launder_parameters(double, double, int, int);
 unsigned int stopwatch();
+string getTimeStr();
 //void load_launder_parameters();
 
 

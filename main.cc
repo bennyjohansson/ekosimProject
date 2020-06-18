@@ -124,6 +124,7 @@ int main() {
   
   		//Timer checkpoint
   		timer0 = stopwatch();
+		cout << "The time is: " <<  getTimeStr() << endl;
   		
 
     	double time_year = bennyland.get_time();
