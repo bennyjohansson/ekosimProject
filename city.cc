@@ -1716,6 +1716,7 @@ void City::update_interest_parameters()
     //cout << "Test i cuty update interest parameters" << endl;
 
     Records records = select_stmt(stmt, dir);
+    sqlite3_close(DB);
 
     for (int i = 0; i < records.size(); i++)
     {
