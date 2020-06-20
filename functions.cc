@@ -247,7 +247,7 @@ double get_consumer_deposit(double savewill, double capital, double interest) {
             break;
         case 2:
             if(capital > 0) {
-                amount = fmax(savewill*capital*atan(1000*interest)/(3.1415/2), 0);
+                amount = fmax(savewill*capital*atan(100*interest)/(3.1415/2), 0);
                 //cout << "I functions get_cons_dep atan, depositing " << amount/capital << " %" << endl;
             }
             else {
