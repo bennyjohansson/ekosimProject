@@ -111,7 +111,7 @@ int main() {
   	double time_to_steal = bennyland.get_time_to_steal();
   	string theFraudCompanyString = "benny_enterprises";
   	double amount_to_launder = 0;
-  	double start_investing = 5;
+  	double start_investing = 2;
   	unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5= 0, timer6 = 0;
 
 
