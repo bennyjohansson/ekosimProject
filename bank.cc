@@ -30,7 +30,7 @@ capital_reserve_ratio_(0.2),
 liquidity_reserve_ratio_(1),
 trustworthy_(true),
 payback_time_(payback_time),
-div_ratio_(0.1)
+div_ratio_(0.2)
 {}
 
 /*
