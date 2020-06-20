@@ -232,7 +232,7 @@ double item_cost(double production) {
 double get_consumer_deposit(double savewill, double capital, double interest) {
     
     double amount = 0;
-    int function_select = 1;
+    int function_select = 2;
     
     
     switch (function_select) {
@@ -247,7 +247,7 @@ double get_consumer_deposit(double savewill, double capital, double interest) {
             break;
         case 2:
             if(capital > 0) {
-                amount = fmax(savewill*capital*atan(10*interest)/(3.1415/2), 0);
+                amount = fmax(savewill*capital*atan(100*interest)/(3.1415/2), 0);
             }
             else {
                 amount = 0;
