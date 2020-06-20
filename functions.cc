@@ -280,7 +280,7 @@ double get_consumer_borrow(double borrowwill, double assets, double loans, doubl
     
     switch (function_select) {
         case 1:
-            if(capital > 0) {
+            if(assets > 0) {
                 amount = fmax(borrowwill*assets/(1+100*interest), 0);
             }
             else {
@@ -289,7 +289,7 @@ double get_consumer_borrow(double borrowwill, double assets, double loans, doubl
             
             break;
 		case 2:
-            if(capital > 0) {
+            if(assets > 0) {
                 amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_leverage)*(assets + loans) - debt), 0);
             }
             else {

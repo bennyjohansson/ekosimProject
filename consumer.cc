@@ -194,11 +194,14 @@ double Consumer::get_desired_borrow() {
     double amount = 0;
     double interest = 0;
     double available_capital = 0;
+    double assets = 0;
+
+    assets = loans_ + capital_;
     
     interest = bank_ -> get_interest();
     available_capital = bank_ -> get_sum_to_borrow();
     
-    amount = get_consumer_borrow(borrowwill_, capital_, loans_, debts_, interest);
+    amount = get_consumer_borrow(borrowwill_, assets, loans_, debts_, interest);
     
     if(amount > available_capital && available_capital > 0) {
         amount = available_capital;
