@@ -799,13 +799,13 @@ double Consumer::get_expected_net_flow_to_bank() {
     
     
     if(trustworthy) {
-        //repayment_to_bank = debts_/(payback_time*12);
-        //interest_to_bank = interest*debts_;
+        repayment_to_bank = debts_/(payback_time*12);
+        interest_to_bank = interest*debts_;
     }
     
     if(trustworthy) {
-        //repayment_from_bank = loans_/(payback_time*12);
-        //interest_from_bank = interest*loans_;
+        repayment_from_bank = loans_/(payback_time*12);
+        interest_from_bank = interest*loans_;
         
         loans_from_bank = get_desired_borrow();
         loans_to_bank = get_desired_deposit();
