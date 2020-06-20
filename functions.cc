@@ -270,7 +270,7 @@ double get_consumer_deposit(double savewill, double capital, double interest) {
     
 }
 
-double get_consumer_borrow(double borrowwill, double capital, double loans, double debt, double interest) {
+double get_consumer_borrow(double borrowwill, double assets, double loans, double debt, double interest) {
     
     double amount = 0;
     //double factor = 5;
@@ -281,7 +281,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
     switch (function_select) {
         case 1:
             if(capital > 0) {
-                amount = fmax(borrowwill*capital/(1+100*interest), 0);
+                amount = fmax(borrowwill*assets/(1+100*interest), 0);
             }
             else {
                 amount = 0;
@@ -290,7 +290,7 @@ double get_consumer_borrow(double borrowwill, double capital, double loans, doub
             break;
 		case 2:
             if(capital > 0) {
-                amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_leverage)*(capital + loans) - debt), 0);
+                amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_leverage)*(assets + loans) - debt), 0);
             }
             else {
                 amount = 0;
