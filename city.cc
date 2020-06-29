@@ -778,7 +778,7 @@ void City::update_consumer_list() {
     double set_avg_borrowwill = 0;
 
     set_avg_spendwill = getDatabaseParameter("'AverageSpendwill'");
-    set_avg_borrowwill = getDatabaseParameter("'AverageBorowwill'");
+    set_avg_borrowwill = getDatabaseParameter("'AverageBorrowwill'");
 
     cout << "I City Updating consumers, setting average spendwill to: " << set_avg_spendwill << endl;
     cout << "I City Updating consumers, setting average spendwill to: " << set_avg_borrowwill << endl;
