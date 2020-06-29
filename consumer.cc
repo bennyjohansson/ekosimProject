@@ -333,10 +333,11 @@ void Consumer::change_debts(double ch) {
  * functions are very related to the consumer class
  */
 
-void Consumer::update_values() {
+void Consumer::update_values(double spendwill, double borrowwill) {
     // update_capital(); 
     update_skill();
-    update_spendwill();
+    update_spendwill(spendwill);
+    update_borrowwill(borrowwill);
     //update_motivation();
 }
 
@@ -365,7 +366,7 @@ void Consumer::update_skill() {
 }
 
 
-void Consumer::update_spendwill() {
+void Consumer::update_spendwill(double spendwill) {
     
     //spendwill_ = spendwill_ + 1*sum;
     
@@ -375,32 +376,24 @@ void Consumer::update_spendwill() {
      * Maybe we should make a "calander" class with events...
      */
     
-    /*
-    double time = clock_ -> get_time();
-    
-    if(time == 120) {
-        spendwill_ = 1.1*spendwill_;
-    }
-    if(time == 140) {
-        spendwill_ = 1.1*spendwill_;
-    }
-    if(time == 160) {
-        spendwill_ = 0.86*spendwill_;
-    }
-    */
-    
-    //if(time == 220) {
-    //  spendwill_ = 0.85*spendwill_;
-    //}
-    //if(time == 260) {
-    //  spendwill_ = 0.85*spendwill_;
-    // }
-    
-    //if(time == 300) {
-    //  spendwill_ = 0.85*spendwill_;
-    //}
-    //  randomize(spendwill_, 0.1);
+ 
+    randomize(spendwill_, spendwill);
     normalize(spendwill_);
+}
+
+void Consumer::update_borrowwill(double borrowwill) {
+    
+    //spendwill_ = spendwill_ + 1*sum;
+    
+    /*
+     * Trying the stem response on a change in demand, should not
+     * be made here though, need to collect that somewhere else. 
+     * Maybe we should make a "calander" class with events...
+     */
+    
+ 
+    randomize(borrowwill_, borrowwill);
+    normalize(borrowwill_);
 }
 
 

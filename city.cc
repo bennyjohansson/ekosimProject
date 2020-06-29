@@ -772,9 +772,20 @@ void City::negotiate_market_price()
     //}
 }
 
-void City::update_consumer_list()
-{
-    consumers_->update();
+void City::update_consumer_list() {
+
+    double set_avg_spendwill = 0;
+    double set_avg_borrowwill = 0;
+
+    set_avg_spendwill = getDatabaseParameter("'AverageSpendwill'");
+    set_avg_borrowwill = getDatabaseParameter("'AverageBorowwill'");
+
+    cout << "I City Updating consumers, setting average spendwill to: " << set_avg_spendwill << endl;
+    cout << "I City Updating consumers, setting average spendwill to: " << set_avg_borrowwill << endl;
+
+		//double test = getDatabaseParameter("AverageSpendwill");
+
+    consumers_->update(set_avg_spendwill, set_avg_borrowwill);
 }
 
 void City::update_companies()
@@ -1704,19 +1715,20 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    const char *dir = "/var/app/current/myDB/ekosimDB.db";
-    sqlite3 *DB;
+    const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+
     double targetInteresRate = 0;
     double interestRateMethod = 0;
     double capital_reserve_ratio = 0;
     double liquidity_reserve_ratio = 0;
     double bank_dividend_ratio = 0;
 
-    const char *stmt = "SELECT * FROM PARAMETERS";
+    //const char* stmt = "SELECT * FROM PARAMETERS";
+    string stmt = "SELECT * FROM PARAMETERS";
     //cout << "Test i cuty update interest parameters" << endl;
 
     Records records = select_stmt(stmt, dir);
-    sqlite3_close(DB);
+    //sqlite3_close(DB);
 
     for (int i = 0; i < records.size(); i++)
     {
@@ -1753,4 +1765,5 @@ void City::update_interest_parameters()
     bank_ -> set_capital_reserve_ratio(capital_reserve_ratio);
     bank_ -> set_liquidity_reserve_ratio(liquidity_reserve_ratio);
     bank_ -> set_dividend_ratio(bank_dividend_ratio);
+
 }

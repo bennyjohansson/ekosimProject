@@ -517,12 +517,12 @@ void Consumer_list::remove_consumer(Consumer * consumer, double capacity) {
  * Functions to update and operate on the list
  */
 
-void Consumer_list::update() {  
+void Consumer_list::update(double spendwill, double borrowwill) {  
 
   Element_consumer *p = 0;
 
   for(p = list_; p; p = p->next_) {
-    p -> consumer_ -> update_values();
+    p -> consumer_ -> update_values(spendwill, borrowwill);
   }
 
 }

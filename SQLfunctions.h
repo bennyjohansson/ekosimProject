@@ -17,6 +17,7 @@ static int createMoneyTable(const char* s);
 static int insertParameterData(const char* s);
 int insertMoneyData(std::vector<int> money); //
 int insertTimeData(std::vector<double> timeData); //
+double getDatabaseParameter(string);
 
 static int updateData(const char* s);
 static int updateParameter(const char* s, string, double);
@@ -26,6 +27,8 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 int testFunction();
 
 int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names);
-Records select_stmt(const char* stmt, const char* s);
+Records select_stmt(string stmt, const char* s); //const char*
+
+const char* get_sql_string();
 
 #endif

@@ -84,10 +84,11 @@ class Consumer {
        *Update values calls the functions below to update consumer parameters
        */
 
-      void update_values();
+      void update_values(double, double);
 
       void update_skill();
-      void update_spendwill();
+      void update_spendwill(double);
+      void update_borrowwill(double);
       void update_motivation();
 
       /*

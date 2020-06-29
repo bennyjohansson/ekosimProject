@@ -75,7 +75,7 @@ class Consumer_list {
        * Functions to update and operate on the list
        */
 
-      void update();  
+      void update(double, double);  
       double consumers_buy();
       void deposit_and_borrow_from_bank();
       void deposit_money_to_bank();
