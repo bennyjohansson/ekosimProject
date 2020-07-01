@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <random>
 #include "functions.h"
 #include "consumer.h"
 #include "market.h"
@@ -16,6 +17,14 @@ using namespace std;
 
 void randomize(double &average, double deviation) {
     
+    //std::default_random_engine generator;
+
+    
+
+    //for (int i = 0; i<3; i++) {
+        
+        //cout << "In functions randomize, my rand: " << number << endl;
+    //}
     //int randvalue;
     int randsign;
     double randv;
@@ -28,6 +37,21 @@ void randomize(double &average, double deviation) {
         randv = -randv;
     }  
     average += randv;
+}
+
+double randnorm(double average, double std){
+
+    std::random_device rd;
+    std::mt19937 e2(rd());
+    std::normal_distribution<double> distribution(average,std);
+
+    double number = distribution(e2);
+
+    number = fmax(0, fmin(1,number));
+
+    return number;
+
+
 }
 
 void normalize(double & value) {

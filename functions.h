@@ -14,6 +14,7 @@ using namespace std;
 
 void randomize(double&, double);
 void normalize(double&);
+double randnorm(double, double);
 double get_norm(double average, double deviation);
 double get_price(double excess);
 double get_price(double, double);

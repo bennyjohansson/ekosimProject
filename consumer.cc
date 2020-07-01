@@ -336,8 +336,8 @@ void Consumer::change_debts(double ch) {
 void Consumer::update_values(double spendwill, double borrowwill) {
     // update_capital(); 
     update_skill();
-    //update_spendwill(spendwill);
-    //update_borrowwill(borrowwill);
+    update_spendwill(spendwill);
+    update_borrowwill(borrowwill);
     //update_motivation();
 }
 
@@ -376,9 +376,9 @@ void Consumer::update_spendwill(double spendwill) {
      * Maybe we should make a "calander" class with events...
      */
     
- 
-    randomize(spendwill_, spendwill);
-    normalize(spendwill_);
+    spendwill_ = randnorm(spendwill, 1);
+    //randomize(spendwill_, spendwill);
+    //normalize(spendwill_);
 }
 
 void Consumer::update_borrowwill(double borrowwill) {
@@ -391,9 +391,9 @@ void Consumer::update_borrowwill(double borrowwill) {
      * Maybe we should make a "calander" class with events...
      */
     
- 
-    randomize(borrowwill_, borrowwill);
-    normalize(borrowwill_);
+    borrowwill_ = randnorm(borrowwill, 1);
+    //randomize(borrowwill_, borrowwill);
+    //normalize(borrowwill_);
 }
 
 
