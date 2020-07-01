@@ -391,7 +391,7 @@ void Consumer::update_borrowwill(double borrowwill) {
      * Maybe we should make a "calander" class with events...
      */
     
-    borrowwill_ = randnorm(borrowwill, 1);
+    //borrowwill_ = randnorm(borrowwill, 1);
     //randomize(borrowwill_, borrowwill);
     //normalize(borrowwill_);
 }
