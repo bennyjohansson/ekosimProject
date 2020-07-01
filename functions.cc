@@ -196,7 +196,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     double sk = 0.5;
     double cap = 100; 
     double spe = 0.7;
-    double save = 0.8; //1-spe; Was 0.05 2020-03-26
+    double save = 0.7; //1-spe; Was 0.05 2020-03-26
     double borrow = 0.010; //Was 0.02 2020-04-01
     
     
