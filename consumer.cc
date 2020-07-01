@@ -336,8 +336,8 @@ void Consumer::change_debts(double ch) {
 void Consumer::update_values(double spendwill, double borrowwill) {
     // update_capital(); 
     update_skill();
-    update_spendwill(spendwill);
-    update_borrowwill(borrowwill);
+    //update_spendwill(spendwill);
+    //update_borrowwill(borrowwill);
     //update_motivation();
 }
 
