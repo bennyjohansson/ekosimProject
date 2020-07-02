@@ -23,7 +23,7 @@ void randomize(double &average, double deviation) {
 
     //for (int i = 0; i<3; i++) {
         
-        //cout << "In functions randomize, my rand: " << number << endl;
+        //
     //}
     //int randvalue;
     int randsign;
@@ -37,17 +37,21 @@ void randomize(double &average, double deviation) {
         randv = -randv;
     }  
     average += randv;
+
+    //cout << "In functions randomize, my rand: " << average << endl;
 }
 
 double randnorm(double average, double std){
 
     std::random_device rd;
     std::mt19937 e2(rd());
-    std::normal_distribution<double> distribution(average,std);
+    std::normal_distribution<double> distribution(average*100,std);
 
-    double number = distribution(e2);
+    double number = distribution(e2)/100;
 
     number = fmax(0, fmin(1,number));
+
+    //cout << "Functions randnorm, value: " << number << endl;
 
     return number;
 
@@ -235,6 +239,8 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     normalize(mot);
     normalize(save);
     normalize(borrow);
+
+    cout << "I functions rand cons, borrow: " << borrow << endl;
     return new Consumer(mot,sk,cap,spe, save, borrow, market, bank, clock);
 }
 
