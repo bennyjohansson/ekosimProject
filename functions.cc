@@ -159,7 +159,7 @@ double get_prod(Consumer * consumer, double capacity) {
 double capacity_increase(double items, double capacity) {
     
     double increase = 0;
-    int function_select = 3; //2
+    int function_select = 4; //2
     
     switch (function_select) {
         case 1:
@@ -173,12 +173,12 @@ double capacity_increase(double items, double capacity) {
             
         case 3:
         //Suitable when using factor increase
-            increase = 0.2*items; //was 0.6
+            increase = 0.6*items; //was 0.6
             break;
             
         case 4:
         //0.01 ger sjunkande GDP och 0.05 ökande 
-            increase = 0.1*items;
+            increase = 2500*log(0.001*items + 1);
             break;
             
             
