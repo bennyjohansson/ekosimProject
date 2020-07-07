@@ -159,7 +159,7 @@ double get_prod(Consumer * consumer, double capacity) {
 double capacity_increase(double items, double capacity) {
     
     double increase = 0;
-    int function_select = 2;
+    int function_select = 3; //2
     
     switch (function_select) {
         case 1:
