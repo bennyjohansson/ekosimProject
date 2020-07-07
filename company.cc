@@ -35,7 +35,7 @@ production_function_(1),
 prod_const_skill_(60),
 prod_const_motivation_(40),
 wage_const_(0.1),
-wage_change_limit_(0.9),
+wage_change_limit_(0.2),
 market_(market),
 capacity_(3000),
 clock_(clock),
@@ -53,7 +53,7 @@ invest_(0),
 prod_const_skill_(p_c_skill),
 prod_const_motivation_(p_c_mot),
 wage_const_(wage_const),
-wage_change_limit_(1),
+wage_change_limit_(0.8),
 capacity_(capacity),
 capacity_0_(capacity),
 pbr_(plow_back_ratio),
@@ -1023,14 +1023,14 @@ double Company::get_total_wages() {
      * 'wage_change_limit_'
      */
     
-    //  if(clock_ -> get_time() > 30) {
-    //   if(wages/size > *theIterator*(1 + wage_change_limit_)) {
-    //     wages = *theIterator*(1 + wage_change_limit_)*size;
-    //   }    
-    //   if(wages/size < *theIterator*(1 - wage_change_limit_)) {
-    //     wages = *theIterator*(1 - wage_change_limit_)*size;
-    //   }
-    //}
+     if(clock_ -> get_time() > 30) {
+      if(wages/size > *theIterator*(1 + wage_change_limit_)) {
+        wages = *theIterator*(1 + wage_change_limit_)*size;
+      }    
+      if(wages/size < *theIterator*(1 - wage_change_limit_)) {
+        wages = *theIterator*(1 - wage_change_limit_)*size;
+      }
+    }
     
     return wages;
 }
