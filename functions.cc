@@ -173,7 +173,7 @@ double capacity_increase(double items, double capacity) {
             
         case 3:
         //Suitable when using factor increase
-            increase = 0.6*items;
+            increase = 0.05*items; //was 0.6
             break;
             
         case 4:
