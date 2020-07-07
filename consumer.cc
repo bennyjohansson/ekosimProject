@@ -415,6 +415,7 @@ void Consumer::update_motivation() {
     
     randomize(motivation_, 0.1);
     normalize(motivation_);
+    motivation_ = randnorm(motivation_, 1);
 }
 
 double Consumer::get_demand() {

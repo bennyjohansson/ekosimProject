@@ -58,6 +58,42 @@ double randnorm(double average, double std){
 
 }
 
+Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
+    
+    /* 
+     * Default values for consumers
+     *
+     *
+     */
+    
+    double mot = 0.6;
+    double sk = 0.5;
+    double cap = 100; 
+    double spe = 0.7;
+    double save = 0.7; //1-spe; Was 0.05 2020-03-26
+    double borrow = 0.010; //Was 0.02 2020-04-01
+    
+    
+    randomize(mot, 0.7);
+    randomize(sk, 0.7);
+    randomize(cap, 1);
+    randomize(spe, 0.5);
+    randomize(save, 0.5);
+    randomize(borrow, 0.2);
+    
+    borrow = randnorm(borrow, 1);
+    normalize(spe);
+    normalize(sk);
+    normalize(mot);
+    normalize(save);
+    //normalize(borrow);
+
+    cout << "I functions rand cons, borrow: " << borrow << endl;
+    return new Consumer(mot,sk,cap,spe, save, borrow, market, bank, clock);
+}
+
+
+
 void normalize(double & value) {
     if(value < 0) {
         value = 0;
@@ -210,38 +246,6 @@ double get_price(double excess, double sum_spend) {
     else {
         return 1000000;
     }
-}
-
-Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
-    
-    /* 
-     * Default values for consumers
-     *
-     *
-     */
-    
-    double mot = 0.6;
-    double sk = 0.5;
-    double cap = 100; 
-    double spe = 0.7;
-    double save = 0.7; //1-spe; Was 0.05 2020-03-26
-    double borrow = 0.010; //Was 0.02 2020-04-01
-    
-    
-    randomize(mot, 0.7);
-    randomize(sk, 0.7);
-    randomize(cap, 1);
-    randomize(spe, 0.5);
-    randomize(save, 0.5);
-    randomize(borrow, 0.2);
-    normalize(spe);
-    normalize(sk);
-    normalize(mot);
-    normalize(save);
-    normalize(borrow);
-
-    cout << "I functions rand cons, borrow: " << borrow << endl;
-    return new Consumer(mot,sk,cap,spe, save, borrow, market, bank, clock);
 }
 
 
