@@ -847,7 +847,7 @@ int Company::get_desired_investment(){
 	double borrow = 0;
 	
 	invested_items = 1;
-	item_increase = 100;
+	item_increase = 1000;
 	
 	price_out = market_ -> get_price_out();
 	
