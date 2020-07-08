@@ -184,43 +184,45 @@ void City::print_GDP()
     /*
      * Printing to file gdp.txt
      */
-    ofstream file("gdp.txt");
-    GDP = GDP_.begin();
-    Time = time_.begin();
-    Investments = investments_.begin();
-    Growth = growth_.begin();
-    Demand = demand_.begin();
-    Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
-    Price_out = price_out_.begin();
-    Employed = employed_.begin();
-    Interest_rate = interest_rate_.begin();
-    Market_capital = market_capital_.begin();
-    Bank_capital = bank_capital_.begin();
-    Total_capital = total_capital_.begin();
-    Interest_rate = interest_rate_.begin();
+    if(save_to_file) {
+        ofstream file("gdp.txt");
+        GDP = GDP_.begin();
+        Time = time_.begin();
+        Investments = investments_.begin();
+        Growth = growth_.begin();
+        Demand = demand_.begin();
+        Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
+        Price_out = price_out_.begin();
+        Employed = employed_.begin();
+        Interest_rate = interest_rate_.begin();
+        Market_capital = market_capital_.begin();
+        Bank_capital = bank_capital_.begin();
+        Total_capital = total_capital_.begin();
+        Interest_rate = interest_rate_.begin();
 
-    file << "#time1 gdp2 growth3 demand4 wages5 price6 employed7 company_capital8 consumer_capital9 interest_rate10 investments11 market_capital12 bank_capital13 total_capital14" << endl;
-    for (GDP = GDP_.begin(); GDP != GDP_.end(); GDP++)
-    {
-        file << *Time << " " << *GDP << " " << *Growth << " " << *Demand
-             << " " << *Wages << " " << *Price_out << " " << *Employed
-             << " " << *Consumer_capital << " " << *Company_capital << " " << 10 * (*Interest_rate) << " "
-             << *Investments << " " << *Market_capital << " " << *Bank_capital << " " << *Total_capital << endl;
-        Time++;
-        Demand++;
-        Growth++;
-        Wages++;
-        Price_out++;
-        Employed++;
-        Consumer_capital++;
-        Company_capital++;
-        Market_capital++;
-        Bank_capital++;
-        Total_capital++;
-        Interest_rate++;
-        Investments++;
+        file << "#time1 gdp2 growth3 demand4 wages5 price6 employed7 company_capital8 consumer_capital9 interest_rate10 investments11 market_capital12 bank_capital13 total_capital14" << endl;
+        for (GDP = GDP_.begin(); GDP != GDP_.end(); GDP++)
+        {
+            file << *Time << " " << *GDP << " " << *Growth << " " << *Demand
+                << " " << *Wages << " " << *Price_out << " " << *Employed
+                << " " << *Consumer_capital << " " << *Company_capital << " " << 10 * (*Interest_rate) << " "
+                << *Investments << " " << *Market_capital << " " << *Bank_capital << " " << *Total_capital << endl;
+            Time++;
+            Demand++;
+            Growth++;
+            Wages++;
+            Price_out++;
+            Employed++;
+            Consumer_capital++;
+            Company_capital++;
+            Market_capital++;
+            Bank_capital++;
+            Total_capital++;
+            Interest_rate++;
+            Investments++;
+        }
+        file.close();
     }
-    file.close();
 }
 
 /*
