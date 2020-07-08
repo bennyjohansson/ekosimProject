@@ -117,6 +117,7 @@ void City::print_GDP()
 {
 
     const int SPACE = 15;
+    bool save_to_file = false;
 
     list<double>::iterator GDP;
     list<double>::iterator Growth;
