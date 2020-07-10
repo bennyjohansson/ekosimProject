@@ -35,16 +35,16 @@ int main() {
    	* Have a look at the file init_company.cc to change company parameters. 
    	*/
 
-   
+   /*
   	bennyland.load_company("bempa_AB");
   	bennyland.load_company("bempa_co");
   	bennyland.load_company("benny_inc");
   	bennyland.load_company("limpan_AB");
   	bennyland.load_company("benny_enterprises");
   	bennyland.load_company("johansson_och_johansson");
-	
+	*/
 
-	//bennyland.add_companies_from_database();
+	bennyland.add_companies_from_database();
   
   	bennyland.print_company_list(); 
 
