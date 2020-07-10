@@ -14,7 +14,9 @@ static int createDB(const char* s);
 static int createParameterTable(const char* s);
 static int createDataTable(const char* s);
 static int createMoneyTable(const char* s);
+static int createCompanyTable(const char* s);
 static int insertParameterData(const char* s);
+static int initiateCompanyTable(const char* s);
 int insertMoneyData(std::vector<int> money); //
 int insertTimeData(std::vector<double> timeData); //
 double getDatabaseParameter(string);

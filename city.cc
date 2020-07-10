@@ -300,57 +300,6 @@ double City::get_income_tax()
     return income_tax_;
 }
 
-// double City::get_expected_consumer_net_flow_to_bank_sum() {
-
-// 	//double capital_sum = 0;
-// 	//double deposit_sum = 0;
-// 	//double borrow_sum = 0;
-// 	//double total_sum = 0;
-// 	//double savewill_sum = 0;
-// 	//double borrowwill_sum = 0;
-// 	double total_sum = 0;
-// 	double interest = 0;
-// 	int payback_time = 0;
-// 	double borrow_from_bank = 0;
-// 	double deposit_to_bank = 0;
-// 	double available_bank_capital = 0;
-// 	double repayment_to_bank = 0;
-// 	double repayment_from_bank = 0;
-// 	double interest_to_bank = 0;
-// 	double interest_from_bank = 0;
-
-// 	payback_time = bank_ -> get_payback_time();
-//     interest = bank_ -> get_interest();
-//     available_bank_capital = bank_ -> get_sum_to_borrow();
-
-//     auto [capital_sum, deposit_sum, borrow_sum, savewill_sum, borrowwill_sum] = consumers_ -> get_misc_sum(); //bennyland.get_expected_consumer_net_flow_to_bank_sum();
-
-//     borrowwill_sum = fmax(fmin(borrowwill_sum, available_bank_capital), 0);
-
-//     if(bank_ -> get_trustworthy()) {
-//         repayment_to_bank = borrow_sum/(payback_time*12);
-//         interest_to_bank = interest*borrow_sum;
-//     }
-
-//     borrow_from_bank = get_consumer_borrow(borrowwill_sum, capital_sum, deposit_sum, borrow_sum, interest);
-//     deposit_to_bank = get_consumer_deposit(savewill_sum, capital_sum, interest);
-
-//     total_sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + deposit_to_bank - borrow_from_bank;
-
-//     cout << "I City get cons flow, rtb " << repayment_to_bank << " rfb " << repayment_from_bank << " itb " << interest_to_bank << " ifb " << interest_from_bank << " dtb " << deposit_to_bank << " bfb " << borrow_from_bank << endl;
-
-//     // if(amount > available_capital && available_capital > 0) {
-// //         amount = available_capital;
-// //         cout << "In consumer, not enough money to borrow" << endl;
-// //     }
-// //     else if (available_capital < 0) {
-// //         amount = 0;
-// //     }
-
-//     return total_sum;
-
-// }
-
 Company *City::get_company(string name)
 {
     return company_list_->get_company(name);
@@ -1768,5 +1717,58 @@ void City::update_interest_parameters()
     bank_ -> set_capital_reserve_ratio(capital_reserve_ratio);
     bank_ -> set_liquidity_reserve_ratio(liquidity_reserve_ratio);
     bank_ -> set_dividend_ratio(bank_dividend_ratio);
+
+}
+
+void City::add_companies_from_database()
+{
+
+    using Record = std::vector<std::string>;
+    using Records = std::vector<Record>;
+
+    const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+
+    string name = "";
+    double capital = 0;
+    long stock = 0;
+    double capacity = 0;
+    double debts = 0;
+    double p_c_skill = 0;
+    double p_c_mot = 0;
+    double wage_const = 0;
+    double wage_change_limit = 0;
+    double invest = 0;
+    double pbr = 0;
+    double decay = 0;
+    int production_function = 0;
+    
+
+    //const char* stmt = "SELECT * FROM PARAMETERS";
+    string stmt = "SELECT * FROM COMPANY_TABLE";
+    //cout << "Test i cuty update interest parameters" << endl;
+
+    Records records = select_stmt(stmt, dir);
+
+    for (int i = 0; i < records.size(); i++) {
+
+        name = records[i][1];
+        capital = std::stod(records[i][2]);
+        stock = std::stoi(records[i][3]);
+        capacity = std::stod(records[i][4]);
+        debts = std::stod(records[i][5]);
+        p_c_skill = std::stod(records[i][6]);
+        p_c_mot = std::stod(records[i][7]);
+        wage_const = std::stod(records[i][8]);
+        wage_change_limit = std::stod(records[i][9]);
+        invest = std::stod(records[i][10]);
+        pbr = std::stod(records[i][11]);
+        decay = std::stod(records[i][12]);
+        production_function = std::stoi(records[i][13]);        
+
+        add_company(new Company(name, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
+        
+        cout << endl << "Added company: " << name << endl << "Capital: " << capital << endl << "Capacity: " << capacity << endl;
+        
+    }
 
 }
