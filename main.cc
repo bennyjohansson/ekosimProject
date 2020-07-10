@@ -43,7 +43,8 @@ int main() {
   	bennyland.load_company("benny_enterprises");
   	bennyland.load_company("johansson_och_johansson");
 	*/
-
+	initiateDB();
+	
 	bennyland.add_companies_from_database();
   
   	bennyland.print_company_list(); 
@@ -51,7 +52,7 @@ int main() {
 	/*
 	* Initiating Database
 	*/
-	initiateDB();
+	
 	//vector<int> vect(13, 10); 
 	//insertMoneyData(vect);
 
