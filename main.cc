@@ -44,7 +44,7 @@ int main() {
   	bennyland.load_company("johansson_och_johansson");
 	*/
 	initiateDB();
-	
+
 	bennyland.add_companies_from_database();
   
   	bennyland.print_company_list(); 
@@ -107,7 +107,7 @@ int main() {
   	* Setting basic parameters
    	*/
   	
-  	double simulation_years = 2000;
+  	double simulation_years = 20000;
   	bool invest = false;
   	int flashtime = 5;
   	string theThiefString = "";
