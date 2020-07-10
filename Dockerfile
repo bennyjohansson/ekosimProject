@@ -3,7 +3,7 @@
 FROM amazonlinux:2
 
 RUN yum update -y && yum install -y initscripts;
-RUN yum install sqlite-devel
+RUN yum install -y sqlite-devel
 
 CMD ["/usr/sbin/init"]
 
