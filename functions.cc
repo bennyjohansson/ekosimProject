@@ -88,7 +88,7 @@ Consumer * random_consumer(Market * market, Bank * bank, Clock * clock) {
     normalize(save);
     //normalize(borrow);
 
-    cout << "I functions rand cons, borrow: " << borrow << endl;
+    //cout << "I functions rand cons, borrow: " << borrow << endl;
     return new Consumer(mot,sk,cap,spe, save, borrow, market, bank, clock);
 }
 
