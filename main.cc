@@ -43,8 +43,8 @@ int main() {
   	bennyland.load_company("benny_enterprises");
   	bennyland.load_company("johansson_och_johansson");
 	*/
-	//initiateCityDB("Bennyland");
-	initiateDB();
+	initiateCityDB("Bennyland");
+	//initiateDB();
 
 
 	bennyland.add_companies_from_database();

@@ -19,8 +19,8 @@ static int createMoneyTable(const char* s);
 static int createCompanyTable(const char* s);
 static int insertParameterData(const char* s);
 static int initiateCompanyTable(const char* s);
-int insertMoneyData(std::vector<int> money); //
-int insertTimeData(std::vector<double> timeData); //
+int insertMoneyData(std::vector<int> money, string); //
+int insertTimeData(std::vector<double> timeData, string); //
 double getDatabaseParameter(string);
 
 static int updateData(const char* s);

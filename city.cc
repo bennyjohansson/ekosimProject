@@ -1046,7 +1046,7 @@ void City::save_data()
 
 
     try {
-        insertTimeData(time_data);
+        insertTimeData(time_data, name_);
     }    
     catch(exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -1131,7 +1131,7 @@ void City::save_money_data()
     money_data.push_back((int)total_capital);
 
     try {
-        insertMoneyData(money_data);
+        insertMoneyData(money_data, name_);
     }    
     catch(exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -1671,8 +1671,8 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    //const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
-    const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+    const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
+    //const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
 
 
     double targetInteresRate = 0;
@@ -1732,8 +1732,8 @@ void City::add_companies_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    //const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
-    const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+    const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
+    //const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
 
     string name = "";
     double capital = 0;
@@ -1749,7 +1749,7 @@ void City::add_companies_from_database()
     double decay = 0;
     int production_function = 0;
     
-
+    cout << "I City add companies from DB, dir: " << dir << endl;
     //const char* stmt = "SELECT * FROM PARAMETERS";
     string stmt = "SELECT * FROM COMPANY_TABLE";
     //cout << "Test i cuty update interest parameters" << endl;
