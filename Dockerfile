@@ -19,7 +19,7 @@ COPY main /home/ecosim
 
 #Run the file inside image
 #CMD /home/ec2-user/ekosimProject
-CMD /home/ec2-user/ecosim
+CMD /home/ecosim
 
 
 
