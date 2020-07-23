@@ -46,6 +46,7 @@ int main() {
 	initiateCityDB("Bennyland");
 	//initiateDB();
 
+	cout << "I main" << endl;
 
 	bennyland.add_companies_from_database();
 
