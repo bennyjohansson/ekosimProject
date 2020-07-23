@@ -34,7 +34,7 @@ int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_
 Records select_stmt(string stmt, const char* s); //const char*
 
 const char* get_sql_string();
-const char* get_city_sql_string(string city_name);
+string get_city_sql_string(string city_name);
 
 
 #endif

@@ -1671,8 +1671,8 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
-    //const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+    string full_path = get_city_sql_string(name_); 
+    const char* dir =  full_path.c_str(); 
 
 
     double targetInteresRate = 0;
@@ -1732,8 +1732,8 @@ void City::add_companies_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
-    //const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+    string full_path = get_city_sql_string(name_); 
+    const char* dir =  full_path.c_str(); 
 
     string name = "";
     double capital = 0;

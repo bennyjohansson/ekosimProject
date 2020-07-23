@@ -1,0 +1,9 @@
+docker commands
+sudo docker build -t myapp .
+docker run -it --mount src=/var/app/current/myDB/,target=/home/ecosim/myDB/,type=bind myapp
+
+docker ps
+docker kill "container id"
+
+shell
+docker run -it myapp sh
