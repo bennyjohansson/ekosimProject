@@ -65,6 +65,7 @@ class City {
       double get_income_tax();
       int get_no_years_laundry();
       int get_time_to_steal();
+      string get_name();
       
       /*
        * Change-functions

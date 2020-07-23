@@ -10,6 +10,8 @@ using Record = std::vector<std::string>;
 using Records = std::vector<Record>;
 
 int initiateDB();
+int initiateCityDB(string city_name);
+
 static int createDB(const char* s);
 static int createParameterTable(const char* s);
 static int createDataTable(const char* s);
@@ -32,5 +34,7 @@ int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_
 Records select_stmt(string stmt, const char* s); //const char*
 
 const char* get_sql_string();
+const char* get_city_sql_string(string city_name);
+
 
 #endif

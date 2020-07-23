@@ -22,8 +22,7 @@ City::City() : name_("bennyland"),
                market_(new Market()),
                bank_(new Bank("BENNYBANK", 0.02, 3)),
                clock_(new Clock())
-{
-}
+{}
 
 City::City(string name) : name_(name),
                           consumers_(new Consumer_list("CONSUMERS")),
@@ -41,8 +40,7 @@ City::City(string name) : name_(name),
                           vat_(0.2),
                           income_tax_(0.3),
                           time_to_steal_(7919)
-{
-}
+{}
 
 void City::info()
 {
@@ -52,6 +50,7 @@ void City::info()
          << "----------------------------------------" << endl
          << "Name: " << name_ << endl
          << "Population: " << consumers_->get_size() << endl
+         << "Capital owners; " << capital_owners_ -> get_size() << endl 
          << endl
          << "COMPANIES " << endl;
     company_list_->print_list();
@@ -350,6 +349,11 @@ int City::get_no_years_laundry()
 int City::get_time_to_steal()
 {
     return time_to_steal_;
+}
+
+string City::get_name()
+{
+    return name_;
 }
 
 /*
@@ -1667,7 +1671,9 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
+    //const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
     const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
+
 
     double targetInteresRate = 0;
     double interestRateMethod = 0;
@@ -1726,6 +1732,7 @@ void City::add_companies_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
+    //const char *dir = get_city_sql_string(name_); //"/var/app/current/myDB/ekosimDB.db";
     const char *dir = get_sql_string(); //"/var/app/current/myDB/ekosimDB.db";
 
     string name = "";
