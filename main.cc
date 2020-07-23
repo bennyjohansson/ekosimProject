@@ -48,6 +48,8 @@ int main() {
 
 
 	bennyland.add_companies_from_database();
+
+	cout << "I main" << endl;
   
   	bennyland.print_company_list(); 
 
@@ -58,7 +60,7 @@ int main() {
 	//vector<int> vect(13, 10); 
 	//insertMoneyData(vect);
 
-	
+
   	/*
    	* Creating random consumers. See file functions.cc for settings about the consumers.
    	*/
