@@ -58,7 +58,7 @@ int main() {
 	//vector<int> vect(13, 10); 
 	//insertMoneyData(vect);
 
-
+	
   	/*
    	* Creating random consumers. See file functions.cc for settings about the consumers.
    	*/
