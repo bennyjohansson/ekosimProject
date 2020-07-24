@@ -1,9 +1,22 @@
 docker commands
 sudo docker build -t myapp .
 docker run -it --mount src=/var/app/current/myDB/,target=/home/ecosim/myDB/,type=bind myapp
+docker run -it --mount src=/var/app/current/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
 
 docker ps
 docker kill "container id"
 
+Start service
+sudo service docker start
+
 shell
 docker run -it myapp sh
+
+Stop all running containers
+docker stop $(docker ps -aq)
+
+Remove all containers
+docker rm $(docker ps -aq)
+
+Remove all images
+docker rmi $(docker images -q)
