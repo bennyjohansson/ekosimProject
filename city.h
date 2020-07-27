@@ -20,6 +20,7 @@ class City {
 
       City();
       City(string name);
+      City(string name, Clock * clock);
 
       /*
        * Info-funktioner
@@ -85,6 +86,7 @@ class City {
       void set_time_to_steal(int);
       void set_vat(double);
       void set_income_tax(double);
+      void set_market(Market *);
 
 
       /*

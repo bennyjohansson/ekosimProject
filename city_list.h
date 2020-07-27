@@ -16,7 +16,7 @@ class City_list {
 
   City_list();
   City_list(string name);
-  City_list(City * city);
+  City_list(string name, Clock * clock);
 
 
   /*
@@ -25,6 +25,7 @@ class City_list {
   
     void info();
     void print_list();
+    void print_GDP();
 
 
   /*
@@ -43,6 +44,14 @@ class City_list {
   void add_city(City * city);
 
 
+  bool update_employees();
+  bool run_production_cycle();
+  bool run_sales_cycle();
+  bool run_investment_cycle();
+  bool run_banking_cycle();
+  bool run_dividend_cycle();
+  bool run_save_cycle();
+  bool run_adjust_money_and_consumer_cycle();
 
  private:
   string name_;

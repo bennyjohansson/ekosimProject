@@ -42,6 +42,25 @@ City::City(string name) : name_(name),
                           time_to_steal_(7919)
 {}
 
+
+City::City(string name, Clock * clock ): name_(name),
+                          consumers_(new Consumer_list("CONSUMERS")),
+                          company_list_(new Company_list("COMPANIES")),
+                          labour_market_(new Consumer_list("LABOUR MARKET")),
+                          capital_owners_(new Consumer_list("CAPITAL OWNERS")),
+                          market_(new Market()),
+                          bank_(new Bank("BENNYBANK", 0.05, 3)),
+                          clock_(clock),
+                          flash_counter_(0),
+                          shareToSteal_(0.95),
+                          laundry_factor_(0.95),
+                          no_years_laundry_(4),
+                          capital_(0),
+                          vat_(0.2),
+                          income_tax_(0.3),
+                          time_to_steal_(7919)
+{}
+
 void City::info()
 {
     cout << endl
@@ -152,7 +171,7 @@ void City::print_GDP()
     /*
      * Printing output to screen
      */
-    cout << "Bennyland"
+    cout << name_
          << endl
          << "-----------------------------------------------------" << endl
          << setw(SPACE - 10) << "Time" << setw(SPACE - 1) << "GDP" << setw(SPACE - 2) << "Growth" << setw(SPACE) << "Demand"
@@ -406,6 +425,11 @@ void City::set_vat(double vat)
 void City::set_income_tax(double income_tax)
 {
     income_tax_ = income_tax;
+}
+
+void City::set_market(Market * market)
+{
+    market_ = market;
 }
 
 /*
