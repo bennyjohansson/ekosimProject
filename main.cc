@@ -104,6 +104,7 @@ int main() {
     	cout << 		"---------" << endl;
  
 		bennyworld.run_dividend_cycle();
+		bennyworld.run_adjust_money_and_consumer_cycle();
 
 
     
