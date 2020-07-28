@@ -792,7 +792,7 @@ void City::update_interest_rate()
     double bank_sum = 0;
     double max_bank_borrow_to_consumers = 0;
 
-    double diff_limit = 2500; //500 works fine
+    double diff_limit = 10000; //500 works fine
     double sum_flows_to_bank = 0;
     double prev_flows_to_bank = 0;
     double initial_flows_to_bank = 0;
