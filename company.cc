@@ -571,20 +571,26 @@ bool Company::update_employees(Consumer * opt) {
 }
 
 void Company::remove_usless_employees() {
-    try {
-        Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
-        
-        while(contribution_removing(bad_empl) > 0.1) {
 
-            remove_employee(bad_empl);
+    if(employees_) {
+        try {
+            Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
             
-            bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
-        	
+            while(contribution_removing(bad_empl) > 0.1) {
 
+                remove_employee(bad_empl);
+                
+                bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
+                
+
+            }
+        }
+        catch(std:: exception b) {
+            cout << b.what() << endl << "Error i company rem usless " << name_ << endl;  
         }
     }
-    catch(std:: exception b) {
-        cout << b.what() << endl << "Error i company rem usless " << name_ << endl;  
+    else {
+        cout << "I Company remove usless employees, no employees" << endl;
     }
 }
 
