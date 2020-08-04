@@ -31,8 +31,13 @@ int main() {
 
   	World bennyworld("Bennyworld");
 	initiateWorldDB("Bennyworld");
-	bennyworld.initiate_city("Bennyland");
+	
+	/*
+	* Adding default country
+	*/ 
+
 	initiateCityDB("Bennyland");
+	bennyworld.initiate_city("Bennyland");
 
 	/*
 	* Adding another city
