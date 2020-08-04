@@ -49,7 +49,7 @@ int main() {
 	* Setting parameters
 	*/
 
-	int simulation_cycles = 100;
+	int simulation_cycles = 1000;
 	int current_cycle = 0;
 	unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5= 0, timer6 = 0;
 
