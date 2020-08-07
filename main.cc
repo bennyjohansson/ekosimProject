@@ -128,14 +128,14 @@ int main() {
 		cout << endl << "ADDING COMPETITION & CONSUMERS" << endl;
     	cout << 		"------------------------------" << endl;
 
-		if(current_cycle == 20) { 
+		// if(current_cycle == 20) { 
 			
-			City * Saraland = bennyworld.get_city("Saraland");
-			City * Bennyland = bennyworld.get_city("Bennyland");
-			Market * BMarket = Bennyland -> get_market();
-			Saraland->set_market(BMarket);
+		// 	City * Saraland = bennyworld.get_city("Saraland");
+		// 	City * Bennyland = bennyworld.get_city("Bennyland");
+		// 	Market * BMarket = Bennyland -> get_market();
+		// 	Saraland->set_market(BMarket);
 
-		}
+		// }
 
    		cout << endl << "TIME MEASUREMENTS" << endl;
    		cout << 		"--------------------" << endl;

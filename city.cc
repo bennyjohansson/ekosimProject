@@ -1281,7 +1281,7 @@ void City::adjust_money()
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.70;
+    double scale_factor = 1;
 
     double MAX_CHANGE_FACTOR = 1;
 
@@ -1333,7 +1333,7 @@ void City::adjust_money()
     Price_out = price_out_.begin();
 
     sum = 0;
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < 5; i++)
     {
         sum += *Price_out;
         Price_out++;
