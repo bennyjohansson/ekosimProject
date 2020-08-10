@@ -183,6 +183,19 @@ bool World::run_adjust_money_and_consumer_cycle() {
 }
 
 
+bool World::update_companies_from_database() {
+
+		//Running the following lines
+
+    	// bennyland.adjust_money();
+    	// bennyland.update_consumer_list();
+
+    return cities_ -> update_companies_from_database();
+    
+}
+
+
+
 
 
 void World::printWorldDB()

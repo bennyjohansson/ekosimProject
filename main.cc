@@ -125,8 +125,9 @@ int main() {
    		//Timer checkpoint last part
 		timer6 = stopwatch();// - timer5;
 		
-		cout << endl << "ADDING COMPETITION & CONSUMERS" << endl;
+		cout << endl << "UPDATING AND ADDING COMPETITION & CONSUMERS" << endl;
     	cout << 		"------------------------------" << endl;
+		bennyworld.update_companies_from_database();
 
 		// if(current_cycle == 20) { 
 			

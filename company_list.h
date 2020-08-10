@@ -64,6 +64,7 @@ class Company_list {
   bool update_employees(Consumer *);
   bool update_employees2(Consumer *);
   void remove_usless_employees();
+  void update_companies_from_database(string city_name);
 
 
   /*

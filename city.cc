@@ -1807,3 +1807,14 @@ void City::add_companies_from_database()
     }
 
 }
+
+
+
+void City::update_companies_from_database() {
+
+    if(company_list_) {
+
+        company_list_ -> update_companies_from_database(name_);
+    }
+
+}

@@ -10,6 +10,7 @@
 //#include "consumer.h"
 #include "company.h"
 #include "functions.h"
+#include "SQLfunctions.h"
 #include "error_no_return.h"
 
 using namespace std;
@@ -495,6 +496,50 @@ void Company::remove_usless_employees() {
     }
 }
 
+void Company::update_from_database(string city_name) {
+
+    using Record = std::vector<std::string>;
+    using Records = std::vector<Record>;
+
+    string full_path = get_city_sql_string(city_name); 
+    const char* dir =  full_path.c_str(); 
+
+    double wage_const = 0;
+    double wage_change_limit = 0;
+    double pbr = 0;
+    double decay = 0;
+    double production_parameter = 0;
+    int production_function = 0;
+
+    production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
+    
+    //const char* stmt = "SELECT * FROM PARAMETERS";
+    string stmt = "SELECT * FROM COMPANY_TABLE WHERE NAME = ";
+    stmt.append("'");
+    stmt.append(name_);
+    stmt.append("'");
+
+    cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
+
+    Records records = select_stmt(stmt, dir);
+
+
+    wage_const = std::stod(records[0][8]);
+    wage_change_limit = std::stod(records[0][9]);
+    pbr = std::stod(records[0][11]);
+    decay = std::stod(records[0][12]);
+    //production_parameter = std::stod(records[0][13]);        
+    production_function = std::stoi(records[0][14]);        
+
+    wage_const_ = wage_const;
+    wage_change_limit_ = wage_change_limit;
+    pbr_ = pbr;
+    decay_ = decay;
+    production_parameter_ = production_parameter;
+    production_function_ = production_function;
+        
+
+}
 
 //Checks how the expected income changes by adding consumer 
 double Company::contribution_adding(Consumer * consumer) {

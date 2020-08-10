@@ -256,3 +256,25 @@ bool City_list::run_adjust_money_and_consumer_cycle() {
     return true;
     
 }
+
+
+
+
+bool City_list::update_companies_from_database() {
+
+    	
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            p -> get_city() -> update_companies_from_database();
+        }
+    }
+    else {
+        cout << "No countries to run adjust cycle" << endl;
+        return false;
+    }
+    return true;
+    
+}

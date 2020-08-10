@@ -52,6 +52,7 @@ class City_list {
   bool run_dividend_cycle();
   bool run_save_cycle();
   bool run_adjust_money_and_consumer_cycle();
+  bool update_companies_from_database();
 
  private:
   string name_;
