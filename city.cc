@@ -328,7 +328,7 @@ Company *City::get_random_company()
     return company_list_->get_random_company()->get_company();
 }
 
-Consumer *City::get_optimal_consumer(double mot_we, double skill_we)
+Consumer *City::get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter)
 {
 
     double cap_sum = 0;
@@ -341,7 +341,7 @@ Consumer *City::get_optimal_consumer(double mot_we, double skill_we)
 
     try
     {
-        return (consumers_->get_optimal_consumer(mot_we, skill_we, capacity));
+        return (consumers_->get_optimal_consumer(mot_we, skill_we, capacity, production_function, production_parameter));
     }
     catch (no_return_error)
     {
@@ -971,6 +971,8 @@ void City::update_employees()
     string name = "";
     double skill = 0;
     double mot = 0;
+    int prod_fcn = 1;
+    double prod_param = 0.001;
     Consumer *opt = 0;
 
     /*
@@ -989,8 +991,10 @@ void City::update_employees()
     name = get_random_company()->get_name();
     skill = get_company(name)->get_prod_const_skill();
     mot = get_company(name)->get_prod_const_motivation();
+    prod_fcn = get_company(name)->get_production_function();
+    prod_param = get_company(name)->get_production_parameter();
 
-    while (company_list_->update_employees2(opt = get_optimal_consumer(mot, skill)))
+    while (company_list_->update_employees2(opt = get_optimal_consumer(mot, skill, prod_fcn, prod_param)))
     {
     }
 }

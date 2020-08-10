@@ -359,7 +359,7 @@ Consumer * Consumer_list::get_consumer(string name) {
         throw no_return_error("Cant find the consumer");
     }
     else {
-        throw no_return_error("no list"); 
+        throw no_return_error("No list"); 
     } 
 }
 
@@ -382,13 +382,13 @@ bool Consumer_list::is_consumer(Consumer * consumer) {
 
 
 Consumer * Consumer_list::get_optimal_consumer(double skill_we, 
-					       double mot_we, double capacity) { 
+					       double mot_we, double capacity, int production_function, double production_parameter) { 
   Element_consumer *p;
   Element_consumer * best = new Element_consumer(0, new Consumer(0,0,0,0));
   best -> set_employment_status(true);
     
   if(!list_) {
-    throw no_return_error("no optimal consumer");
+    throw no_return_error("No optimal consumer");
   }
   
   for(p = list_; p; p = p -> next_) {
@@ -398,20 +398,20 @@ Consumer * Consumer_list::get_optimal_consumer(double skill_we,
     //    cout <<"I consumer list get optimal" << p -> get_skill() << " x  " << best -> get_skill() << "  " << get_prod(consumer, capacity) << " " <<  get_prod(besta, capacity) << endl;
 
 
-    if((get_prod(consumer, capacity) > get_prod(besta, capacity)) && !(p -> get_employment_status())) {
+    if((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter)) && !(p -> get_employment_status())) {
 	best = p;
 	//	cout << "I consumer list get optimal" << p -> get_skill() << " x  " << best -> get_skill() << endl;
     }
   }
 
   if(p == best) {
-    throw no_return_error("no optimal consumer");
+    throw no_return_error("No optimal consumer");
   }
   
   return best -> get_consumer();
 }
 
-Consumer * Consumer_list::get_usless_employee(double skill, double mot, double capacity){
+Consumer * Consumer_list::get_usless_employee(double skill, double mot, double capacity, int production_function, double production_parameter){
 
   Element_consumer * p;
   Element_consumer * worst = new Element_consumer(0, new Consumer(3,3,3,3));
@@ -419,20 +419,20 @@ Consumer * Consumer_list::get_usless_employee(double skill, double mot, double c
   wors -> get_consumer() -> set_employment_status(true);
   
   if(!list_) {
-    throw no_return_error("no optimal consumer");
+    throw no_return_error("No usless consumer");
   }
   
   for(p = list_; p; p = p -> next_) {
     Consumer * consumer = p -> get_consumer();
     Consumer * worst = wors -> get_consumer();
     
-    if(get_prod(consumer, capacity) < get_prod(worst, capacity)) {
+    if(get_prod(consumer, capacity, production_function, production_parameter) < get_prod(worst, capacity, production_function, production_parameter)) {
       wors =  p;
     }
   }
   
   if(wors == worst) {
-    throw no_return_error("no optimal consumer");
+    throw no_return_error("No usless consumer");
   }
   //  cout << "I cons list get usles" << endl;
   return wors -> get_consumer();

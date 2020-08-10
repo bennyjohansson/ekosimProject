@@ -46,6 +46,8 @@ public:
     double get_wage_const();  
     double get_production();
     int get_production_function();
+    double get_production_parameter();
+
     double get_production(Consumer *);
     double get_stock();
     double get_items_for_production();
@@ -69,6 +71,7 @@ public:
     
     void set_capital(double);
     void set_production_function(int);
+    void set_production_parameter(double);
     void set_prod_const_skill(double);
     void set_prod_const_motivation(double);
     void set_wage_const(double);
@@ -142,6 +145,7 @@ private:
     double debts_;
     
     int production_function_;
+    double production_parameter_;
     double prod_const_skill_;
     double prod_const_motivation_;
     double wage_const_;  

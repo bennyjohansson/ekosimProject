@@ -50,6 +50,8 @@ capital_(capital),
 stock_(stock),
 debts_(0),
 invest_(0),
+production_function_(1),
+production_parameter_(0.001),
 prod_const_skill_(p_c_skill),
 prod_const_motivation_(p_c_mot),
 wage_const_(wage_const),
@@ -143,16 +145,17 @@ double Company::get_wage_change_limit() {
 }
 
 
-/*
- * Calls the get_prod() function in functions.cc
- */
-
 
 
 
 int Company::get_production_function() {
     return production_function_;
 }
+
+double Company::get_production_parameter() {
+    return production_parameter_;
+}
+
 
 
 
@@ -168,15 +171,64 @@ double Company::get_production() {
     employees = employees_ -> get_size();
     
     
-    prod =  get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, employees, capacity_);
+    prod =  get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
     
     return prod;
     
 }
 
+// double Company::get_production() {
+    
+//     double skill_sum = 0;
+//     double mot_sum = 0;
+//     double employees = 0;
+//     double prod = 0;
+    
+//     skill_sum = employees_ -> get_skill_sum(); 
+//     mot_sum =employees_ -> get_motivation_sum();
+//     employees = employees_ -> get_size();
+
+//     //Production rates
+//     double rate1 = 0.001; 
+//     double rate2 = 0.000100;
+//     double rate3 = 0.001; 
+//     double rate4 = 0.00000005;  //Funkar bra med 0.000000010;
+   
+//     int prod_function = 1;
+
+//         switch (prod_function) {
+            
+//         case 1:
+//             prod = capacity_*atan((skill_sum*prod_const_skill_ + mot_sum*prod_const_motivation_)*rate1);
+//             break;
+            
+//         case 2:
+//             prod = 2*capacity_*log(skill_sum*prod_const_skill_ + mot_sum*prod_const_motivation_+1);
+//             break;
+            
+//         case 3:
+//             prod = capacity_*atan((skill_sum*prod_const_skill_ + mot_sum*prod_const_motivation_)*rate3*capacity_);
+//             break;
+             
+//         case 4:
+//             prod = capacity_*atan((skill_sum*prod_const_skill_ + mot_sum*prod_const_motivation_)*rate4);
+//             break;    
+        
+            
+//         default:
+//         	cout << "I functions get_prod, no valid production function set" << endl;
+//             prod = 0;
+//             break;
+//     } 
+     
+    
+//     return prod;
+    
+// }
+
 
 /*
- * Calls the get_prod() function in functions.cc
+ * Calls the get_prod () function in functions.cc
  * Don't think this function works very well...
  */
 
@@ -184,7 +236,7 @@ double Company::get_production(Consumer * consumer) {
     
     double skill = consumer -> get_skill();
     double mot = consumer -> get_motivation();
-    double prod = get_prod(skill, skill, mot, mot, 1, capacity_);
+    double prod = get_prod(skill, prod_const_skill_, mot, prod_const_motivation_, capacity_, production_function_, production_parameter_);
     
     return prod;
 } 
@@ -215,7 +267,7 @@ double Company::get_items_for_production() {
     	mot_sum = employees_ -> get_motivation_sum();
     }
     
-    production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, size, capacity_);
+    production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
     
     items = item_cost(production);
     
@@ -223,161 +275,6 @@ double Company::get_items_for_production() {
 }
 
 
-
-
-// double Company::get_investment_cashflow_old(double items, double loans) {
-//     
-//     double interest_rate = 0;
-//     double capacity_incr = 0;
-//     double new_capacity = 0;
-//     double capacity_initial_increase = 0;
-//     double value = 0;
-//     double price_in = 0;
-//     int t = 1;
-//     int size = 0;
-//     double mot_sum = 0;
-//     double skill_sum = 0;
-//     double production = 0;
-//     double price_out = 0;
-//     double loan_cost = 0;
-//     double factor_change = 0;
-//     double sales_value = 0;
-//     double est_wages = 0;
-//     double est_prod_cost = 0;
-//     double zero_limit = 1;
-//     
-//     interest_rate = bank_ -> get_interest();
-//     price_in = market_ -> get_price_in();
-//     price_out = market_ -> get_price_out();
-//     size = employees_ -> get_size();
-//     skill_sum = employees_ -> get_skill_sum();
-//     mot_sum = employees_ -> get_motivation_sum();
-//     
-//     //Capacity and efficiency increase
-//     //cout << "Calling capacity increase i comp investment cashflows" << endl;
-//     capacity_incr = capacity_increase(items, capacity_);
-//     new_capacity = capacity_ + capacity_incr;
-//     factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_);
-//     
-//     
-//         
-//     loan_cost =   bank_ -> get_loan_cost(loans);
-//     
-//     //nedanstående additioner till prod konst skill och mot är tesingar
-//     capacity_initial_increase = capacity_incr;
-//     
-//     
-//     while (new_capacity >= zero_limit && t < 20 && new_capacity > 0.1*capacity_initial_increase) {
-//         
-//         production = get_prod(skill_sum, prod_const_skill_+factor_change, mot_sum, prod_const_motivation_+factor_change, size, new_capacity);
-//         
-//         sales_value = production*price_in;
-//         est_wages = get_estimated_wages(production);
-//         est_prod_cost = item_cost(production)*price_out;
-//         
-//         value += (sales_value - est_prod_cost - est_wages)/(pow((1 + interest_rate), t));
-//         t++;
-//         
-//         new_capacity -= new_capacity*decay_;
-//         //cout << t << " " << "Capacity: " << capacity_ << "New_capacity: " << new_capacity << endl;
-//     }
-//     //cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
-//     value -= loan_cost;
-//     //cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
-//     return value;
-//     
-// }
-
-
-
-
-//double Company::get_investment() {
-//    
-//    double max_items = 0;
-//    double items_temp = 1;
-//    double items = 0;
-//    double cost = 0;
-//    double income = 0;
-//    double price_out = 0;
-//    double value = 0;
-//    double capacity_change = 0;
-//    double loans = 0;
-//    bool increase = true;
-//    
-//    price_out = market_ -> get_price_out();
-//    max_items = market_ -> get_items();
-//    
-//    while(items_temp < max_items && cost < capital_*pbr_) {
-//        
-//        cost = price_out * items_temp;
-
-//        if(cost > capital_*pbr_) {
-//            loans = cost - capital_*pbr_;
-//        }
-
-//        income = get_investment_cashflow(items_temp, loans);
-
-//        if (income - cost > value) {
-//            value = income - cost;
-//            items = items_temp;
-//            increase = true;
-//        }
-//        else {
-//            increase = false;
-//        }
-
-//        items_temp += 10;
-
-//   }
-
-//   return items;
-
-//}
-
-
-
-// double Company::get_estimated_investment(double added_capital) {
-
-//   double max_items = 0;
-//   double items_temp = 1;
-//   double items = 0;
-//   double cost = 0;
-//   double income = 0;
-//   double price_out = 0;
-//   double value = 0;
-//   double capacity_change = 0;
-//   double loans = 0;
-//   bool increase = true;
-
-//   price_out = market_ -> get_price_out();
-//   max_items = market_ -> get_items();
-
-//   while(increase) {
-
-//     cost = price_out * items_temp;
-
-//     if(cost > capital_*pbr_) {
-//       loans = cost - (capital_ + added_capital(1 - wage_constant_))*pbr_;
-//     }
-
-//     income = get_investment_cashflow(items_temp, loans);//items
-//     //cout << "I compannby desired invest, income: " << income << "   cost: " << cost << "  MAx: " << value << endl; 
-//     if (income - cost > value) {
-//       value = income - cost;
-//       items = items_temp;
-//       increase = true;
-//     }
-//     else {
-//       increase = false;
-//     }
-
-//     items_temp += 10;
-
-//   }
-
-//   return items;
-
-// }
 
 
 double Company::get_desired_loans() {
@@ -446,6 +343,10 @@ void Company::set_capital(double capital) {
 
 void Company::set_production_function(int pf) {
     production_function_ = pf;
+}
+
+void Company::set_production_parameter(double pp) {
+    production_parameter_ = pp;
 }
 
 void Company::set_prod_const_skill(double skill) {
@@ -574,13 +475,13 @@ void Company::remove_usless_employees() {
 
     if(employees_) {
         try {
-            Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_);
+            Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_, production_function_, production_parameter_);
             
             while(contribution_removing(bad_empl) > 0.1) {
 
                 remove_employee(bad_empl);
                 
-                bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_);
+                bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_, production_function_, production_parameter_);
                 
 
             }
@@ -621,7 +522,7 @@ double Company::contribution_adding(Consumer * consumer) {
     //  cout << "I company contribution adding"<< endl << "skill och mot" << skill << "  " << mot << "  " << "tabort"<< endl; 
     
     prod_before = get_production();
-    prod_after = get_prod(skill_sum+skill, prod_const_skill_, mot_sum+mot, prod_const_motivation_, size + 1, capacity_);
+    prod_after = get_prod(skill_sum+skill, prod_const_skill_, mot_sum+mot, prod_const_motivation_, capacity_, production_function_, production_parameter_);
     
     
     /*
@@ -673,7 +574,7 @@ double Company::contribution_removing(Consumer * consumer) {
     size = employees_ -> get_size();
     
     prod_before = get_production();
-    prod_after = get_prod(skill_sum - skill, prod_const_skill_, mot_sum - mot, prod_const_motivation_, size - 1, capacity_); 
+    prod_after = get_prod(skill_sum - skill, prod_const_skill_, mot_sum - mot, prod_const_motivation_, capacity_, production_function_, production_parameter_); 
     
     if (size != 0) {
         wage = get_total_wages()/size;
@@ -976,8 +877,8 @@ double Company::get_investment_cashflow(double items, double loans) {
     while (new_capacity >= zero_limit && t < 60 ) { //&& new_capacity > 0.1*capacity_initial_increase t< 20 was initially
         
         
-        production_old = get_prod(skill_sum, pcs, mot_sum, pcm, size, old_capacity);
-        production_new = get_prod(skill_sum, pcs+factor_change, mot_sum, pcm+factor_change, size, new_capacity);
+        production_old = get_prod(skill_sum, pcs, mot_sum, pcm, old_capacity, production_function_, production_parameter_);
+        production_new = get_prod(skill_sum, pcs+factor_change, mot_sum, pcm+factor_change, new_capacity, production_function_, production_parameter_);
         
         sales_value = (production_new - production_old)*price_in;
         est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);

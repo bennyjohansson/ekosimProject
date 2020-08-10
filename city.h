@@ -58,7 +58,7 @@ class City {
       Company * get_company(string name);
       Consumer * get_random_consumer();
       Company * get_random_company();
-      Consumer * get_optimal_consumer(double mot_we, double skill_we);
+      Consumer * get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
       double get_shareToSteal();
       double get_laundry_factor();
       double get_capital();

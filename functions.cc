@@ -12,6 +12,7 @@
 #include "consumer.h"
 #include "market.h"
 #include "clock.h"
+#include "SQLFunctions.h"
 
 using namespace std;
 
@@ -104,38 +105,31 @@ void normalize(double & value) {
 }
 
 double get_prod(double sk_sum, double sk, double mot_sum, 
-                double mot, double employees, double capacity) {
+                double mot, double capacity, int prod_function, double production_parameter) {
     
-
-    double rate1 = 0.00000005;  //Funkar bra med 0.000000010;
-    double rate2 = 0.000100;
-    double rate4 = 0.001; 
-//    double rate1 =0.10;
-//    double rate2 = 0.0500;
-
+    double rate1 = 0.002; 
+    double rate2 = 0.0001;
+    double rate3 = 0.001; 
+   
+    //int prod_function = 1;
 
     double prod = 0;
     
-    int prod_function = 1;
     //cout << "in functins get prod " << capacity << endl;
     switch (prod_function) {
             
         case 1:
-            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate4);
+            prod = capacity*(2/3.1415)*atan((sk_sum*sk + mot_sum*mot)*rate1);
             break;
             
         case 2:
-            prod = 2*capacity*log((rate2*sk_sum*sk) + (rate2*mot_sum*mot)+1);
+            prod = capacity*log((rate2*sk_sum*sk + rate2*mot_sum*mot)*rate2+1);
             break;
             
         case 3:
-            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate1*capacity);
+            prod = capacity*atan((sk_sum*sk + mot_sum*mot)*rate3*capacity);
             break;
-             
-        case 4:
-            prod = capacity*atan(((rate1*sk_sum*sk) + (rate1*mot_sum*mot)));
-            break;    
-        
+                     
             
         default:
         	cout << "I functions get_prod, no valid production function set" << endl;
@@ -147,21 +141,21 @@ double get_prod(double sk_sum, double sk, double mot_sum,
     return prod;
 }
 
-double get_prod(Consumer * consumer, double capacity) {
+double get_prod(Consumer * consumer, double capacity, int prod_function, double production_parameter) {
     
     double skill = consumer -> get_skill();
     double mot = consumer -> get_motivation(); 
     //  cout << "Hej i functions get_prod(Consumer) " << endl;
-    return get_prod(skill, skill, mot, mot, 1, capacity);
-    //THE 150 ABOVE SHOLUD NOT BE; IS THIS IN USE; TESTING
+    return get_prod(skill, skill, mot, mot, capacity, prod_function, production_parameter);
+
 }
 
 double capacity_increase(double items, double capacity) {
     
     double increase = 0;
-    int function_select = 4; //2
+    int capacity_function = 4; //2
     
-    switch (function_select) {
+    switch (capacity_function) {
         case 1:
             increase = 30000/capacity*log(items*50/capacity + 1);
             break;
@@ -199,10 +193,10 @@ double factor_increase(double items, double sk, double mot, double capacity) {
 // Bör inte finnas något tak typ att 1 är max
 //Kan man tänka sig att kostnad för typ 5% ökning är direkt proportionell mot capacity eller behövs någon icke-linjär funktion?
     double f_increase = 0;
-    int function_select = 3;
+    int factor_function = 3;
     
     
-    switch (function_select) {
+    switch (factor_function) {
         case 1:
             f_increase = 2;
             break;

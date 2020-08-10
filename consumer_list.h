@@ -49,8 +49,8 @@ class Consumer_list {
       Element_consumer * get_first_unemployed();
       bool is_consumer(Consumer *);
       Consumer * get_random_consumer();
-      Consumer * get_optimal_consumer(double, double, double);
-      Consumer * get_usless_employee(double, double, double);
+      Consumer * get_optimal_consumer(double, double, double, int, double);
+      Consumer * get_usless_employee(double, double, double, int, double);
       Consumer * get_consumer(string);
 
 

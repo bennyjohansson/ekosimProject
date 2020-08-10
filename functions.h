@@ -18,8 +18,8 @@ double randnorm(double, double);
 double get_norm(double average, double deviation);
 double get_price(double excess);
 double get_price(double, double);
-double get_prod(double, double, double, double, double, double);
-double get_prod(Consumer *, double);
+double get_prod(double, double, double, double, double, int, double);
+double get_prod(Consumer *, double, int, double);
 double get_consumer_demand_deposit(double, double, double);
 double get_consumer_demand_cash(double, double);
 
