@@ -14,6 +14,7 @@
 #include "clock.h"
 #include "SQLfunctions.h"
 
+
 using namespace std;
 
 void randomize(double &average, double deviation) {
