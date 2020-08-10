@@ -519,7 +519,7 @@ void Company::update_from_database(string city_name) {
     stmt.append(name_);
     stmt.append("'");
 
-    cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
+
 
     Records records = select_stmt(stmt, dir);
 
@@ -529,7 +529,15 @@ void Company::update_from_database(string city_name) {
     pbr = std::stod(records[0][11]);
     decay = std::stod(records[0][12]);
     //production_parameter = std::stod(records[0][13]);        
-    production_function = std::stoi(records[0][14]);        
+    production_function = std::stoi(records[0][14]);       
+
+    cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
+    cout << "wage_change_limit: " << wage_change_limit << endl;
+    cout << "pbr: " << pbr << endl;
+    cout << "decay: " << decay << endl;
+    cout << "production_parameter: " << production_parameter << endl;
+    cout << "production_function: " << production_function << endl;
+    cout << "wage_const: " << wage_const << endl; 
 
     wage_const_ = wage_const;
     wage_change_limit_ = wage_change_limit;
