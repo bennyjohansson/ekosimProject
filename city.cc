@@ -1798,7 +1798,7 @@ void City::add_companies_from_database()
         invest = std::stod(records[i][10]);
         pbr = std::stod(records[i][11]);
         decay = std::stod(records[i][12]);
-        production_function = std::stoi(records[i][13]);        
+        production_function = std::stoi(records[i][14]);        
 
         add_company(new Company(name, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
         
