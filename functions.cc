@@ -108,7 +108,7 @@ void normalize(double & value) {
 double get_prod(double sk_sum, double sk, double mot_sum, 
                 double mot, double capacity, int prod_function, double production_parameter) {
     
-    double rate1 = 0.002; 
+    double rate1 = production_parameter; 
     double rate2 = 0.0001;
     double rate3 = 0.001; 
    
