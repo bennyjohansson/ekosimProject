@@ -14,7 +14,6 @@ int initiateDB();
 int initiateCityDB(string city_name);
 int initiateWorldDB(string world_name);
 
-
 static int createDB(const char* s);
 static int createParameterTable(const char* s);
 static int createDataTable(const char* s);
