@@ -127,7 +127,7 @@ int main() {
 		
 		cout << endl << "UPDATING AND ADDING COMPETITION & CONSUMERS" << endl;
     	cout << 		"------------------------------" << endl;
-		//bennyworld.update_companies_from_database();
+		bennyworld.update_companies_from_database();
 
 		// if(current_cycle == 20) { 
 			
