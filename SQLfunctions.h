@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <vector>
 
+
 using namespace std;
 using Record = std::vector<std::string>;
 using Records = std::vector<Record>;
