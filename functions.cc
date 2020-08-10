@@ -12,7 +12,7 @@
 #include "consumer.h"
 #include "market.h"
 #include "clock.h"
-#include "SQLFunctions.h"
+#include "SQLfunctions.h"
 
 using namespace std;
 
