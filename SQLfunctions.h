@@ -27,7 +27,7 @@ static int createWorldTable(const char* s);
 
 int insertMoneyData(std::vector<int> money, string); //
 int insertTimeData(std::vector<double> timeData, string); //
-int insertWorldData(string world_name, string city_name, string email, int created);
+int insertWorldData(string world_name, string city_name, int consumers, string email, int created);
 double getDatabaseParameter(string, string);
 
 static int updateData(const char* s);

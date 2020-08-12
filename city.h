@@ -67,6 +67,7 @@ class City {
       int get_no_years_laundry();
       int get_time_to_steal();
       string get_name();
+      int get_no_consumers();
       
       /*
        * Change-functions

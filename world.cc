@@ -25,10 +25,12 @@ void World::add_city(City * city) {
 void World::add_city(string city_name, string email) {
 
 	City * myCity = new City(city_name, clock_);
+	int size = 0;
+	size = myCity -> get_no_consumers();
 	//string email = "myEmail@gmail.com";
 	//Initiating database
 	initiateCityDB(city_name);
-	insertWorldData(name_, city_name, email, 1);
+	insertWorldData(name_, city_name, size, email,  1);
     
     /*
    	* Creating random consumers. See file functions.cc for settings about the consumers.
@@ -83,9 +85,9 @@ void World::initiate_city(string city_name) {
 
     City * myCity;
 	string email = "johansson.benny@gmail.com";
+	int no_consumers = 3000;
+	double share_capital_owners = 0.1;
 	
-	//Adding default city to world db
-	insertWorldData(name_, city_name, email, 1);
 
     
     myCity = cities_ -> get_city(city_name);
@@ -93,14 +95,17 @@ void World::initiate_city(string city_name) {
     /*
    	* Creating random consumers. See file functions.cc for settings about the consumers.
    	*/
-	myCity -> add_random_consumers(3000);
+	myCity -> add_random_consumers(no_consumers);
   	
   	/*
    	* Adding capital owners
    	*/
-  	myCity -> add_capital_owners(0.1);
+  	myCity -> add_capital_owners(share_capital_owners);
 
 	myCity -> add_companies_from_database();
+
+	//Adding default city to world db
+	insertWorldData(name_, city_name, no_consumers, email, 1);
 
 }
 

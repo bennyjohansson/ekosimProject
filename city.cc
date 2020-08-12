@@ -375,6 +375,11 @@ string City::get_name()
     return name_;
 }
 
+int City::get_no_consumers()
+{
+    return consumers_ -> get_size();;
+}
+
 /*
  * Change-functions
  */
