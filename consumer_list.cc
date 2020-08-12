@@ -337,10 +337,13 @@ int Consumer_list::get_trustworthy() {
 }
 
 Consumer * Consumer_list::get_random_consumer() {
-  int nr = (rand()%size_ + 1);
+  int nr = (rand()%size_);
   Element_consumer * p = list_;
 
+  cout << "random nr: " << nr << endl;
+
   for(int i = 0; i < nr; i++) {
+    cout << i << endl;
     p = p -> next_;
   }
   
