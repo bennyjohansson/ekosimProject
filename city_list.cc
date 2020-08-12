@@ -97,6 +97,8 @@ bool City_list::update_employees() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_employees();
         }
     }
@@ -113,7 +115,7 @@ bool City_list::run_production_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
-            cout << p-> get_city() -> get_name() << endl;
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_employees();
             p -> get_city() -> negotiate_market_price();
             p -> get_city() -> produce();
@@ -138,6 +140,7 @@ bool City_list::run_sales_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_companies();
             p -> get_city() -> save_data();
             p -> get_city() -> sell_to_market();
@@ -162,6 +165,7 @@ bool City_list::run_investment_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_interest_parameters();
             p -> get_city() -> update_interest_rate();
             p -> get_city() -> invest(true);
@@ -186,6 +190,7 @@ bool City_list::run_banking_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> consumers_bank_business();
             p -> get_city() -> company_pay_interest();
             p -> get_city() -> company_repay_to_bank();
@@ -207,6 +212,7 @@ bool City_list::run_dividend_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> company_pay_dividends();
             p -> get_city() -> pay_transfers();
         }
@@ -226,6 +232,7 @@ bool City_list::run_save_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> save_money_data();
         }
     }
@@ -245,6 +252,7 @@ bool City_list::run_adjust_money_and_consumer_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> adjust_money();
             p -> get_city() -> update_consumer_list();
         }
@@ -268,6 +276,7 @@ bool City_list::update_companies_from_database() {
 
     if(list_) {
         for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_companies_from_database();
         }
     }
