@@ -214,6 +214,7 @@ void World::printWorldDB()
 
     string world_name = "";
 	string email = "";
+	int no_consumers = 0;
 	int created = 0;
 
     
@@ -225,11 +226,12 @@ void World::printWorldDB()
     for (int i = 0; i < records.size(); i++) {
 
         world_name = records[i][1];
-        email = records[i][2];
-		created = std::stoi(records[i][3]);
+		no_consumers = records[i][2];
+        email = records[i][3];
+		created = std::stoi(records[i][4]);
 
         
-        cout  << "City: " << world_name << " with email: " << email << " created status: " << created << endl;
+        cout  << "City: " << world_name << " with " << no_consumers << " consumers " << "and email: " << email << " created status: " << created << endl;
         
     }
 
