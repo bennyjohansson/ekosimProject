@@ -532,12 +532,12 @@ void Company::update_from_database(string city_name) {
     production_function = std::stoi(records[0][14]);       
 
     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
-    cout << "wage_change_limit: " << wage_change_limit << endl;
-    cout << "pbr: " << pbr << endl;
-    cout << "decay: " << decay << endl;
-    cout << "production_parameter: " << production_parameter << endl;
-    cout << "production_function: " << production_function << endl;
-    cout << "wage_const: " << wage_const << endl; 
+    cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
+    cout << "pbr: " << pbr << " was: " << pbr_ << endl;
+    cout << "decay: " << decay << " was: " << decay_ << endl;
+    cout << "production_parameter: " << production_parameter << " was: " << production_parameter_ << endl;
+    cout << "production_function: " << production_function << " was: " << production_function_ << endl;
+    cout << "wage_const: " << wage_const << " was: " << wage_const_ << endl;
 
     wage_const_ = wage_const;
     wage_change_limit_ = wage_change_limit;
