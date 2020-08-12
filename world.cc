@@ -226,7 +226,7 @@ void World::printWorldDB()
     for (int i = 0; i < records.size(); i++) {
 
         world_name = records[i][1];
-		no_consumers = records[i][2];
+		no_consumers = std::stoi(records[i][2]);
         email = records[i][3];
 		created = std::stoi(records[i][4]);
 
