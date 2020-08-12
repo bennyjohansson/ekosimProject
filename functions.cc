@@ -156,7 +156,7 @@ double capacity_increase(double items, double capacity) {
     double increase = 0;
     int capacity_function = 4; //2
 
-    double parameter4_amount = 300;
+    double parameter4_amount = 3000;
     double parameter4_rate = 0.001; //0.001 works fine per 2020-08-12
     
     switch (capacity_function) {
