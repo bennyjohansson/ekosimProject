@@ -1285,7 +1285,7 @@ void City::adjust_money()
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.5;
+    double scale_factor = 0.7;
 
     double MAX_CHANGE_FACTOR = 0.6;
 
