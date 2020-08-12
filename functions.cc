@@ -157,7 +157,7 @@ double capacity_increase(double items, double capacity) {
     int capacity_function = 4; //2
 
     double factor4_amount = 3000;
-    double factor4_rate = 0.002; //0.001 works fine per 2020-08-12
+    double factor4_rate = 0.005; //0.001 works fine per 2020-08-12
     
     switch (capacity_function) {
         case 1:
