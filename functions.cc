@@ -156,8 +156,8 @@ double capacity_increase(double items, double capacity) {
     double increase = 0;
     int capacity_function = 4; //2
 
-    double factor4_amount = 3000;
-    double factor4_rate = 0.005; //0.001 works fine per 2020-08-12
+    double parameter4_amount = 3500;
+    double parameter4_rate = 0.01; //0.001 works fine per 2020-08-12
     
     switch (capacity_function) {
         case 1:
@@ -176,7 +176,7 @@ double capacity_increase(double items, double capacity) {
             
         case 4:
         //0.01 ger sjunkande GDP och 0.05 ökande 
-            increase = factor4_amount*log(factor4_rate*items + 1);
+            increase = parameter4_amount*log(parameter4_rate*items + 1);
             break;
             
             
@@ -198,6 +198,9 @@ double factor_increase(double items, double sk, double mot, double capacity) {
 //Kan man tänka sig att kostnad för typ 5% ökning är direkt proportionell mot capacity eller behövs någon icke-linjär funktion?
     double f_increase = 0;
     int factor_function = 3;
+
+    double parameter3_rate = 0.5; //0.001 works fine per 2020-08-12
+
     
     
     switch (factor_function) {
@@ -212,7 +215,7 @@ double factor_increase(double items, double sk, double mot, double capacity) {
             
         case 3:
         //Used 0.025 which was good
-            f_increase = 0.25*items/capacity;
+            f_increase = parameter3_rate*items/capacity;
             break;     
             
         default:
