@@ -340,10 +340,10 @@ Consumer * Consumer_list::get_random_consumer() {
   int nr = (rand()%size_);
   Element_consumer * p = list_;
 
-  cout << "random nr: " << nr << endl;
+  //cout << "random nr: " << nr << endl;
 
   for(int i = 0; i < nr; i++) {
-    cout << i << endl;
+    //cout << i << endl;
     p = p -> next_;
   }
   
