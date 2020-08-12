@@ -631,7 +631,7 @@ double Company::contribution_removing(Consumer * consumer) {
     
     if (size != 0) {
         wage = get_total_wages()/size;
-        contribution = -(prod_after - prod_before)*price + (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
+        contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
 
         //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
         //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
