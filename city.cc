@@ -1286,6 +1286,7 @@ void City::adjust_money()
     double inflation = 0;
     double item_inflation = 0;
     double scale_factor = 0.7;
+    double target_inflation = 0.02;
 
     double MAX_CHANGE_FACTOR = 0.6;
 
@@ -1384,7 +1385,7 @@ void City::adjust_money()
         break;
     }
 
-    money_change_factor = -inflation;
+    money_change_factor = -inflation + target_inflation;
 
     if (money_change_factor > MAX_CHANGE_FACTOR)
     {
