@@ -176,7 +176,7 @@ double capacity_increase(double items, double capacity) {
             
         case 4:
         //0.01 ger sjunkande GDP och 0.05 ökande 
-            increase = 2500*log(0.001*items + 1);
+            increase = factor4_amount*log(factor4_rate*items + 1);
             break;
             
             
