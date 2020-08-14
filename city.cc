@@ -978,6 +978,7 @@ void City::update_employees()
     double mot = 0;
     int prod_fcn = 1;
     double prod_param = 0.001;
+    int no_consumers_hired = 0;
     Consumer *opt = 0;
 
     /*
@@ -1001,7 +1002,9 @@ void City::update_employees()
 
     while (company_list_->update_employees2(opt = get_optimal_consumer(mot, skill, prod_fcn, prod_param)))
     {
+        no_consumers_hired++;
     }
+    cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 }
 
 void City::tick()

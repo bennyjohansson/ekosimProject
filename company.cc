@@ -474,6 +474,8 @@ bool Company::update_employees(Consumer * opt) {
 
 void Company::remove_usless_employees() {
 
+    int no_removed_employees = 0;
+
     if(employees_) {
         try {
             Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_, production_function_, production_parameter_);
@@ -483,6 +485,7 @@ void Company::remove_usless_employees() {
                 remove_employee(bad_empl);
                 
                 bad_empl = employees_ -> get_usless_employee(prod_const_skill_,  prod_const_motivation_, capacity_, production_function_, production_parameter_);
+                no_removed_employees++;
                 
 
             }
@@ -494,6 +497,7 @@ void Company::remove_usless_employees() {
     else {
         cout << "I Company remove usless employees, no employees" << endl;
     }
+    cout << "I Company " << name_ << " remove usless employees: " << no_removed_employees << " removed" << endl;
 }
 
 void Company::update_from_database(string city_name) {
@@ -562,6 +566,9 @@ double Company::contribution_adding(Consumer * consumer) {
     double price_out = 0;
     double wage = 0;
     double contribution = 0;
+    double delta_sales = 0;
+    double material_cost_delta = 0;
+
     
     
     skill = consumer -> get_skill();
@@ -596,8 +603,14 @@ double Company::contribution_adding(Consumer * consumer) {
     theIterator = wages_.begin();
     wage = *theIterator;
     
-    contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
-    
+    //contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
+
+    delta_sales = (prod_after - prod_before)*price;
+    material_cost_delta = (item_cost(prod_after) - item_cost(prod_before))*price_out;
+    contribution = delta_sales - wage - material_cost_delta;
+
+    //cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
+
     //cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
     
     return contribution;
@@ -616,6 +629,8 @@ double Company::contribution_removing(Consumer * consumer) {
     double price_out = 0;
     double wage = 0;
     double contribution = 0;
+    double delta_sales = 0;
+    double material_cost_delta = 0;
     
     
     skill = consumer -> get_skill();
@@ -631,10 +646,13 @@ double Company::contribution_removing(Consumer * consumer) {
     
     if (size != 0) {
         wage = get_total_wages()/size;
-        contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
 
-        //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
-        //cout << "I comp contrib removing"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
+        delta_sales = (prod_after - prod_before)*price;
+        material_cost_delta = (item_cost(prod_after) - item_cost(prod_before))*price_out;
+        //contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
+        contribution = delta_sales + wage - material_cost_delta;
+
+        //cout << "I comp contrib removing for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
     }
     else {
         contribution = 0;
