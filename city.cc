@@ -1071,7 +1071,7 @@ void City::save_data()
     time_data.push_back((double)item);
     time_data.push_back((double)demand);
     time_data.push_back((double)price_out);
-    time_data.push_back((double)employed);
+    time_data.push_back((double)unemployment);
     time_data.push_back((double)wages);
     time_data.push_back((double)interest_rate);
     time_data.push_back((double)investments);
