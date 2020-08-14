@@ -1027,9 +1027,9 @@ void City::save_data()
     double liquidity_reserve_ratio = 0;
     double bank_dividend_ratio = 0;
     double unemployment = 0;
-    int employed = 0;
-    int unemployed = 0;
-    int size = 0;
+    double employed = 0;
+    double unemployed = 0;
+    double size = 0;
     double wages = 0;
     double investments = 0;
     list<double>::iterator GDP;
@@ -1063,6 +1063,7 @@ void City::save_data()
         growth = 0;
     }
 
+    cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployed/size << " size: " << size << endl;
     //file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
     //<< employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
 
