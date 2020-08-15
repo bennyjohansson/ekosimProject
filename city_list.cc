@@ -253,7 +253,7 @@ bool City_list::run_adjust_money_and_consumer_cycle() {
     if(list_) {
         for(p = list_; p; p = p -> next_) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> adjust_money();
+            p -> get_city() -> adjust_money(); 
             p -> get_city() -> update_consumer_list();
         }
     }
