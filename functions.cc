@@ -158,6 +158,8 @@ double capacity_increase(double items, double capacity) {
 
     double parameter4_amount = 3000;
     double parameter4_rate = 0.001; //0.001 works fine per 2020-08-12
+
+    double parameter3_rate = 0.2;
     
     switch (capacity_function) {
         case 1:
@@ -171,7 +173,7 @@ double capacity_increase(double items, double capacity) {
             
         case 3:
         //Suitable when using factor increase
-            increase = 0.6*items; //was 0.6
+            increase = parameter3_rate*items; //was 0.6
             break;
             
         case 4:
