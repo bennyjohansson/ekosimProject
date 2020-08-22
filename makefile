@@ -3,7 +3,7 @@ CCC = c++ #clang++ #g++ #g++
 #OBJECTS_O = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o
 
 CCFLAGS = -g -Wall -v   -lsqlite3 -std=c++17 -lstdc++ #-I/usr/local/include -I/usr/local/opt/sqlite/include -L/usr/local/opt/sqlite/lib -stdlib=libc++ 
-OBJECTS_O = world.o city.o consumer.o city_list.o consumer_list.o functions.o company.o company_list.o element_city.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
+OBJECTS_O = world.o city.o consumer.o city_list.o consumer_list.o functions.o company.o company_list.o element_city.o element_company.o element_consumer.o market.o clock.o bank.o SQLfunctions.o #init_company.o 
 #OBJECTS_CC = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
 
 main : main.cc $(OBJECTS_O)
@@ -54,8 +54,8 @@ clock.o : clock.cc
 bank.o : bank.cc
 	$(CCC) $(CCFLAGS) -c bank.cc
 
-init_company.o : init_company.cc
-	$(CCC) $(CCFLAGS) -c init_company.cc
+# init_company.o : init_company.cc
+# 	$(CCC) $(CCFLAGS) -c init_company.cc
 	
 SQLfunctions.o : SQLfunctions.cc
 	$(CCC) $(CCFLAGS) -c SQLfunctions.cc

@@ -151,19 +151,20 @@ double get_prod(Consumer * consumer, double capacity, int prod_function, double 
 
 }
 
-double capacity_increase(double items, double capacity) {
+double capacity_increase(double items, double capacity, double CapIncreaseParam_1, double CapIncreaseRate_1) {
     
     double increase = 0;
     int capacity_function = 4; //2
 
-    double parameter4_amount = 8000;
-    double parameter4_rate = 0.0001; //0.001 works fine per 2020-08-12
+    double parameter1_amount = 8000;
+    double parameter1_rate = 0.0001; //0.001 works fine per 2020-08-12
 
     double parameter3_rate = 0.2;
     
     switch (capacity_function) {
         case 1:
-            increase = 30000/capacity*log(items*50/capacity + 1);
+            increase = CapIncreaseParam_1*log(CapIncreaseRate_1*items + 1);
+
             break;
             
         case 2:
@@ -178,7 +179,8 @@ double capacity_increase(double items, double capacity) {
             
         case 4:
         //0.01 ger sjunkande GDP och 0.05 ökande 
-            increase = parameter4_amount*log(parameter4_rate*items + 1);
+            increase = 30000/capacity*log(items*50/capacity + 1);
+
             break;
             
             
@@ -191,23 +193,23 @@ double capacity_increase(double items, double capacity) {
     return increase;
 }
 
-double factor_increase(double items, double sk, double mot, double capacity) {
+double factor_increase(double items, double sk, double mot, double capacity, double f_increase) {
 
  //Function not completed
  //Best idea is probably to call both capacity increase and factor increase from company etc. 
 //Bör sannolikt vara korrelerad med capacity - dyrare att effektivisera något stort än något litet
 // Bör inte finnas något tak typ att 1 är max
 //Kan man tänka sig att kostnad för typ 5% ökning är direkt proportionell mot capacity eller behövs någon icke-linjär funktion?
-    double f_increase = 0;
-    int factor_function = 3;
+    //double f_increase = 0;
+    int factor_function = 1;
 
-    double parameter3_rate = 0.002; //0.001 works fine per 2020-08-12
+    double parameter1_rate = 0.002; //0.001 works fine per 2020-08-12
 
     
     
     switch (factor_function) {
         case 1:
-            f_increase = 2;
+            f_increase = parameter1_rate*items/capacity;
             break;
             
         case 2:
@@ -217,7 +219,7 @@ double factor_increase(double items, double sk, double mot, double capacity) {
             
         case 3:
         //Used 0.025 which was good
-            f_increase = parameter3_rate*items/capacity;
+            f_increase = parameter1_rate*items/capacity;
             break;     
             
         default:

@@ -22,7 +22,7 @@ public:
     Company();
     Company(string name);
     Company(string, Market*, Clock*);
-    Company(string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
+    Company(string, string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
     // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
     
     /*
@@ -59,7 +59,7 @@ public:
     double get_total_wages();
     double get_estimated_wages(double);
     double get_wage_change_limit();
-    double get_investment_cashflow(double, double);
+    double get_investment_cashflow(double, double, double, double, double);
     int get_desired_investment();
 
     double get_desired_loans();
@@ -139,6 +139,7 @@ public:
     
 private:
     string name_;  
+    string city_name_;
     double capital_;
     int stock_;
     double capacity_;

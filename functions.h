@@ -34,8 +34,8 @@ string getTimeStr();
 //void load_launder_parameters();
 
 
-double capacity_increase(double, double);
-double factor_increase(double, double, double, double);
+double capacity_increase(double, double, double, double);
+double factor_increase(double, double, double, double, double);
 double item_cost(double);
 
 Consumer * random_consumer(Market *, Bank *, Clock *);

@@ -626,7 +626,7 @@ void City::load_company(string nameactual)
     //pbr = 0.3;
     wage_const = 0.7;
     cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
-    add_company(new Company(nameactual, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
+    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
 }
 
 void City::load_launder_parameters()
@@ -1810,7 +1810,7 @@ void City::add_companies_from_database()
         decay = std::stod(records[i][12]);
         production_function = std::stoi(records[i][14]);        
 
-        add_company(new Company(name, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
+        add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
         
         cout << endl << "Added company: " << name << endl << "Capital: " << capital << endl << "Capacity: " << capacity << endl;
         
