@@ -193,7 +193,7 @@ double capacity_increase(double items, double capacity, double CapIncreaseParam_
     return increase;
 }
 
-double factor_increase(double items, double sk, double mot, double capacity, double f_increase) {
+double factor_increase(double items, double sk, double mot, double capacity, double parameter1_rate) {
 
  //Function not completed
  //Best idea is probably to call both capacity increase and factor increase from company etc. 
@@ -202,8 +202,8 @@ double factor_increase(double items, double sk, double mot, double capacity, dou
 //Kan man tänka sig att kostnad för typ 5% ökning är direkt proportionell mot capacity eller behövs någon icke-linjär funktion?
     //double f_increase = 0;
     int factor_function = 1;
-
-    double parameter1_rate = 0.002; //0.001 works fine per 2020-08-12
+    double f_increase = 0;
+    //double parameter1_rate = 0.002; //0.001 works fine per 2020-08-12
 
     
     
