@@ -154,7 +154,7 @@ double get_prod(Consumer * consumer, double capacity, int prod_function, double 
 double capacity_increase(double items, double capacity, double CapIncreaseParam_1, double CapIncreaseRate_1) {
     
     double increase = 0;
-    int capacity_function = 4; //2
+    int capacity_function = 1; //2
 
     double parameter1_amount = 8000;
     double parameter1_rate = 0.0001; //0.001 works fine per 2020-08-12
