@@ -458,7 +458,7 @@ void Company::update_company() {
 
 bool Company::update_employees(Consumer * opt) {
     //  cout << "I company update employees:v " << contribution_adding(opt) << endl;    
-    if(contribution_adding(opt) > 1) {
+    if(contribution_adding(opt) > 0.01) {
         try {
             add_employee(opt);
         }
@@ -481,7 +481,7 @@ void Company::remove_usless_employees() {
         try {
             Consumer * bad_empl = employees_ -> get_usless_employee(prod_const_skill_, prod_const_motivation_, capacity_, production_function_, production_parameter_);
             
-            while(contribution_removing(bad_empl) > 0.1) {
+            while(contribution_removing(bad_empl) > 0.001) {
 
                 remove_employee(bad_empl);
                 
@@ -536,14 +536,14 @@ void Company::update_from_database(string city_name) {
     //production_parameter = std::stod(records[0][13]);        
     production_function = std::stoi(records[0][14]);       
 
-    cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
+/*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
     cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
     cout << "pbr: " << pbr << " was: " << pbr_ << endl;
     cout << "decay: " << decay << " was: " << decay_ << endl;
     cout << "production_parameter: " << production_parameter << " was: " << production_parameter_ << endl;
     cout << "production_function: " << production_function << " was: " << production_function_ << endl;
     cout << "wage_const: " << wage_const << " was: " << wage_const_ << endl;
-
+ */
     wage_const_ = wage_const;
     wage_change_limit_ = wage_change_limit;
     pbr_ = pbr;
