@@ -47,6 +47,8 @@ public:
     double get_production();
     int get_production_function();
     double get_production_parameter();
+    int get_no_employees();
+
 
     double get_production(Consumer *);
     double get_stock();
@@ -56,6 +58,7 @@ public:
     double get_debts();
     double get_capacity();
     double get_pbr();
+    double get_average_wage();
     double get_total_wages();
     double get_estimated_wages(double);
     double get_wage_change_limit();

@@ -46,6 +46,7 @@ class Company_list {
   double get_planned_production_sum();
   Company * get_company(string name); 
   Element_company * get_random_company();
+  Company * get_next_best_salary_company(double);
 
 
   /*
@@ -63,6 +64,8 @@ class Company_list {
   bool update_employees(Consumer *, string);
   bool update_employees(Consumer *);
   bool update_employees2(Consumer *);
+  bool update_employees3(Consumer *);
+
   void remove_usless_employees();
   void update_companies_from_database(string city_name);
 

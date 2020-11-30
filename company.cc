@@ -158,6 +158,9 @@ double Company::get_production_parameter() {
     return production_parameter_;
 }
 
+int Company::get_no_employees() {
+    return employees_ -> get_size();
+}
 
 
 
@@ -1000,6 +1003,19 @@ double Company::get_investment_cashflow(double items, double loans, double FacIn
     //cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
     return value;
     
+}
+
+double Company::get_average_wage() {
+
+    double average_wage = 0;
+
+    list<double>::iterator theIterator;
+    theIterator = wages_.begin();
+
+    average_wage = *theIterator;
+
+    return average_wage;
+
 }
 
 double Company::get_total_wages() {

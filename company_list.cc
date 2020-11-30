@@ -93,6 +93,39 @@ Element_company * Company_list::get_random_company() {
     return p;
 }
 
+//Returns the company with highest average wage lower than "limit". 
+Company * Company_list::get_next_best_salary_company(double limit) {
+
+
+    Element_company * p;
+    Element_company * r;
+    double current_wage = 0;
+    double highest_wage = 0;
+    
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            current_wage = p ->get_company() -> get_average_wage();
+
+            if(current_wage == 0) {
+                return get_random_company() -> get_company();
+            }
+
+            cout << "I company list get_next_best, current_wage: " << current_wage << " highest wage: " << highest_wage << " limit " << limit << " for " << p-> get_company() -> get_name() << endl;
+            if (current_wage < limit && current_wage > highest_wage) {
+                highest_wage = current_wage;
+                r = p;
+            }
+        }
+        if(highest_wage == 0) {
+            throw no_return_error("Cant find any company");
+        }
+    }
+    else {
+        throw no_return_error("no list"); 
+    } 
+    return r -> get_company() ;
+}
+
 Company * Company_list::get_company(string name) {
     Element_company * p;
     
@@ -270,7 +303,7 @@ bool Company_list::update_employees(Consumer * opt) {
     
 }
 
-bool Company_list::update_employees2(Consumer * opt) {
+bool Company_list::update_employees3(Consumer * opt) {
     Element_company * p = 0;
     Element_company * r = 0;
     Element_company * q = 0;  
@@ -303,6 +336,32 @@ bool Company_list::update_employees2(Consumer * opt) {
     
     //No one wants to hire opt, done. 
     return false;
+}
+
+bool Company_list::update_employees2(Consumer * opt) {
+    Company * p = 0;
+    bool hired = false;
+    double best_wage = 1000000;  
+    
+    
+    for(int i = 1; i < size_; i++){
+        p = get_next_best_salary_company(best_wage);
+        best_wage = p-> get_average_wage();
+        hired = p-> update_employees(opt);
+
+        //If hired, return true and get new optimal consumer
+        if(hired) {
+            cout << "Company " << p -> get_name() << " hired" << endl;
+            return hired;
+        }
+        else {
+            cout << "Company " << p -> get_name() << " did not hire" << endl;
+        }
+    }    
+
+    //No one wants to hire opt, done. 
+    return false;
+
 }
 
 void Company_list::remove_usless_employees() {
