@@ -440,16 +440,21 @@ void Company::change_wage_change_limit(double ch) {
 
 void Company::add_employee(Consumer * consumer) {
     
-    if(!(consumer -> get_employment_status())) {
+    if(!(consumer -> get_employer() == name_)) {
         employees_-> add_first(consumer);
         consumer -> set_employment_status(true);
         consumer -> set_employer(name_);
+    }
+    else {
+        cout << "Consumer " << consumer -> get_name() << " already employed by" << name_ << endl;
     }
 }
 
 void Company::remove_employee(Consumer * consumer) {
     
     consumer -> set_income(0);
+    consumer -> set_employment_status(false);
+    consumer -> set_employer("");
     employees_ -> remove_consumer(consumer, capacity_);
     
 }  
@@ -469,7 +474,9 @@ bool Company::update_employees(Consumer * opt) {
                 add_employee(opt);
             }
             else {
-                cout << opt -> get_name() << " already employed by " << name_ << endl;
+                cout << opt -> get_name() << " already employed by, SOME BUG HERE IN COMPANY UPDATE EMPLOYEES " << name_ << endl;
+                //THIS SHOULD NOT BE NEEDED!
+                //opt -> set_employment_status(true);
             }
         }
         catch (std:: exception a) {
