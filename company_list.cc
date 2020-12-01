@@ -357,7 +357,6 @@ bool Company_list::update_employees2(Consumer * opt) {
         else {
             cout << "Company " << p -> get_name() << " did not hire " << opt -> get_name() << endl;
         }
-        cout << "I company list upd empl2, company no: " << i << endl;
     }    
 
     //No one wants to hire opt, done. 
