@@ -355,7 +355,7 @@ bool Company_list::update_employees2(Consumer * opt) {
             return hired;
         }
         else {
-            cout << "Company " << p -> get_name() << " did not hire" << endl;
+            cout << "Company " << p -> get_name() << " did not hire " << opt -> get_name() << endl;
         }
     }    
 

@@ -1006,8 +1006,8 @@ void City::update_employees()
     }
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
-    //Test
-    if(clock_ -> get_time() == 30 or clock_ -> get_time() == 60) {
+    //Employees looking for new jobs every 10(?) years
+    if((clock_ -> get_time())%10 == 0) {
         Element_consumer * p;
 
         p = consumers_ -> get_first_consumer();
