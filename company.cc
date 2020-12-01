@@ -443,6 +443,7 @@ void Company::add_employee(Consumer * consumer) {
     if(!(consumer -> get_employment_status())) {
         employees_-> add_first(consumer);
         consumer -> set_employment_status(true);
+        consumer -> set_employer(name_);
     }
 }
 
@@ -463,6 +464,7 @@ bool Company::update_employees(Consumer * opt) {
     //  cout << "I company update employees:v " << contribution_adding(opt) << endl;    
     if(contribution_adding(opt) > 0.01) {
         try {
+            cout << "Company " << name_ << " hired from " << opt-> get_employer() << endl;
             add_employee(opt);
         }
         catch (std:: exception a) {

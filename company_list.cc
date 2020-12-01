@@ -351,7 +351,7 @@ bool Company_list::update_employees2(Consumer * opt) {
 
         //If hired, return true and get new optimal consumer
         if(hired) {
-            cout << "Company " << p -> get_name() << " hired" << endl;
+            //cout << "Company " << p -> get_name() << " hired" << endl;
             return hired;
         }
         else {

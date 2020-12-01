@@ -51,7 +51,8 @@ employed_(false),
 trustworthy_(true),
 bank_(b),
 clock_(c),
-market_(m)
+market_(m), 
+employer_ ("")
 
 {}
 
@@ -172,6 +173,10 @@ string Consumer::get_name() {
 	return name_;
 }
 
+string Consumer::get_employer() {
+	return employer_;
+}
+
 double Consumer::get_time() {
 
 	return clock_ -> get_time();
@@ -279,6 +284,10 @@ void Consumer::set_debts(double debts) {
 
 void Consumer::set_name(string name) {
     name_ = name;
+}
+
+void Consumer::set_employer(string employer) {
+    employer_ = employer;
 }
 
 void Consumer::set_trustworthy(bool tw) {

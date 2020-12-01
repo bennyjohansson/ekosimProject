@@ -52,6 +52,7 @@ class Consumer {
       bool get_employment_status();
       bool get_trustworthy();
       string get_name();
+      string get_employer();
       /*
        *Functions to set consumer parameters
        */
@@ -66,6 +67,7 @@ class Consumer {
       void set_loans(double);
       void set_debts(double);
       void set_name(string);
+      void set_employer(string);
       void set_trustworthy(bool);
       /*
        *Functions to change consumer parameters
@@ -122,6 +124,7 @@ class Consumer {
     	double income_;
     	bool employed_;
       bool trustworthy_;
+      string employer_;
       
        
       Bank * bank_;

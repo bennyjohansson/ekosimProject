@@ -47,6 +47,8 @@ class Consumer_list {
       int get_trustworthy();
       
       Element_consumer * get_first_unemployed();
+      Element_consumer * get_first_consumer();
+      
       bool is_consumer(Consumer *);
       Consumer * get_random_consumer();
       Consumer * get_optimal_consumer(double, double, double, int, double);

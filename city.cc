@@ -1005,6 +1005,23 @@ void City::update_employees()
         no_consumers_hired++;
     }
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
+
+    //Test
+    if(clock_ -> get_time() == 30 or clock_ -> get_time() == 60) {
+        Element_consumer * p;
+
+        p = consumers_ -> get_first_consumer();
+
+        if(p){
+            for(p; p -> next_; p = p -> next_) {
+
+                company_list_ -> update_employees2(p -> get_consumer());
+
+            }
+
+        }
+
+    }
 }
 
 void City::tick()
