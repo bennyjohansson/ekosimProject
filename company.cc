@@ -464,7 +464,7 @@ bool Company::update_employees(Consumer * opt) {
     //  cout << "I company update employees:v " << contribution_adding(opt) << endl;    
     if(contribution_adding(opt) > 0.01) {
         try {
-            cout << "Company " << name_ << " hired from " << opt-> get_employer() << endl;
+            cout << "Company " << name_ << " hired " << opt -> get_name() <<  " from " << opt-> get_employer() << endl;
             add_employee(opt);
         }
         catch (std:: exception a) {
