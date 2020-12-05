@@ -631,10 +631,11 @@ void Company::save_time_data_to_database(string city_name) {
     company_data.push_back((double)wage_const_);
     company_data.push_back((double)wage_change_limit_);
     company_data.push_back((double)invest_);
+    company_data.push_back((double)pbr_);
     company_data.push_back((double)decay_);
     company_data.push_back((double)production_parameter_);
     company_data.push_back((double)production_function_);
-    company_data.push_back((double)prod_const_motivation_);
+    //company_data.push_back((double)prod_const_motivation_);
 
 
     insertCompanyTimeData(company_data, city_name, name_);
