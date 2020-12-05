@@ -580,15 +580,16 @@ bool Company::update_employees(Consumer *opt)
         stmt.append("'");
         stmt.append(name_);
         stmt.append("'");
+        stmt.append(" AND TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM COMPANY_TABLE)");
 
         Records records = select_stmt(stmt, dir);
 
-        wage_const = std::stod(records[0][8]);
-        wage_change_limit = std::stod(records[0][9]);
-        pbr = std::stod(records[0][11]);
-        decay = std::stod(records[0][12]);
+        wage_const = std::stod(records[0][9]);
+        wage_change_limit = std::stod(records[0][10]);
+        pbr = std::stod(records[0][12]);
+        decay = std::stod(records[0][13]);
         //production_parameter = std::stod(records[0][13]);
-        production_function = std::stoi(records[0][14]);
+        production_function = std::stoi(records[0][15]);
 
         /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
     cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
