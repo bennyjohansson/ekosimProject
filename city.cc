@@ -1814,19 +1814,19 @@ void City::add_companies_from_database()
 
     for (int i = 0; i < records.size(); i++) {
 
-        name = records[i][1];
-        capital = std::stod(records[i][2]);
-        stock = std::stoi(records[i][3]);
-        capacity = std::stod(records[i][4]);
-        debts = std::stod(records[i][5]);
-        p_c_skill = std::stod(records[i][6]);
-        p_c_mot = std::stod(records[i][7]);
-        wage_const = std::stod(records[i][8]);
-        wage_change_limit = std::stod(records[i][9]);
-        invest = std::stod(records[i][10]);
-        pbr = std::stod(records[i][11]);
-        decay = std::stod(records[i][12]);
-        production_function = std::stoi(records[i][14]);        
+        name = records[i][2];
+        capital = std::stod(records[i][3]);
+        stock = std::stoi(records[i][4]);
+        capacity = std::stod(records[i][5]);
+        debts = std::stod(records[i][6]);
+        p_c_skill = std::stod(records[i][7]);
+        p_c_mot = std::stod(records[i][8]);
+        wage_const = std::stod(records[i][9]);
+        wage_change_limit = std::stod(records[i][10]);
+        invest = std::stod(records[i][11]);
+        pbr = std::stod(records[i][12]);
+        decay = std::stod(records[i][13]);
+        production_function = std::stoi(records[i][15]);        
 
         add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
         
