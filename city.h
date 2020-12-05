@@ -149,6 +149,7 @@ class City {
       void consumers_bank_business();
       void add_companies_from_database();
       void update_companies_from_database();
+      void write_time_data_to_company_database();
       
       //Database functions
       void update_interest_parameters();

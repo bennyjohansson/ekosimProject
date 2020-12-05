@@ -68,6 +68,7 @@ class Company_list {
 
   void remove_usless_employees();
   void update_companies_from_database(string city_name);
+  void write_time_data_to_database(string city_name);
 
 
   /*

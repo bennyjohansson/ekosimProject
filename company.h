@@ -114,6 +114,7 @@ public:
     bool update_employees(Consumer *);
     void remove_usless_employees();
     void update_from_database(string city_name);
+    void save_time_data_to_database(string city_name);
     
     double contribution_adding(Consumer *);
     double contribution_removing(Consumer *);

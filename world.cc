@@ -199,6 +199,12 @@ bool World::update_companies_from_database() {
     
 }
 
+bool World::write_time_data_to_company_database(){
+
+	return cities_ -> write_time_data_to_company_database();
+
+}
+
 
 
 

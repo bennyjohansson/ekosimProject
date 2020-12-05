@@ -48,6 +48,7 @@ class World {
       bool run_save_cycle();
       bool run_adjust_money_and_consumer_cycle();
       bool update_companies_from_database();
+      bool write_time_data_to_company_database();
 
  
 

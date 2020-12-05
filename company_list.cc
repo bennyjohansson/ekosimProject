@@ -394,6 +394,21 @@ void Company_list::update_companies_from_database(string city_name) {
     
 }
 
+void Company_list::write_time_data_to_database(string city_name) {
+    
+    Element_company * p;
+    
+    if(list_) {  
+        for(p = list_; p; p = p -> next_) {
+            (p -> get_company()) -> save_time_data_to_database(city_name);
+        }
+    }
+    else {
+        cout << "No companies in company list" << endl;
+    }
+    
+}
+
 
 
 

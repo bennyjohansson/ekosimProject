@@ -1846,3 +1846,13 @@ void City::update_companies_from_database() {
     }
 
 }
+
+
+void City::write_time_data_to_company_database() {
+
+    if(company_list_) {
+
+        company_list_ -> write_time_data_to_database(name_);
+    }
+
+}

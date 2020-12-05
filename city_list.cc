@@ -287,3 +287,22 @@ bool City_list::update_companies_from_database() {
     return true;
     
 }
+
+bool City_list::write_time_data_to_company_database() {
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            p -> get_city() -> write_time_data_to_company_database();
+        }
+    }
+    else {
+        cout << "No countries to run write company time data cycle" << endl;
+        return false;
+    }
+    return true;
+
+    
+}

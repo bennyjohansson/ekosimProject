@@ -605,7 +605,42 @@ bool Company::update_employees(Consumer *opt)
         decay_ = decay;
         production_parameter_ = production_parameter;
         production_function_ = production_function;
-    }
+}
+
+
+
+// THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE
+void Company::save_time_data_to_database(string city_name) {
+
+
+    std::vector<double> company_data;
+    int time_stamp = 0;
+    time_stamp = clock_ -> get_time();
+
+    //TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT, 
+    //WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN) VALUES(";
+
+
+    company_data.push_back((double)time_stamp);
+    company_data.push_back((double)capital_);
+    company_data.push_back((double)stock_);
+    company_data.push_back((double)capacity_);
+    company_data.push_back((double)debts_);
+    company_data.push_back((double)prod_const_skill_);
+    company_data.push_back((double)prod_const_motivation_);
+    company_data.push_back((double)wage_const_);
+    company_data.push_back((double)wage_change_limit_);
+    company_data.push_back((double)invest_);
+    company_data.push_back((double)decay_);
+    company_data.push_back((double)production_parameter_);
+    company_data.push_back((double)production_function_);
+    company_data.push_back((double)prod_const_motivation_);
+
+
+    insertCompanyTimeData(company_data, city_name, name_);
+
+
+}
 
     //Checks how the expected income changes by adding consumer
     double Company::contribution_adding(Consumer * consumer)
