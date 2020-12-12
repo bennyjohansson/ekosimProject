@@ -1323,7 +1323,7 @@ void City::adjust_money()
      *
      */
 
-    int function_select = 2;
+    int function_select = 3;
 
     int i = 0;
     double items_a = 0;
