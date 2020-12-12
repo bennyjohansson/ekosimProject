@@ -519,7 +519,7 @@ bool Company::update_employees(Consumer *opt)
         }
     }
     else {
-            cout << opt->get_name() << " already employed by " << name_ << endl;
+            //cout << opt->get_name() << " already employed by " << name_ << endl;
             return true;
         }
 }
