@@ -306,3 +306,24 @@ bool City_list::write_time_data_to_company_database() {
 
     
 }
+
+
+
+bool City_list::update_country_from_database() {
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            p -> get_city() -> update_parameters_from_database();
+        }
+    }
+    else {
+        cout << "No countries to update from database" << endl;
+        return false;
+    }
+    return true;
+
+    
+}

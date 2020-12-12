@@ -58,6 +58,7 @@ City::City(string name, Clock * clock ): name_(name),
                           capital_(0),
                           vat_(0.2),
                           income_tax_(0.3),
+                          budget_balance_(0.00),
                           time_to_steal_(7919)
 {}
 
@@ -318,6 +319,16 @@ double City::get_income_tax()
     return income_tax_;
 }
 
+double City::get_budget_balance()
+{
+    return budget_balance_;
+}
+
+double City::get_inflation_target()
+{
+    return inflation_target_;
+}
+
 Company *City::get_company(string name)
 {
     return company_list_->get_company(name);
@@ -430,6 +441,16 @@ void City::set_vat(double vat)
 void City::set_income_tax(double income_tax)
 {
     income_tax_ = income_tax;
+}
+
+void City::set_budget_balance(double budget_balance)
+{
+    budget_balance_ = budget_balance;
+}
+
+void City::set_inflation_target(double inflation_target)
+{
+    inflation_target_ = inflation_target;
 }
 
 void City::set_market(Market * market)
@@ -1313,7 +1334,7 @@ void City::adjust_money()
     double inflation = 0;
     double item_inflation = 0;
     double scale_factor = 0.5;
-    double target_inflation = 0.01;
+    double target_inflation = 0;
 
     double MAX_CHANGE_FACTOR = 0.6;
 
@@ -1412,7 +1433,7 @@ void City::adjust_money()
         break;
     }
 
-    money_change_factor = -inflation + target_inflation;
+    money_change_factor = -inflation + inflation_target_;
 
     if (money_change_factor > MAX_CHANGE_FACTOR)
     {
@@ -1780,6 +1801,54 @@ void City::update_interest_parameters()
     bank_ -> set_liquidity_reserve_ratio(liquidity_reserve_ratio);
     bank_ -> set_dividend_ratio(bank_dividend_ratio);
 
+}
+
+void City::update_parameters_from_database()
+{
+
+    using Record = std::vector<std::string>;
+    using Records = std::vector<Record>;
+
+    string full_path = get_city_sql_string(name_); 
+    const char* dir =  full_path.c_str(); 
+
+
+    double budgetBalance = 0;
+    double incomeTax = 0;
+    double inflationTarget = 0;
+
+    //const char* stmt = "SELECT * FROM PARAMETERS";
+    string stmt = "SELECT * FROM PARAMETERS";
+    //cout << "Test i cuty update interest parameters" << endl;
+
+    Records records = select_stmt(stmt, dir);
+    //sqlite3_close(DB);
+
+    for (int i = 0; i < records.size(); i++)
+    {
+        if (records[i][1] == "BudgetBalance")
+        {
+            budgetBalance = std::stod(records[i][2]);
+            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+        }
+        if (records[i][1] == "IncomeTax")
+        {
+            budgetBalance = std::stod(records[i][2]);
+            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+        }
+        if (records[i][1] == "TargetInflation")
+        {
+            budgetBalance = std::stod(records[i][2]);
+            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+        }
+        
+        
+        
+    }
+    cout << endl;
+    set_budget_balance(budgetBalance);
+    set_income_tax(incomeTax);
+    set_inflation_target(inflationTarget);
 }
 
 void City::add_companies_from_database()

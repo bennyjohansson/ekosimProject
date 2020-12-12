@@ -132,6 +132,7 @@ int main()
 			cout << "------------------------------" << endl;
 			bennyworld.update_companies_from_database();
 			bennyworld.write_time_data_to_company_database();
+			bennyworld.update_country_from_database();
 
 			// if(current_cycle == 20) {
 

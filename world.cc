@@ -207,6 +207,14 @@ bool World::write_time_data_to_company_database(){
 
 
 
+bool World::update_country_from_database(){
+
+	return cities_ -> update_country_from_database();
+
+}
+
+
+
 
 
 void World::printWorldDB()

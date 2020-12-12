@@ -64,6 +64,8 @@ class City {
       double get_capital();
       double get_vat();
       double get_income_tax();
+      double get_budget_balance();
+      double get_inflation_target();
       int get_no_years_laundry();
       int get_time_to_steal();
       string get_name();
@@ -87,6 +89,8 @@ class City {
       void set_time_to_steal(int);
       void set_vat(double);
       void set_income_tax(double);
+      void set_budget_balance(double);
+      void set_inflation_target(double);
       void set_market(Market *);
 
 
@@ -153,6 +157,7 @@ class City {
       
       //Database functions
       void update_interest_parameters();
+      void update_parameters_from_database();
 
       list<double> GDP_;
       list<double> growth_;
@@ -188,6 +193,8 @@ class City {
       double loans_to_bank_;
       double vat_;
       double income_tax_; 
+      double budget_balance_;
+      double inflation_target_;
       double capital_;
       
     
