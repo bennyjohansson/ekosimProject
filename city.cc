@@ -1838,7 +1838,7 @@ void City::update_parameters_from_database()
         }
         if (records[i][1] == "InflationTarget")
         {
-            budgetBalance = std::stod(records[i][2]);
+            inflationTarget = std::stod(records[i][2]);
             cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
         }
         
