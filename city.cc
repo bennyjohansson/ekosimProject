@@ -1453,7 +1453,7 @@ void City::adjust_money()
 
     money_change = total_money * money_change_factor * scale_factor;
 
-    cout << "I city adj. money, inflation: " << inflation << " money ch %: " << money_change / total_money << " Total money " << total_money << " Money change " << money_change << endl;
+    cout << "I city adj. money, inflation: " << inflation << " target: " << inflation_target_ << " money ch %: " << money_change / total_money << " Total money " << total_money << " Money change " << money_change << endl;
     //money_change = (1-average_items/items_a)*total_money;
 
     //if(price_a > average_price) {
