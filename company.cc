@@ -567,9 +567,9 @@ bool Company::update_employees(Consumer *opt)
         // char dir[100];
         // dir = full_path.c_str();
         
-        cout << "I company update_from_databbase1 " << endl;
+        //cout << "I company update_from_databbase1 " << endl;
         const char *dir = full_path.c_str();
-        cout << "I company update_from_databbase2 " << endl;
+        //cout << "I company update_from_databbase2 " << endl;
 
         double wage_const = 0;
         double wage_change_limit = 0;
@@ -586,9 +586,9 @@ bool Company::update_employees(Consumer *opt)
         stmt.append(name_);
         stmt.append("'");
         stmt.append(" AND TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM COMPANY_TABLE)");
-        cout << "I company update_from_databbase3 " << endl;
+        //cout << "I company update_from_databbase3 " << endl;
         Records records = select_stmt(stmt, dir);
-        cout << "I company update_from_databbase4 " << endl;
+        //cout << "I company update_from_databbase4 " << endl;
         wage_const = std::stod(records[0][9]);
         wage_change_limit = std::stod(records[0][10]);
         pbr = std::stod(records[0][12]);
