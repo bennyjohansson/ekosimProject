@@ -110,7 +110,7 @@ Company * Company_list::get_next_best_salary_company(double limit) {
                 return get_random_company() -> get_company();
             }
 
-            cout << "I company list get_next_best, current_wage: " << current_wage << " highest wage: " << highest_wage << " limit " << limit << " for " << p-> get_company() -> get_name() << endl;
+            //cout << "I company list get_next_best, current_wage: " << current_wage << " highest wage: " << highest_wage << " limit " << limit << " for " << p-> get_company() -> get_name() << endl;
             if (current_wage < limit && current_wage > highest_wage) {
                 highest_wage = current_wage;
                 r = p;
@@ -351,11 +351,11 @@ bool Company_list::update_employees2(Consumer * opt) {
 
         //If hired, return true and get new optimal consumer
         if(hired) {
-            cout << "Company i c-list " << p -> get_name() << " hired" << endl;
+            //cout << "Company i c-list " << p -> get_name() << " hired" << endl;
             return hired;
         }
         else {
-            cout << "Company " << p -> get_name() << " did not hire " << opt -> get_name() << endl;
+            //cout << "Company " << p -> get_name() << " did not hire " << opt -> get_name() << endl;
         }
     }    
 
