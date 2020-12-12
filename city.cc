@@ -1037,7 +1037,6 @@ void City::update_employees()
             for(p; p -> next_; p = p -> next_) {
 
                 company_list_ -> update_employees2(p -> get_consumer());
-                cout << "I city update_empl, returned" << endl;
 
             }
 
