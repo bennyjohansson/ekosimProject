@@ -1277,7 +1277,7 @@ void City::produce()
 
     price = market_->get_price_out();
 
-    production_items = company_list_->produce();
+    production_items = company_list_->produce(name_);
 
     cout << "Actual production: " << production_items * price << " $BJ and items: " << production_items << endl;
 }

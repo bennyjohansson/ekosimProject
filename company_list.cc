@@ -416,14 +416,14 @@ void Company_list::write_time_data_to_database(string city_name) {
  * Functions to operate on the companies
  */
 
-double Company_list::produce() {
+double Company_list::produce(string city_name) {
     
     Element_company * p;
     double sum = 0;
     cout << "I company list, items needed for production: (items): " << get_items_for_production_sum() << endl;
     
     for(p = list_; p; p = p -> next_) {
-        sum += (p -> get_company()) -> produce();
+        sum += (p -> get_company()) -> produce(city_name);
     }
     
     //cout << "I company list, actual production (items): " << sum << endl;

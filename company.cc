@@ -50,6 +50,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         debts_(0),
                                                                                                                                                                                                                         invest_(0),
                                                                                                                                                                                                                         production_function_(1),
+                                                                                                                                                                                                                        current_production_items_(0),
                                                                                                                                                                                                                         production_parameter_(0.001),
                                                                                                                                                                                                                         prod_const_skill_(p_c_skill),
                                                                                                                                                                                                                         prod_const_motivation_(p_c_mot),
@@ -640,6 +641,8 @@ void Company::save_time_data_to_database(string city_name) {
     company_data.push_back((double)decay_);
     company_data.push_back((double)production_parameter_);
     company_data.push_back((double)production_function_);
+    company_data.push_back((double)current_production_items_);
+    //cout << "I company save time database " << current_production_items_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 
 
@@ -763,14 +766,16 @@ void Company::save_time_data_to_database(string city_name) {
         return contribution;
     }
 
-    double Company::produce()
+    double Company::produce(string city_name)
     {
 
         double production = 0;
 
         buy_items_for_production();
         production = get_production();
+        current_production_items_  = production;
         stock_ += production;
+        //insertCompanyDatapoint("PRODUCTION", production, clock_ -> get_time(), city_name, name_);
 
         cout << "I Company produce, share of full capacity: " << production / (capacity_ * 3.1415 / 2) << " capacity: " << capacity_ << " employees: " << employees_->get_size() << " for " << name_ << endl;
 

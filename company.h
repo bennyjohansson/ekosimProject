@@ -119,7 +119,7 @@ public:
     double contribution_adding(Consumer *);
     double contribution_removing(Consumer *);
     
-    double produce();
+    double produce(string);
     void sell_to_market();
     void pay_employees(); 
     double pay_employees_individual(double); 
@@ -151,6 +151,7 @@ private:
     double debts_;
     
     int production_function_;
+    int current_production_items_;
     double production_parameter_;
     double prod_const_skill_;
     double prod_const_motivation_;

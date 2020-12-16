@@ -75,7 +75,7 @@ class Company_list {
    * Functions to operate on the companies
    */
 
-  double produce();
+  double produce(string);
   void sell_to_market();
   double pay_employees(double);
   double pay_dividends();
