@@ -1159,6 +1159,7 @@ void Company::save_time_data_to_database(string city_name) {
         double income_tax_sum = 0;
         double skill_sum = 0;
         double motivation_sum = 0;
+        int pay_wages_in_cash = 1;
 
         price = market_->get_price_in();
         size = employees_->get_size();
@@ -1166,13 +1167,16 @@ void Company::save_time_data_to_database(string city_name) {
         skill_sum = employees_->get_skill_sum();
         motivation_sum = employees_->get_motivation_sum();
 
+        pay_wages_in_cash=  getDatabaseParameter("'PayWageInCash'", city_name_);
+
+
         wage_tot = get_total_wages();
         //cout << name_ << "I company pay wage employ1" << endl;
 
         if (size)
         {
             wage = wage_tot / size;
-            income_tax_sum = employees_->pay_employees_individual(wage_tot, skill_sum, motivation_sum, income_tax, name_);
+            income_tax_sum = employees_->pay_employees_individual(wage_tot, skill_sum, motivation_sum, income_tax, name_, pay_wages_in_cash);
             capital_ -= wage_tot;
             //log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
         }

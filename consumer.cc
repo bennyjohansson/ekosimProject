@@ -35,8 +35,9 @@ items_(0),
 name_("")
 {}
 
-Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, Market * m, Bank *b, Clock * c) :
+Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, string country, Market * m, Bank *b, Clock * c) :
 name_(""), 
+country_(country),
 motivation_(mot),
 skill_(sk),
 capital_(cap),
@@ -121,6 +122,10 @@ void Consumer::info_short() {
 /*
  * Get-functions for the consumer
  */
+
+string Consumer::get_country(){
+    return country_;
+}
 
 double Consumer::get_motivation(){
     return motivation_;

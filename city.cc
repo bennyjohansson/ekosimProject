@@ -476,7 +476,7 @@ void City::add_random_consumers(int number_of_consumers)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(market_, bank_, clock_);
+        Consumer *benny = random_consumer(name_, market_, bank_, clock_);
         benny->set_name("Consumer" + std::to_string(i));
         add_consumer(benny);
     }
@@ -493,7 +493,7 @@ void City::add_random_consumers(int number_of_consumers, double capital)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(market_, bank_, clock_);
+        Consumer *benny = random_consumer(name_, market_, bank_, clock_);
         benny->set_name("Consumer" + std::to_string(i));
         benny->set_capital(capital);
         add_consumer(benny);

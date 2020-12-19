@@ -88,7 +88,7 @@ class Consumer_list {
       void bank_business();
       
       void pay_employees(double);
-      double pay_employees_individual(double, double, double, double, string); 
+      double pay_employees_individual(double, double, double, double, string, int); 
       void pay_dividends(double);
 		void pay_dividends_log(double, string);
 		void pay_all_dividends_log(double, double, double); 

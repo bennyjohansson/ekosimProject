@@ -20,7 +20,7 @@ class Consumer {
       Consumer();
 
       Consumer(double, double, double, double);
-      Consumer(double, double, double, double, double, double, Market *, Bank *, Clock *);
+      Consumer(double, double, double, double, double, double, string, Market *, Bank *, Clock *);
   
       /*
        *Functions to get info regarding the consumer
@@ -34,7 +34,7 @@ class Consumer {
       /*
        * Functions to get things from a consumer
        */
-
+      string get_country();
       double get_motivation();
       double get_skill();
       double get_capital();
@@ -112,6 +112,7 @@ class Consumer {
    private:
       
       string name_;
+      string country_;
       double motivation_;
       double skill_;
       double capital_;

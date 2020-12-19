@@ -38,6 +38,6 @@ double capacity_increase(double, double, double, double);
 double factor_increase(double, double, double, double, double);
 double item_cost(double);
 
-Consumer * random_consumer(Market *, Bank *, Clock *);
+Consumer * random_consumer(string, Market *, Bank *, Clock *);
 
 #endif

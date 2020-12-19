@@ -8,6 +8,7 @@
 //#include "consumer.h"
 #include "error_no_return.h"
 #include "functions.h"
+#include "SQLfunctions.h"
 
 using namespace std;
 
@@ -724,7 +725,7 @@ void Consumer_list::pay_employees(double wage)
   }
 }
 
-double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum, double motivation_sum, double income_tax, string employer)
+double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum, double motivation_sum, double income_tax, string employer, int pay_wages_in_cash)
 {
 
   Element_consumer *p;
@@ -732,6 +733,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
   double my_wage = 0;
   double my_income_tax = 0;
   double income_tax_sum = 0;
+  string country = "";
 
   for (p = list_; p; p = p->next_)
   {
@@ -739,10 +741,22 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
     skill = consumer->get_skill();
     my_wage = wage_sum * skill / skill_sum;
     my_income_tax = my_wage * income_tax;
-    consumer->change_capital(my_wage - my_income_tax);
-    //consumer -> accept_deposit(my_wage - my_income_tax);
     consumer->set_income(my_wage);
     income_tax_sum += my_income_tax;
+    country = consumer -> get_country();
+
+
+
+  if(pay_wages_in_cash = 1) {
+      consumer->change_capital(my_wage - my_income_tax);
+  }
+  else {
+    consumer -> accept_deposit(my_wage - my_income_tax);
+  }
+    //
+
+
+
 
     log_transaction_full(employer, consumer->get_name(), my_wage, "Salary", consumer->get_time());
   }
