@@ -579,6 +579,8 @@ bool Company::update_employees(Consumer *opt)
         double production_parameter = 0;
         int production_function = 0;
 
+        //For loop for testing segmentation fault
+        //for(int i = 0; i<100; i++){
         production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
 
         //const char* stmt = "SELECT * FROM PARAMETERS";
@@ -596,7 +598,8 @@ bool Company::update_employees(Consumer *opt)
         decay = std::stod(records[0][13]);
         //production_parameter = std::stod(records[0][13]);
         production_function = std::stoi(records[0][15]);
-
+        //cout << "I company update_from_databbase4 " << endl;
+        //}
         /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
     cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
     cout << "pbr: " << pbr << " was: " << pbr_ << endl;
@@ -1169,7 +1172,7 @@ void Company::save_time_data_to_database(string city_name) {
 
         pay_wages_in_cash =  getDatabaseParameter("'PayWageInCash'", city_name_);
 
-        cout << "Pay in cash: " << pay_wages_in_cash << endl;
+        //cout << "Pay in cash: " << pay_wages_in_cash << endl;
 
 
         wage_tot = get_total_wages();

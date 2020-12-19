@@ -50,6 +50,11 @@ int main()
 	* Printing world database
 	*/
 		bennyworld.printWorldDB();
+/*
+   	* A check so that no money is lost during the exec.
+   	*/
+  	double sum_before = bennyworld.get_city("Bennyland") -> get_capital_sum();
+
 
 		/*
 	* Setting parameters
@@ -133,6 +138,9 @@ int main()
 			bennyworld.update_companies_from_database();
 			bennyworld.write_time_data_to_company_database();
 			bennyworld.update_country_from_database();
+
+
+    		cout << "Money: " << bennyworld.get_city("Bennyland") -> get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland") -> get_capital_sum() - sum_before <<  " Added money: " << bennyworld.get_city("Bennyland") -> get_loans_to_bank() << endl;
 
 			// if(current_cycle == 20) {
 
