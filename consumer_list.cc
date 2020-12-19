@@ -752,7 +752,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
   }
   else {
     consumer -> accept_deposit(my_wage - my_income_tax);
-    cout << "Paying wage to deposit account" << endl;
+    //cout << "Paying wage to deposit account" << endl;
   }
     //
 
