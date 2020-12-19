@@ -747,7 +747,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
 
 
 
-  if(pay_wages_in_cash = 1) {
+  if(pay_wages_in_cash == 1) {
       consumer->change_capital(my_wage - my_income_tax);
   }
   else {
