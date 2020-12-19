@@ -1167,7 +1167,9 @@ void Company::save_time_data_to_database(string city_name) {
         skill_sum = employees_->get_skill_sum();
         motivation_sum = employees_->get_motivation_sum();
 
-        pay_wages_in_cash=  getDatabaseParameter("'PayWageInCash'", city_name_);
+        pay_wages_in_cash =  getDatabaseParameter("'PayWageInCash'", city_name_);
+
+        cout << "Pay in cash: " << pay_wages_in_cash << endl;
 
 
         wage_tot = get_total_wages();
