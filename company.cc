@@ -642,6 +642,7 @@ void Company::save_time_data_to_database(string city_name) {
     company_data.push_back((double)production_parameter_);
     company_data.push_back((double)production_function_);
     company_data.push_back((double)current_production_items_);
+    company_data.push_back((double)employees_ -> get_size());
     //cout << "I company save time database " << current_production_items_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 
