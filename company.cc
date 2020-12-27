@@ -54,6 +54,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         production_parameter_(0.001),
                                                                                                                                                                                                                         prod_const_skill_(p_c_skill),
                                                                                                                                                                                                                         prod_const_motivation_(p_c_mot),
+                                                                                                                                                                                                                        item_efficiency_(0.1),
                                                                                                                                                                                                                         wage_const_(wage_const),
                                                                                                                                                                                                                         wage_change_limit_(0.8),
                                                                                                                                                                                                                         capacity_(capacity),
@@ -153,6 +154,11 @@ double Company::get_prod_const_skill()
 double Company::get_prod_const_motivation()
 {
     return prod_const_motivation_;
+}
+
+double Company::get_item_efficiency()
+{
+    return item_efficiency_;
 }
 
 double Company::get_wage_const()
@@ -292,7 +298,7 @@ double Company::get_items_for_production()
 
     production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
-    items = item_cost(production);
+    items = item_cost(production, item_efficiency_);
 
     return items;
 }
@@ -376,6 +382,11 @@ void Company::set_prod_const_skill(double skill)
 void Company::set_prod_const_motivation(double mot)
 {
     prod_const_motivation_ = mot;
+}
+
+void Company::set_item_efficiency(double ie)
+{
+    item_efficiency_ = ie;
 }
 
 void Company::set_wage_const(double wc)
@@ -646,6 +657,7 @@ void Company::save_time_data_to_database(string city_name) {
     company_data.push_back((double)production_function_);
     company_data.push_back((double)current_production_items_);
     company_data.push_back((double)employees_ -> get_size());
+    company_data.push_back((double)item_efficiency_);
     //cout << "I company save time database " << current_production_items_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 
@@ -704,7 +716,7 @@ void Company::save_time_data_to_database(string city_name) {
         //contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
 
         delta_sales = (prod_after - prod_before) * price;
-        material_cost_delta = (item_cost(prod_after) - item_cost(prod_before)) * price_out;
+        material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
         contribution = delta_sales - wage - material_cost_delta;
 
         //cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
@@ -747,7 +759,7 @@ void Company::save_time_data_to_database(string city_name) {
             wage = get_total_wages() / size;
 
             delta_sales = (prod_after - prod_before) * price;
-            material_cost_delta = (item_cost(prod_after) - item_cost(prod_before)) * price_out;
+            material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
             //contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
             contribution = delta_sales + wage - material_cost_delta;
 
@@ -1059,7 +1071,7 @@ void Company::save_time_data_to_database(string city_name) {
 
             sales_value = (production_new - production_old) * price_in;
             est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
-            est_prod_cost = (item_cost(production_new) - item_cost(production_old)) * price_out;
+            est_prod_cost = (item_cost(production_new, item_efficiency_) - item_cost(production_old, item_efficiency_)) * price_out;
 
             value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
             t++;

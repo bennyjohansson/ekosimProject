@@ -327,3 +327,22 @@ bool City_list::update_country_from_database() {
 
     
 }
+
+bool City_list::save_high_score() {
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            p -> get_city() -> save_high_score();
+        }
+    }
+    else {
+        cout << "No countries to save high-score" << endl;
+        return false;
+    }
+    return true;
+
+    
+}

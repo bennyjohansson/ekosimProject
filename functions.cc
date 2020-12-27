@@ -256,12 +256,12 @@ double get_price(double excess, double sum_spend) {
 
 
 
-double item_cost(double production) {
+double item_cost(double production, double item_efficiency) {
     
     double items = 0;
     const double factor = 0.1;
     
-    items = factor*production;//log(production + 1)*(factor);
+    items = item_efficiency*production;//log(production + 1)*(factor);
     
     return items;
 }

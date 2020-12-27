@@ -20,6 +20,7 @@ static int createParameterTable(const char* s);
 static int createDataTable(const char* s);
 static int createMoneyTable(const char* s);
 static int createCompanyTable(const char* s);
+static int createHighScoreTable(const char* s);
 static int insertParameterData(const char* s);
 static int initiateCompanyTable(const char* s);
 
@@ -30,6 +31,8 @@ int insertTimeData(std::vector<double> timeData, string); //
 int insertWorldData(string world_name, string city_name, int consumers, string email, int created);
 int insertCompanyTimeData(std::vector<double> timeData, string city_name, string company_name);
 int insertCompanyDatapoint(string parameter, int value, int timestamp, string city_name, string company_name);
+int insertHighScore(std::vector<double> myData, string city_name);
+
 double getDatabaseParameter(string, string);
 
 static int updateData(const char* s);

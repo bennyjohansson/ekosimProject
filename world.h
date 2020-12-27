@@ -50,6 +50,7 @@ class World {
       bool update_companies_from_database();
       bool write_time_data_to_company_database();
       bool update_country_from_database();
+      bool save_high_score();
 
  
 

@@ -50,17 +50,16 @@ int main()
 	* Printing world database
 	*/
 		bennyworld.printWorldDB();
-/*
+		/*
    	* A check so that no money is lost during the exec.
    	*/
-  	double sum_before = bennyworld.get_city("Bennyland") -> get_capital_sum();
-
+		double sum_before = bennyworld.get_city("Bennyland")->get_capital_sum();
 
 		/*
 	* Setting parameters
 	*/
 
-		int simulation_cycles = 1000;
+		int simulation_cycles = 100;
 		int current_cycle = 0;
 		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0;
 
@@ -139,8 +138,7 @@ int main()
 			bennyworld.write_time_data_to_company_database();
 			bennyworld.update_country_from_database();
 
-
-    		cout << "Money: " << bennyworld.get_city("Bennyland") -> get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland") -> get_capital_sum() - sum_before <<  " Added money: " << bennyworld.get_city("Bennyland") -> get_loans_to_bank() << endl;
+			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
 
 			// if(current_cycle == 20) {
 
@@ -166,7 +164,17 @@ int main()
 			/*
 		* END OF MAIN LOOP
 		*/
+
+
 		}
+
+		/*
+	* UPDATING HIGH-SCORE
+	*/
+		cout << endl
+			 << "SAVING HIGH-SCORE" << endl;
+		cout << "------------------------------" << endl;
+		bennyworld.save_high_score();
 
 		/*
 	* Closing functions

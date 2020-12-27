@@ -213,6 +213,13 @@ bool World::update_country_from_database(){
 
 }
 
+bool World::save_high_score(){
+
+	return cities_ -> save_high_score();
+
+}
+
+
 
 
 

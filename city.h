@@ -129,6 +129,7 @@ class City {
       void save_data();
       void save_money_data();
       void save_flash(int);
+
       /*
        * Functions for producing, selling and buying. 
        */
@@ -154,6 +155,9 @@ class City {
       void add_companies_from_database();
       void update_companies_from_database();
       void write_time_data_to_company_database();
+      void save_high_score();
+      double calculate_CAGR(int);
+
       
       //Database functions
       void update_interest_parameters();

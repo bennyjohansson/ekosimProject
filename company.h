@@ -43,6 +43,7 @@ public:
     double get_capital();
     double get_prod_const_skill();
     double get_prod_const_motivation();
+    double get_item_efficiency();
     double get_wage_const();  
     double get_production();
     int get_production_function();
@@ -77,6 +78,7 @@ public:
     void set_production_parameter(double);
     void set_prod_const_skill(double);
     void set_prod_const_motivation(double);
+    void set_item_efficiency(double);
     void set_wage_const(double);
     void set_stock(double);
     void set_invest(double);
@@ -155,6 +157,7 @@ private:
     double production_parameter_;
     double prod_const_skill_;
     double prod_const_motivation_;
+    double item_efficiency_;
     double wage_const_;  
     double wage_change_limit_;
     double invest_;

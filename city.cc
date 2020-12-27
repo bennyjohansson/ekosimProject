@@ -1105,6 +1105,7 @@ void City::save_data()
     //file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
     //<< employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
 
+
     //Populating vector for database storage
     time_data.push_back((double)time);
     time_data.push_back((double)item);
@@ -1922,5 +1923,99 @@ void City::write_time_data_to_company_database() {
 
         company_list_ -> write_time_data_to_database(name_);
     }
+
+}
+
+
+
+void City::save_high_score() {
+
+    double CAGR = 0;
+    double environmental_impact = 0;
+    double GINI = 0;
+    double palma_index = 0;
+
+    std::vector<double> score;
+
+
+    CAGR = calculate_CAGR(clock_ -> get_time() - 1);
+
+    score.push_back(CAGR);
+    score.push_back(GINI);
+    score.push_back(environmental_impact);
+
+    insertHighScore(score, name_);
+
+}
+
+double City::calculate_CAGR(int end_time) {
+
+    double CAGR = 0;
+    int start_time1 = 3;
+    int start_time2 = 0;
+    double start_GDP_real = 0;
+    double end_GDP_real = 0;
+    double delta_time = 0;
+
+    using Record = std::vector<std::string>;
+    using Records = std::vector<Record>;
+
+    string full_path = get_city_sql_string(name_); 
+    const char* dir =  full_path.c_str(); 
+
+
+    string stmt1 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(start_time1);
+    //stmt1.append("'" + std::to_string(start_time1) + "'");
+
+    string stmt2 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(end_time);
+    //stmt2.append("'" + std::to_string(end_time) + "'");
+
+    cout << "Test i city calculate CAGR: " << stmt1 << endl;
+    cout << "Test i city calculate CAGR: " << stmt2 << endl;
+
+    Records records_start = select_stmt(stmt1, dir);
+    Records records_end = select_stmt(stmt2, dir);
+    
+
+    try{
+        if(not(records_start.empty())) {
+            start_GDP_real = std::stod(records_start[0][2]);
+        }
+        else{
+            cout << "Empty return from database" << endl;
+        }
+    }
+    catch (const exception &e1) {
+
+        cerr << e1.what();
+    }
+
+    try{
+        if(not(records_end.empty())) {
+            end_GDP_real = std::stod(records_end[0][2]);
+        }
+        else{
+            cout << "Empty return from database" << endl;
+        }
+    }
+    catch (const exception &e2) {
+
+        cerr << e2.what();
+    }
+
+    //cout << "Test i city calculate CAGR: " << CAGR << " GDP real start: " << start_GDP_real << " End GDP real " << end_GDP_real << endl;
+
+
+    if((not(start_GDP_real == 0)) && not(end_time == start_time1)) {
+        delta_time = end_time - start_time1;
+        //cout << "Test i city calculate GDP end/start: " << end_GDP_real/start_GDP_real << " 1/delta time " << 1/delta_time <<  endl;
+        CAGR = pow(end_GDP_real/start_GDP_real,1/delta_time) - 1;
+        //CAGR = end_GDP_real/start_GDP_real - 1;
+        //CAGR = pow(2,10);   
+    }   
+    cout << "Test i city calculate CAGR: " << CAGR << endl;
+
+    return CAGR;
+
 
 }
