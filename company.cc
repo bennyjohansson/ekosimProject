@@ -48,6 +48,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         capital_(capital),
                                                                                                                                                                                                                         stock_(stock),
                                                                                                                                                                                                                         debts_(0),
+                                                                                                                                                                                                                        environmental_impact_(0),
                                                                                                                                                                                                                         invest_(0),
                                                                                                                                                                                                                         production_function_(1),
                                                                                                                                                                                                                         current_production_items_(0),
@@ -144,6 +145,11 @@ double Company::get_capital()
 double Company::get_debts()
 {
     return debts_;
+}
+
+int Company::get_environmental_impact()
+{
+    return environmental_impact_;
 }
 
 double Company::get_prod_const_skill()
@@ -464,6 +470,12 @@ void Company::change_debts(double ch)
 {
     debts_ += ch;
 }
+
+void Company::change_environmental_impact(int ch)
+{
+    environmental_impact_ += ch;;
+}
+
 
 void Company::change_capacity(double ch)
 {
@@ -1311,6 +1323,7 @@ void Company::save_time_data_to_database(string city_name) {
         actual_amount = actual_items * price;
 
         change_capital(-actual_amount);
+        change_environmental_impact(actual_items);
         //market_ -> change_capital(amount);
         //market_ -> change_items(-items);
 

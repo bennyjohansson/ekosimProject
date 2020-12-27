@@ -57,6 +57,7 @@ public:
     double get_investment();
     double get_invest();
     double get_debts();
+    int get_environmental_impact();
     double get_capacity();
     double get_pbr();
     double get_average_wage();
@@ -100,6 +101,7 @@ public:
     void change_stock(double);  
     void change_invest(double);
     void change_debts(double);
+    void change_environmental_impact(int);
     void change_capacity(double);
     void change_pbr(double);
     void change_wage_change_limit(double);
@@ -151,6 +153,7 @@ private:
     double capacity_;
     double capacity_0_;
     double debts_;
+    int environmental_impact_;
     
     int production_function_;
     int current_production_items_;

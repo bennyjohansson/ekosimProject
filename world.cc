@@ -4,7 +4,6 @@
 #include <cstring>
 
 #include "SQLfunctions.h"
-// #include "functions.h"
 #include "world.h"
 
 using namespace std;

@@ -209,6 +209,17 @@ double Company_list::get_debts_sum() {
     return sum;
 }
 
+int Company_list::get_environmental_impact_sum() {
+    Element_company * p;
+    double sum = 0;
+    
+    for (p = list_; p; p = p -> next_) {
+        sum += p -> get_company() -> get_environmental_impact();
+    }
+    //cout << "I company_list loand: " << sum << endl;
+    return sum;
+}
+
 
 
 double Company_list::get_expected_net_flow_to_bank_sum() {

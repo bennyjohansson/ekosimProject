@@ -1934,17 +1934,19 @@ void City::save_high_score() {
     double environmental_impact = 0;
     double GINI = 0;
     double palma_index = 0;
+    string world_name = "Bennyworld";
 
     std::vector<double> score;
 
 
     CAGR = calculate_CAGR(clock_ -> get_time() - 1);
+    environmental_impact = company_list_ -> get_environmental_impact_sum();
 
     score.push_back(CAGR);
     score.push_back(GINI);
     score.push_back(environmental_impact);
 
-    insertHighScore(score, name_);
+    insertHighScore(score, name_, world_name);
 
 }
 

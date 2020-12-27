@@ -40,6 +40,7 @@ class Company_list {
   double get_investment_sum();
   double get_desired_loans_sum();
     double get_debts_sum();
+    int get_environmental_impact_sum();
 
     double get_expected_net_flow_to_bank_sum();
       double get_items_for_production_sum();
