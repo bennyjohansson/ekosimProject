@@ -1934,6 +1934,7 @@ void City::save_high_score() {
     double environmental_impact = 0;
     double GINI = 0;
     double palma_index = 0;
+    string timenow = "";
     string world_name = "Bennyworld";
 
     std::vector<double> score;
@@ -1942,11 +1943,30 @@ void City::save_high_score() {
     CAGR = calculate_CAGR(clock_ -> get_time() - 1);
     environmental_impact = company_list_ -> get_environmental_impact_sum();
 
+    std::time_t t = std::time(0);   // get time now
+    std::tm* now = std::localtime(&t);
+    // std::cout << (now->tm_year + 1900) << '-' 
+    //      << (now->tm_mon + 1) << '-'
+    //      <<  now->tm_mday << ' '
+    //      <<  now->tm_hour << ':'
+    //      <<  now->tm_min << ':'
+    //      <<  now->tm_sec
+    //      << endl;
+        
+    timenow = to_string(now->tm_year + 1900) +  '-' 
+         + to_string(now->tm_mon + 1) + '-'
+         +  to_string(now->tm_mday) + ' '
+         +  to_string(now->tm_hour) + ':'
+         +  to_string(now->tm_min) + ':'
+         +  to_string(now->tm_sec);
+
+    cout << "time: " << timenow << endl;
+
     score.push_back(CAGR);
     score.push_back(GINI);
     score.push_back(environmental_impact);
 
-    insertHighScore(score, name_, world_name);
+    insertHighScore(score, name_, world_name, timenow);
 
 }
 
@@ -1972,8 +1992,8 @@ double City::calculate_CAGR(int end_time) {
     string stmt2 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(end_time);
     //stmt2.append("'" + std::to_string(end_time) + "'");
 
-    cout << "Test i city calculate CAGR: " << stmt1 << endl;
-    cout << "Test i city calculate CAGR: " << stmt2 << endl;
+    // cout << "Test i city calculate CAGR: " << stmt1 << endl;
+    // cout << "Test i city calculate CAGR: " << stmt2 << endl;
 
     Records records_start = select_stmt(stmt1, dir);
     Records records_end = select_stmt(stmt2, dir);
@@ -1984,7 +2004,7 @@ double City::calculate_CAGR(int end_time) {
             start_GDP_real = std::stod(records_start[0][2]);
         }
         else{
-            cout << "Empty return from database" << endl;
+            cout << "Empty return from database in City calculate CAGR" << endl;
         }
     }
     catch (const exception &e1) {
@@ -1997,7 +2017,7 @@ double City::calculate_CAGR(int end_time) {
             end_GDP_real = std::stod(records_end[0][2]);
         }
         else{
-            cout << "Empty return from database" << endl;
+            cout << "Empty return from database in City calculate CAGR" << endl;
         }
     }
     catch (const exception &e2) {

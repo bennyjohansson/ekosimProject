@@ -31,7 +31,7 @@ int insertTimeData(std::vector<double> timeData, string); //
 int insertWorldData(string world_name, string city_name, int consumers, string email, int created);
 int insertCompanyTimeData(std::vector<double> timeData, string city_name, string company_name);
 int insertCompanyDatapoint(string parameter, int value, int timestamp, string city_name, string company_name);
-int insertHighScore(std::vector<double> myData, string city_name, string world_name);
+int insertHighScore(std::vector<double> myData, string city_name, string world_name, string timenow);
 
 double getDatabaseParameter(string, string);
 
