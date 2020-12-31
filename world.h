@@ -51,6 +51,7 @@ class World {
       bool write_time_data_to_company_database();
       bool update_country_from_database();
       bool save_high_score();
+      bool save_consumers();
 
  
 

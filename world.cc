@@ -218,6 +218,12 @@ bool World::save_high_score(){
 
 }
 
+bool World::save_consumers(){
+
+	return cities_ -> save_consumers();
+
+}
+
 
 
 

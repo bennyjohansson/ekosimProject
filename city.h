@@ -156,6 +156,7 @@ class City {
       void update_companies_from_database();
       void write_time_data_to_company_database();
       void save_high_score();
+      void save_consumers();
       double calculate_CAGR(int);
 
       

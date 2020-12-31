@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "functions.h"
+#include "SQLfunctions.h"
 #include "clock.h"
 #include "consumer.h"
 
@@ -824,4 +825,30 @@ double Consumer::get_expected_net_flow_to_bank() {
     sum = repayment_to_bank - repayment_from_bank + interest_to_bank - interest_from_bank + loans_to_bank - loans_from_bank;
     
     return sum;
+}
+
+void Consumer::save_to_database() {
+
+
+    std::vector<double> consumer_data;
+    int time_stamp = 0;
+    time_stamp = clock_ -> get_time();
+
+    consumer_data.push_back((double)items_);
+    consumer_data.push_back((double)capital_);
+    consumer_data.push_back((double)loans_);
+    consumer_data.push_back((double)debts_);
+    consumer_data.push_back((double)skill_);
+    consumer_data.push_back((double)motivation_);
+    consumer_data.push_back((double)spendwill_);
+    consumer_data.push_back((double)savewill_);
+    consumer_data.push_back((double)borrowwill_);
+    consumer_data.push_back((double)income_);
+    //cout << "I company save time database " << current_production_items_ << endl;
+    //company_data.push_back((double)prod_const_motivation_);
+
+
+    insertConsumerData(consumer_data, country_, name_, employer_);
+
+
 }

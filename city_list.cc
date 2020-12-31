@@ -346,3 +346,21 @@ bool City_list::save_high_score() {
 
     
 }
+bool City_list::save_consumers() {
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_; p; p = p -> next_) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            p -> get_city() -> save_consumers();
+        }
+    }
+    else {
+        cout << "No countries to save consumers" << endl;
+        return false;
+    }
+    return true;
+
+    
+}

@@ -2041,3 +2041,12 @@ double City::calculate_CAGR(int end_time) {
 
 
 }
+
+void City::save_consumers() {
+
+    if(consumers_) {
+
+        consumers_ -> save_consumers();
+    }
+
+}

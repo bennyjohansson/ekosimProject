@@ -829,3 +829,16 @@ void Consumer_list::pay_all_dividends_log(double amount_company, double amount_m
     log_transaction_full("Bank", name, amount_bank, "Dividends", time);
   }
 }
+
+
+void Consumer_list::save_consumers()
+{
+
+  Element_consumer *p;
+
+  for (p = list_; p; p = p->next_)
+  {
+    Consumer *consumer = p->get_consumer();
+    consumer ->  save_to_database();
+  }
+}

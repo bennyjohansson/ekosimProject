@@ -93,6 +93,7 @@ class Consumer_list {
 		void pay_dividends_log(double, string);
 		void pay_all_dividends_log(double, double, double); 
 		void pay_transfers_log(double, string);
+      void save_consumers();
 	
    protected:
 

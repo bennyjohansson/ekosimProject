@@ -109,6 +109,8 @@ class Consumer {
       double accept_deposit(double);
       double get_expected_net_flow_to_bank();
       double get_time();
+      void save_to_database();
+      
    private:
       
       string name_;
