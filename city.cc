@@ -22,7 +22,8 @@ City::City() : name_("bennyland"),
                market_(new Market()),
                bank_(new Bank("BENNYBANK", 0.02, 3)),
                clock_(new Clock())
-{}
+{
+}
 
 City::City(string name) : name_(name),
                           consumers_(new Consumer_list("CONSUMERS")),
@@ -40,27 +41,28 @@ City::City(string name) : name_(name),
                           vat_(0.2),
                           income_tax_(0.3),
                           time_to_steal_(7919)
-{}
+{
+}
 
-
-City::City(string name, Clock * clock ): name_(name),
-                          consumers_(new Consumer_list("CONSUMERS")),
-                          company_list_(new Company_list("COMPANIES")),
-                          labour_market_(new Consumer_list("LABOUR MARKET")),
-                          capital_owners_(new Consumer_list("CAPITAL OWNERS")),
-                          market_(new Market()),
-                          bank_(new Bank("BENNYBANK", 0.05, 3)),
-                          clock_(clock),
-                          flash_counter_(0),
-                          shareToSteal_(0.95),
-                          laundry_factor_(0.95),
-                          no_years_laundry_(4),
-                          capital_(0),
-                          vat_(0.2),
-                          income_tax_(0.3),
-                          budget_balance_(0.00),
-                          time_to_steal_(7919)
-{}
+City::City(string name, Clock *clock) : name_(name),
+                                        consumers_(new Consumer_list("CONSUMERS")),
+                                        company_list_(new Company_list("COMPANIES")),
+                                        labour_market_(new Consumer_list("LABOUR MARKET")),
+                                        capital_owners_(new Consumer_list("CAPITAL OWNERS")),
+                                        market_(new Market()),
+                                        bank_(new Bank("BENNYBANK", 0.05, 3)),
+                                        clock_(clock),
+                                        flash_counter_(0),
+                                        shareToSteal_(0.95),
+                                        laundry_factor_(0.95),
+                                        no_years_laundry_(4),
+                                        capital_(0),
+                                        vat_(0.2),
+                                        income_tax_(0.3),
+                                        budget_balance_(0.00),
+                                        time_to_steal_(7919)
+{
+}
 
 void City::info()
 {
@@ -70,7 +72,7 @@ void City::info()
          << "----------------------------------------" << endl
          << "Name: " << name_ << endl
          << "Population: " << consumers_->get_size() << endl
-         << "Capital owners; " << capital_owners_ -> get_size() << endl 
+         << "Capital owners; " << capital_owners_->get_size() << endl
          << endl
          << "COMPANIES " << endl;
     company_list_->print_list();
@@ -204,7 +206,8 @@ void City::print_GDP()
     /*
      * Printing to file gdp.txt
      */
-    if(save_to_file) {
+    if (save_to_file)
+    {
         ofstream file("gdp.txt");
         GDP = GDP_.begin();
         Time = time_.begin();
@@ -224,9 +227,9 @@ void City::print_GDP()
         for (GDP = GDP_.begin(); GDP != GDP_.end(); GDP++)
         {
             file << *Time << " " << *GDP << " " << *Growth << " " << *Demand
-                << " " << *Wages << " " << *Price_out << " " << *Employed
-                << " " << *Consumer_capital << " " << *Company_capital << " " << 10 * (*Interest_rate) << " "
-                << *Investments << " " << *Market_capital << " " << *Bank_capital << " " << *Total_capital << endl;
+                 << " " << *Wages << " " << *Price_out << " " << *Employed
+                 << " " << *Consumer_capital << " " << *Company_capital << " " << 10 * (*Interest_rate) << " "
+                 << *Investments << " " << *Market_capital << " " << *Bank_capital << " " << *Total_capital << endl;
             Time++;
             Demand++;
             Growth++;
@@ -388,7 +391,8 @@ string City::get_name()
 
 int City::get_no_consumers()
 {
-    return consumers_ -> get_size();;
+    return consumers_->get_size();
+    ;
 }
 
 /*
@@ -453,7 +457,7 @@ void City::set_inflation_target(double inflation_target)
     inflation_target_ = inflation_target;
 }
 
-void City::set_market(Market * market)
+void City::set_market(Market *market)
 {
     market_ = market;
 }
@@ -778,7 +782,8 @@ void City::negotiate_market_price()
     //}
 }
 
-void City::update_consumer_list() {
+void City::update_consumer_list()
+{
 
     double set_avg_spendwill = 0;
     double set_avg_borrowwill = 0;
@@ -789,7 +794,7 @@ void City::update_consumer_list() {
     cout << "I City Updating consumers, setting average spendwill to: " << set_avg_spendwill << endl;
     cout << "I City Updating consumers, setting average borrowwill to: " << set_avg_borrowwill << endl;
 
-		//double test = getDatabaseParameter("AverageSpendwill");
+    //double test = getDatabaseParameter("AverageSpendwill");
 
     consumers_->update(set_avg_spendwill, set_avg_borrowwill);
 }
@@ -1028,20 +1033,20 @@ void City::update_employees()
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
     //Employees looking for new jobs every 10(?) years
-    if((clock_ -> get_time())%10 == 0) {
-        Element_consumer * p;
+    if ((clock_->get_time()) % 10 == 0)
+    {
+        Element_consumer *p;
 
-        p = consumers_ -> get_first_consumer();
+        p = consumers_->get_first_consumer();
 
-        if(p){
-            for(p; p -> next_; p = p -> next_) {
+        if (p)
+        {
+            for (p; p->next_; p = p->next_)
+            {
 
-                company_list_ -> update_employees2(p -> get_consumer());
-
+                company_list_->update_employees2(p->get_consumer());
             }
-
         }
-
     }
 }
 
@@ -1080,7 +1085,7 @@ void City::save_data()
     interest_rate = bank_->get_interest();
     liquidity_reserve_ratio = bank_->get_liquidity_reserve_ratio();
     capital_reserve_ratio = bank_->get_capital_reserve_ratio();
-    bank_dividend_ratio  = bank_ -> get_dividend_ratio();
+    bank_dividend_ratio = bank_->get_dividend_ratio();
 
     size = consumers_->get_size();
     employed = consumers_->get_employed();
@@ -1101,10 +1106,9 @@ void City::save_data()
         growth = 0;
     }
 
-    cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployed/size << " size: " << size << endl;
+    cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployed / size << " size: " << size << endl;
     //file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
     //<< employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
-
 
     //Populating vector for database storage
     time_data.push_back((double)time);
@@ -1120,15 +1124,14 @@ void City::save_data()
     time_data.push_back((double)capital_reserve_ratio);
     time_data.push_back((double)bank_dividend_ratio);
 
-
-    try {
+    try
+    {
         insertTimeData(time_data, name_);
-    }    
-    catch(exception& e) {
+    }
+    catch (exception &e)
+    {
         cout << "Error: " << e.what() << endl;
-    }   
-
-    
+    }
 
     GDP_.push_front(item);
     growth_.push_front(growth);
@@ -1206,13 +1209,14 @@ void City::save_money_data()
     money_data.push_back((int)city_capital);
     money_data.push_back((int)total_capital);
 
-    try {
+    try
+    {
         insertMoneyData(money_data, name_);
-    }    
-    catch(exception& e) {
+    }
+    catch (exception &e)
+    {
         cout << "Error: " << e.what() << endl;
-    }   
-    
+    }
 
     bank_capital_.push_front(bank_capital);
     consumer_capital_.push_front(consumer_capital);
@@ -1254,12 +1258,12 @@ void City::save_flash(int time)
         market_capital = market_->get_capital();
         total_capital = get_capital_sum();
 
-
-        if(write_to_file) {
+        if (write_to_file)
+        {
             ofstream flash("flash.txt", ios::app);
 
             flash << flash_counter_ << " " << consumer_capital << " " << company_capital << " "
-              << market_capital << " " << bank_capital << " " << total_capital << endl;
+                  << market_capital << " " << bank_capital << " " << total_capital << endl;
             flash_counter_++;
         }
     }
@@ -1748,9 +1752,8 @@ void City::update_interest_parameters()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_); 
-    const char* dir =  full_path.c_str(); 
-
+    string full_path = get_city_sql_string(name_);
+    const char *dir = full_path.c_str();
 
     double targetInteresRate = 0;
     double interestRateMethod = 0;
@@ -1792,15 +1795,13 @@ void City::update_interest_parameters()
             bank_dividend_ratio = std::stod(records[i][2]);
             cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
         }
-        
     }
     cout << endl;
-    bank_ -> set_interest_rate_method(interestRateMethod);
-    bank_ -> set_target_interest(targetInteresRate);
-    bank_ -> set_capital_reserve_ratio(capital_reserve_ratio);
-    bank_ -> set_liquidity_reserve_ratio(liquidity_reserve_ratio);
-    bank_ -> set_dividend_ratio(bank_dividend_ratio);
-
+    bank_->set_interest_rate_method(interestRateMethod);
+    bank_->set_target_interest(targetInteresRate);
+    bank_->set_capital_reserve_ratio(capital_reserve_ratio);
+    bank_->set_liquidity_reserve_ratio(liquidity_reserve_ratio);
+    bank_->set_dividend_ratio(bank_dividend_ratio);
 }
 
 void City::update_parameters_from_database()
@@ -1809,9 +1810,8 @@ void City::update_parameters_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_); 
-    const char* dir =  full_path.c_str(); 
-
+    string full_path = get_city_sql_string(name_);
+    const char *dir = full_path.c_str();
 
     double budgetBalance = 0;
     double incomeTax = 0;
@@ -1841,9 +1841,6 @@ void City::update_parameters_from_database()
             inflationTarget = std::stod(records[i][2]);
             cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
         }
-        
-        
-        
     }
     cout << endl;
     set_budget_balance(budgetBalance);
@@ -1857,8 +1854,8 @@ void City::add_companies_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_); 
-    const char* dir =  full_path.c_str(); 
+    string full_path = get_city_sql_string(name_);
+    const char *dir = full_path.c_str();
 
     string name = "";
     double capital = 0;
@@ -1873,7 +1870,7 @@ void City::add_companies_from_database()
     double pbr = 0;
     double decay = 0;
     int production_function = 0;
-    
+
     cout << "I City add companies from DB, dir: " << dir << endl;
     //const char* stmt = "SELECT * FROM PARAMETERS";
     string stmt = "SELECT * FROM COMPANY_TABLE";
@@ -1881,7 +1878,8 @@ void City::add_companies_from_database()
 
     Records records = select_stmt(stmt, dir);
 
-    for (int i = 0; i < records.size(); i++) {
+    for (int i = 0; i < records.size(); i++)
+    {
 
         name = records[i][2];
         capital = std::stod(records[i][3]);
@@ -1895,40 +1893,39 @@ void City::add_companies_from_database()
         invest = std::stod(records[i][11]);
         pbr = std::stod(records[i][12]);
         decay = std::stod(records[i][13]);
-        production_function = std::stoi(records[i][15]);        
+        production_function = std::stoi(records[i][15]);
 
         add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
-        
-        cout << endl << "Added company: " << name << endl << "Capital: " << capital << endl << "Capacity: " << capacity << endl;
-        
-    }
 
+        cout << endl
+             << "Added company: " << name << endl
+             << "Capital: " << capital << endl
+             << "Capacity: " << capacity << endl;
+    }
 }
 
+void City::update_companies_from_database()
+{
 
+    if (company_list_)
+    {
 
-void City::update_companies_from_database() {
-
-    if(company_list_) {
-
-        company_list_ -> update_companies_from_database(name_);
+        company_list_->update_companies_from_database(name_);
     }
-
 }
 
+void City::write_time_data_to_company_database()
+{
 
-void City::write_time_data_to_company_database() {
+    if (company_list_)
+    {
 
-    if(company_list_) {
-
-        company_list_ -> write_time_data_to_database(name_);
+        company_list_->write_time_data_to_database(name_);
     }
-
 }
 
-
-
-void City::save_high_score() {
+void City::save_high_score()
+{
 
     double CAGR = 0;
     double environmental_impact = 0;
@@ -1939,38 +1936,26 @@ void City::save_high_score() {
 
     std::vector<double> score;
 
+    CAGR = calculate_CAGR(clock_->get_time() - 1);
+    palma_index = calculate_Palma_ratio();
+    environmental_impact = company_list_->get_environmental_impact_sum();
 
-    CAGR = calculate_CAGR(clock_ -> get_time() - 1);
-    environmental_impact = company_list_ -> get_environmental_impact_sum();
+    std::time_t t = std::time(0); // get time now
+    std::tm *now = std::localtime(&t);
 
-    std::time_t t = std::time(0);   // get time now
-    std::tm* now = std::localtime(&t);
-    // std::cout << (now->tm_year + 1900) << '-' 
-    //      << (now->tm_mon + 1) << '-'
-    //      <<  now->tm_mday << ' '
-    //      <<  now->tm_hour << ':'
-    //      <<  now->tm_min << ':'
-    //      <<  now->tm_sec
-    //      << endl;
-        
-    timenow = to_string(now->tm_year + 1900) +  '-' 
-         + to_string(now->tm_mon + 1) + '-'
-         +  to_string(now->tm_mday) + ' '
-         +  to_string(now->tm_hour) + ':'
-         +  to_string(now->tm_min) + ':'
-         +  to_string(now->tm_sec);
+    timenow = to_string(now->tm_year + 1900) + '-' + to_string(now->tm_mon + 1) + '-' + to_string(now->tm_mday) + ' ' + to_string(now->tm_hour) + ':' + to_string(now->tm_min) + ':' + to_string(now->tm_sec);
 
     cout << "time: " << timenow << endl;
 
     score.push_back(CAGR);
-    score.push_back(GINI);
+    score.push_back(palma_index);
     score.push_back(environmental_impact);
 
     insertHighScore(score, name_, world_name, timenow);
-
 }
 
-double City::calculate_CAGR(int end_time) {
+double City::calculate_CAGR(int end_time)
+{
 
     double CAGR = 0;
     int start_time1 = 3;
@@ -1982,9 +1967,8 @@ double City::calculate_CAGR(int end_time) {
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_); 
-    const char* dir =  full_path.c_str(); 
-
+    string full_path = get_city_sql_string(name_);
+    const char *dir = full_path.c_str();
 
     string stmt1 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(start_time1);
     //stmt1.append("'" + std::to_string(start_time1) + "'");
@@ -1997,56 +1981,116 @@ double City::calculate_CAGR(int end_time) {
 
     Records records_start = select_stmt(stmt1, dir);
     Records records_end = select_stmt(stmt2, dir);
-    
 
-    try{
-        if(not(records_start.empty())) {
+    try
+    {
+        if (not(records_start.empty()))
+        {
             start_GDP_real = std::stod(records_start[0][2]);
         }
-        else{
+        else
+        {
             cout << "Empty return from database in City calculate CAGR" << endl;
         }
     }
-    catch (const exception &e1) {
+    catch (const exception &e1)
+    {
 
         cerr << e1.what();
     }
 
-    try{
-        if(not(records_end.empty())) {
+    try
+    {
+        if (not(records_end.empty()))
+        {
             end_GDP_real = std::stod(records_end[0][2]);
         }
-        else{
+        else
+        {
             cout << "Empty return from database in City calculate CAGR" << endl;
         }
     }
-    catch (const exception &e2) {
+    catch (const exception &e2)
+    {
 
         cerr << e2.what();
     }
 
     //cout << "Test i city calculate CAGR: " << CAGR << " GDP real start: " << start_GDP_real << " End GDP real " << end_GDP_real << endl;
 
-
-    if((not(start_GDP_real == 0)) && not(end_time == start_time1)) {
+    if ((not(start_GDP_real == 0)) && not(end_time == start_time1))
+    {
         delta_time = end_time - start_time1;
         //cout << "Test i city calculate GDP end/start: " << end_GDP_real/start_GDP_real << " 1/delta time " << 1/delta_time <<  endl;
-        CAGR = pow(end_GDP_real/start_GDP_real,1/delta_time) - 1;
+        CAGR = pow(end_GDP_real / start_GDP_real, 1 / delta_time) - 1;
         //CAGR = end_GDP_real/start_GDP_real - 1;
-        //CAGR = pow(2,10);   
-    }   
+        //CAGR = pow(2,10);
+    }
     cout << "Test i city calculate CAGR: " << CAGR << endl;
 
     return CAGR;
-
-
 }
 
-void City::save_consumers() {
+double City::calculate_Palma_ratio()
+{
 
-    if(consumers_) {
+    double Palma_ratio = 0;
+    int number_of_consumers = 0;
+    double top_percentile = 0.1;
+    double bottom_percentile = 0.4;
+    int top_count = 0;
+    int bottom_count = 0;
 
-        consumers_ -> save_consumers();
+    double top_net_wealth = 0;
+    double bottom_net_wealth = 0;
+
+    using Record = std::vector<std::string>;
+    using Records = std::vector<Record>;
+
+    //SETTING LIMITS
+    number_of_consumers = consumers_->get_size();
+    bottom_count = floor(bottom_percentile * number_of_consumers);
+    top_count = ceil(top_percentile * number_of_consumers);
+
+    string full_path = get_city_sql_string(name_);
+    const char *dir = full_path.c_str();
+
+    //SETTING SELECT STATEMENTS
+    string top_net_wealth_stmt = "select sum(NET_WEALTH) from (select (DEPOSITS + CAPITAL - DEBTS) as NET_WEALTH from CONSUMER_TABLE order by (DEPOSITS + capital - DEBTS)  DESC limit " + std::to_string(top_count) + ")";
+    string bottom_net_wealth_stmt = "select sum(NET_WEALTH) from (select (DEPOSITS + CAPITAL - DEBTS) as NET_WEALTH from CONSUMER_TABLE order by (DEPOSITS + capital - DEBTS)  ASC limit " + std::to_string(bottom_count) + ")";
+
+    Records records_top = select_stmt(top_net_wealth_stmt, dir);
+    Records records_bottom = select_stmt(bottom_net_wealth_stmt, dir);
+
+    if (not(records_top.empty()))
+    {
+        top_net_wealth = std::stod(records_top[0][0]);
+        cout << "Extracting net wealth top: " << top_net_wealth << endl;
     }
 
+    if (not(records_bottom.empty()))
+    {
+        bottom_net_wealth = std::stod(records_bottom[0][0]);
+        cout << "Extracting net wealth bottom: " << bottom_net_wealth << endl;
+    }
+
+    if (not(bottom_net_wealth == 0))
+    {
+        Palma_ratio = top_net_wealth / bottom_net_wealth;
+    }
+
+    cout << "Palma ratio: " << Palma_ratio << endl;
+
+    return Palma_ratio;
+}
+
+
+void City::save_consumers()
+{
+
+    if (consumers_)
+    {
+
+        consumers_->save_consumers();
+    }
 }

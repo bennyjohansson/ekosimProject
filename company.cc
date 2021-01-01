@@ -11,7 +11,7 @@
 #include "company.h"
 #include "functions.h"
 #include "SQLfunctions.h"
-#include "error_no_return.h"
+//#include "error_no_return.h"
 
 using namespace std;
 

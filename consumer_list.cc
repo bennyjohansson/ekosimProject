@@ -6,7 +6,7 @@
 //#include "element_consumer.h"
 #include "consumer_list.h"
 //#include "consumer.h"
-#include "error_no_return.h"
+//#include "error_no_return.h"
 #include "functions.h"
 #include "SQLfunctions.h"
 
@@ -419,11 +419,14 @@ Consumer *Consumer_list::get_consumer(string name)
         return p->get_consumer();
       }
     }
-    throw no_return_error("Cant find the consumer");
+    //throw no_return_error("Cant find the consumer");
+    throw std::runtime_error(std::string("Failed: to find a consumer"));
   }
   else
   {
-    throw no_return_error("No list");
+    // throw no_return_error("No list");
+    throw std::runtime_error(std::string("No list"));
+
   }
 }
 
@@ -458,7 +461,8 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
 
   if (!list_)
   {
-    throw no_return_error("No optimal consumer");
+    // throw no_return_error("No optimal consumer");
+    throw std::runtime_error(std::string("No optimal consumer"));
   }
 
   for (p = list_; p; p = p->next_)
@@ -477,7 +481,9 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
 
   if (p == best)
   {
-    throw no_return_error("No optimal consumer");
+    //throw no_return_error("No optimal consumer");
+    throw std::runtime_error(std::string("No optimal consumer"));
+
   }
 
   return best->get_consumer();
@@ -493,7 +499,9 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
 
   if (!list_)
   {
-    throw no_return_error("No usless consumer");
+    //throw no_return_error("No usless consumer");
+    throw std::runtime_error(std::string("No usless consumer"));
+
   }
 
   for (p = list_; p; p = p->next_)
@@ -509,7 +517,8 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
 
   if (wors == worst)
   {
-    throw no_return_error("No usless consumer");
+    //throw no_return_error("No usless consumer");
+    throw std::runtime_error(std::string("No usless consumer"));
   }
   //  cout << "I cons list get usles" << endl;
   return wors->get_consumer();

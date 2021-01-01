@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 #include "city_list.h"
-#include "error_no_return.h"
+//#include "error_no_return.h"
 
 using namespace std;
 
@@ -35,10 +35,13 @@ City * City_list::get_city(string name) {
                 return p -> get_city() ;
             }
         }
-        throw no_return_error("Cant find the city");
+        //throw no_return_error("Cant find the city");
+        throw std::runtime_error(std::string("Cant find the city"));
     }
     else {
-        throw no_return_error("no list"); 
+        // throw no_return_error("no list"); 
+        throw std::runtime_error(std::string("No ciry list"));
+        
     } 
 }
 
@@ -47,7 +50,7 @@ City * City_list::get_city(string name) {
  */ 
 
 void City_list::add_city(City * city) {
-    Element_city * p;
+    //Element_city * p;
     size_++;
     
     if(list_) {

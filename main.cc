@@ -10,7 +10,7 @@
 #include "world.h"
 #include "city.h"
 #include "functions.h"
-#include "init_company.h"
+// #include "init_company.h"
 #include "functions.h"
 #include "SQLfunctions.h"
 

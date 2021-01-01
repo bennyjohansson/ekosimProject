@@ -158,7 +158,7 @@ class City {
       void save_high_score();
       void save_consumers();
       double calculate_CAGR(int);
-
+      double calculate_Palma_ratio();
       
       //Database functions
       void update_interest_parameters();
