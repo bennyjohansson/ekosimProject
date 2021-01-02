@@ -844,7 +844,7 @@ void City::update_interest_rate()
 
     double delta_sum = 0;
     double d_sum_di = 1;
-    double max_interest_rate = 2;
+    double max_interest_rate = 0.5;
     double ir_delta = 0.0005;
     int number_of_iterations = 20; //20 works fine
     int ir_method_select = 1;
@@ -1864,6 +1864,11 @@ void City::update_parameters_from_database()
             if (records[i][1] == "InflationTarget")
             {
                 inflationTarget = std::stod(records[i][2]);
+                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+            }
+            if (records[i][1] == "CapitalGainsTax")
+            {
+                capital_gains_tax_ = std::stod(records[i][2]);
                 cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
             }
         }
