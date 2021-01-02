@@ -26,6 +26,7 @@ void World::add_city(string city_name, string email) {
 	City * myCity = new City(city_name, clock_);
 	int size = 0;
 	size = myCity -> get_no_consumers();
+	double share_capital_owners = 0.3;
 	//string email = "myEmail@gmail.com";
 	//Initiating database
 	initiateCityDB(city_name);
@@ -39,7 +40,7 @@ void World::add_city(string city_name, string email) {
   	/*
    	* Adding capital owners
    	*/
-  	myCity -> add_capital_owners(0.1);
+  	myCity -> add_capital_owners(share_capital_owners);
 
 	myCity -> add_companies_from_database();
 
@@ -85,7 +86,7 @@ void World::initiate_city(string city_name) {
     City * myCity;
 	string email = "johansson.benny@gmail.com";
 	int no_consumers = 3000;
-	double share_capital_owners = 0.2;
+	double share_capital_owners = 0.3;
 	
 
     
