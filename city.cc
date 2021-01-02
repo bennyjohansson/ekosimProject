@@ -1825,29 +1825,32 @@ void City::update_parameters_from_database()
 
     Records records = select_stmt(stmt, dir);
     //sqlite3_close(DB);
-
-    for (int i = 0; i < records.size(); i++)
+    if (not(records.empty()))
     {
-        if (records[i][1] == "BudgetBalance")
+        for (int i = 0; i < records.size(); i++)
         {
-            budgetBalance = std::stod(records[i][2]);
-            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+            if (records[i][1] == "BudgetBalance")
+            {
+                budgetBalance = std::stod(records[i][2]);
+                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+            }
+            if (records[i][1] == "IncomeTax")
+            {
+                incomeTax = std::stod(records[i][2]);
+                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+            }
+            if (records[i][1] == "InflationTarget")
+            {
+                inflationTarget = std::stod(records[i][2]);
+                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+            }
         }
-        if (records[i][1] == "IncomeTax")
-        {
-            incomeTax = std::stod(records[i][2]);
-            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
-        }
-        if (records[i][1] == "InflationTarget")
-        {
-            inflationTarget = std::stod(records[i][2]);
-            cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
-        }
+
+        cout << endl;
+        set_budget_balance(budgetBalance);
+        set_income_tax(incomeTax);
+        set_inflation_target(inflationTarget);
     }
-    cout << endl;
-    set_budget_balance(budgetBalance);
-    set_income_tax(incomeTax);
-    set_inflation_target(inflationTarget);
 }
 
 void City::add_companies_from_database()
@@ -2085,7 +2088,6 @@ double City::calculate_Palma_ratio()
 
     return Palma_ratio;
 }
-
 
 void City::save_consumers()
 {

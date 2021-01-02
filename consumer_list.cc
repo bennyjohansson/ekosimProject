@@ -750,7 +750,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
     skill = consumer->get_skill();
     my_wage = wage_sum * skill / skill_sum;
     my_income_tax = my_wage * income_tax;
-    consumer->set_income(my_wage);
+    consumer->set_income(my_wage - my_income_tax);
     income_tax_sum += my_income_tax;
     country = consumer -> get_country();
 
