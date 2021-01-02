@@ -811,6 +811,7 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
     //consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
+    consumer -> set_transfers(amount);
   }
 }
 
@@ -836,6 +837,8 @@ void Consumer_list::pay_all_dividends_log(double amount_company, double amount_m
 
     consumer->change_capital(amount_bank);
     log_transaction_full("Bank", name, amount_bank, "Dividends", time);
+
+    consumer -> set_dividends(amount_company + amount_market + amount_bank);
   }
 }
 

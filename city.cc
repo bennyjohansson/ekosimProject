@@ -1012,6 +1012,7 @@ void City::update_employees()
      */
 
     company_list_->remove_usless_employees();
+    cout << "I City update emplyees" << endl;
 
     /*
      * A company does not always hire the optimal consumer first. A random company is selected
@@ -1029,6 +1030,7 @@ void City::update_employees()
     while (company_list_->update_employees2(opt = get_optimal_consumer(mot, skill, prod_fcn, prod_param)))
     {
         no_consumers_hired++;
+        //cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
     }
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
@@ -2056,8 +2058,8 @@ double City::calculate_Palma_ratio()
     const char *dir = full_path.c_str();
 
     //SETTING SELECT STATEMENTS
-    string top_net_wealth_stmt = "select sum(NET_WEALTH) from (select (DEPOSITS + CAPITAL - DEBTS) as NET_WEALTH from CONSUMER_TABLE order by (DEPOSITS + capital - DEBTS)  DESC limit " + std::to_string(top_count) + ")";
-    string bottom_net_wealth_stmt = "select sum(NET_WEALTH) from (select (DEPOSITS + CAPITAL - DEBTS) as NET_WEALTH from CONSUMER_TABLE order by (DEPOSITS + capital - DEBTS)  ASC limit " + std::to_string(bottom_count) + ")";
+    string top_net_wealth_stmt = "select sum(NET_INCOME) from (select (INCOME + DIVIDENDS + TRANSFERS) as NET_INCOME from CONSUMER_TABLE order by (INCOME + DIVIDENDS + TRANSFERS)  DESC limit " + std::to_string(top_count) + ")";
+    string bottom_net_wealth_stmt = "select sum(NET_INCOME) from (select (INCOME + DIVIDENDS + TRANSFERS) as NET_INCOME from CONSUMER_TABLE order by (INCOME + DIVIDENDS + TRANSFERS)  ASC limit " + std::to_string(bottom_count) + ")";
 
     Records records_top = select_stmt(top_net_wealth_stmt, dir);
     Records records_bottom = select_stmt(bottom_net_wealth_stmt, dir);
@@ -2065,13 +2067,13 @@ double City::calculate_Palma_ratio()
     if (not(records_top.empty()))
     {
         top_net_wealth = std::stod(records_top[0][0]);
-        cout << "Extracting net wealth top: " << top_net_wealth << endl;
+        cout << "Extracting net income top: " << top_net_wealth << endl;
     }
 
     if (not(records_bottom.empty()))
     {
         bottom_net_wealth = std::stod(records_bottom[0][0]);
-        cout << "Extracting net wealth bottom: " << bottom_net_wealth << endl;
+        cout << "Extracting net income bottom: " << bottom_net_wealth << endl;
     }
 
     if (not(bottom_net_wealth == 0))

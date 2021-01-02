@@ -119,8 +119,11 @@ bool City_list::run_production_cycle() {
     if(list_) {
         for(p = list_; p; p = p -> next_) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << "Updating employees" << endl;
             p -> get_city() -> update_employees();
+            cout << "Negotiate market price" << endl;
             p -> get_city() -> negotiate_market_price();
+            cout << "Produce" << endl;
             p -> get_city() -> produce();
         }
     }

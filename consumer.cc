@@ -49,6 +49,8 @@ items_(0),
 loans_(0), 
 debts_(0),
 income_(0),
+dividends_(0),
+transfers_(0),
 employed_(false),
 trustworthy_(true),
 bank_(b),
@@ -153,6 +155,14 @@ double Consumer::get_borrowwill(){
 
 double Consumer::get_income() {
     return income_;
+}
+
+double Consumer::get_dividends() {
+    return dividends_;
+}
+
+double Consumer::get_transfers() {
+    return transfers_;
 }
 
 bool Consumer::get_employment_status() {
@@ -272,6 +282,17 @@ void Consumer::set_spedwill(double spendw){
 void Consumer::set_income(double income) {
     income_ = income;
 }
+
+void Consumer::set_dividends(double dividends) {
+    dividends_ = dividends;
+}
+
+void Consumer::set_transfers(double transfers) {
+    transfers_ = transfers;
+}
+
+
+
 void Consumer::set_employment_status(bool employed) {
     employed_ = employed;
 }
@@ -844,6 +865,8 @@ void Consumer::save_to_database() {
     consumer_data.push_back((double)savewill_);
     consumer_data.push_back((double)borrowwill_);
     consumer_data.push_back((double)income_);
+    consumer_data.push_back((double)dividends_);
+    consumer_data.push_back((double)transfers_);
     //cout << "I company save time database " << current_production_items_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 

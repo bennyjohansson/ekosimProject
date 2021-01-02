@@ -42,6 +42,8 @@ class Consumer {
       double get_borrowwill();
       double get_savewill();
       double get_income();
+      double get_dividends();
+      double get_transfers();
       double get_items();
       double get_loans();
       double get_debts();
@@ -62,6 +64,8 @@ class Consumer {
       void set_capital(double);
       void set_spedwill(double);
       void set_income(double);  
+      void set_dividends(double);  
+      void set_transfers(double);  
       void set_employment_status(bool employed);
       void set_items(double);
       void set_loans(double);
@@ -125,6 +129,8 @@ class Consumer {
       double loans_;
       double debts_;
     	double income_;
+      double dividends_;
+      double transfers_;
     	bool employed_;
       bool trustworthy_;
       string employer_;

@@ -156,8 +156,8 @@ double capacity_increase(double items, double capacity, double CapIncreaseParam_
     double increase = 0;
     int capacity_function = 1; //2
 
-    double parameter1_amount = 8000;
-    double parameter1_rate = 0.0001; //0.001 works fine per 2020-08-12
+    // double parameter1_amount = 8000;
+    // double parameter1_rate = 0.0001; //0.001 works fine per 2020-08-12
 
     double parameter3_rate = 0.2;
     
@@ -259,7 +259,7 @@ double get_price(double excess, double sum_spend) {
 double item_cost(double production, double item_efficiency) {
     
     double items = 0;
-    const double factor = 0.1;
+    //const double factor = 0.1;
     
     items = item_efficiency*production;//log(production + 1)*(factor);
     
