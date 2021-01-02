@@ -1107,7 +1107,7 @@ void City::save_data()
     employed = consumers_->get_employed();
     unemployed = consumers_->get_unemployed();
     unemployment = unemployed / size;
-    wages = *((company_list_->get_company("bempa_AB"))->wages_.begin());
+    wages = company_list_ -> get_average_wage(); //*((company_list_->get_company("bempa_AB"))->wages_.begin());
     nominal_gdp = price_out * item;
     GDP = GDP_.begin();
     time = clock_->get_time();
