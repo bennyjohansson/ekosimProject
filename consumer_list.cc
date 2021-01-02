@@ -384,10 +384,10 @@ int Consumer_list::get_trustworthy()
   return no;
 }
 
-Element_consumer * Consumer_list::get_first_consumer() {
+Element_consumer *Consumer_list::get_first_consumer()
+{
 
   return list_;
-
 }
 
 Consumer *Consumer_list::get_random_consumer()
@@ -426,7 +426,6 @@ Consumer *Consumer_list::get_consumer(string name)
   {
     // throw no_return_error("No list");
     throw std::runtime_error(std::string("No list"));
-
   }
 }
 
@@ -472,8 +471,9 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
 
     //    cout <<"I consumer list get optimal" << p -> get_skill() << " x  " << best -> get_skill() << "  " << get_prod(consumer, capacity) << " " <<  get_prod(besta, capacity) << endl;
 
-    if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter)) && !(p->get_employment_status())) {
-    //if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter))) {
+    if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter)) && !(p->get_employment_status()))
+    {
+      //if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter))) {
       best = p;
       //	cout << "I consumer list get optimal" << p -> get_skill() << " x  " << best -> get_skill() << endl;
     }
@@ -483,7 +483,6 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
   {
     //throw no_return_error("No optimal consumer");
     throw std::runtime_error(std::string("No optimal consumer"));
-
   }
 
   return best->get_consumer();
@@ -501,7 +500,6 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
   {
     //throw no_return_error("No usless consumer");
     throw std::runtime_error(std::string("No usless consumer"));
-
   }
 
   for (p = list_; p; p = p->next_)
@@ -752,21 +750,18 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
     my_income_tax = my_wage * income_tax;
     consumer->set_income(my_wage - my_income_tax);
     income_tax_sum += my_income_tax;
-    country = consumer -> get_country();
+    country = consumer->get_country();
 
-
-
-  if(pay_wages_in_cash == 1) {
+    if (pay_wages_in_cash == 1)
+    {
       consumer->change_capital(my_wage - my_income_tax);
-  }
-  else {
-    consumer -> accept_deposit(my_wage - my_income_tax);
-    //cout << "Paying wage to deposit account" << endl;
-  }
+    }
+    else
+    {
+      consumer->accept_deposit(my_wage - my_income_tax);
+      //cout << "Paying wage to deposit account" << endl;
+    }
     //
-
-
-
 
     log_transaction_full(employer, consumer->get_name(), my_wage, "Salary", consumer->get_time());
   }
@@ -811,7 +806,7 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
     //consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
-    consumer -> set_transfers(amount);
+    consumer->set_transfers(amount);
   }
 }
 
@@ -821,6 +816,7 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
   Element_consumer *p;
   int time = 0;
   string name;
+  int pay_dividends_in_cash = 0;
 
   for (p = list_; p; p = p->next_)
   {
@@ -829,19 +825,25 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
     name = consumer->get_name();
     time = consumer->get_time();
 
-    consumer->change_capital(amount_company);
+    if (pay_dividends_in_cash == 0)
+    {
+      consumer->accept_deposit(amount_company);
+      consumer->accept_deposit(amount_market);
+      consumer->accept_deposit(amount_bank);
+    }
+    else
+    {
+      consumer->change_capital(amount_company);
+      consumer->change_capital(amount_market);
+      consumer->change_capital(amount_bank);
+    }
+    
     log_transaction_full("Company", name, amount_company, "Dividends", time);
-
-    consumer->change_capital(amount_market);
     log_transaction_full("Market", name, amount_market, "Dividends", time);
-
-    consumer->change_capital(amount_bank);
     log_transaction_full("Bank", name, amount_bank, "Dividends", time);
-
-    consumer -> set_dividends(amount_company + amount_market + amount_bank);
+    consumer->set_dividends(amount_company + amount_market + amount_bank);
   }
 }
-
 
 void Consumer_list::save_consumers()
 {
@@ -851,6 +853,6 @@ void Consumer_list::save_consumers()
   for (p = list_; p; p = p->next_)
   {
     Consumer *consumer = p->get_consumer();
-    consumer ->  save_to_database();
+    consumer->save_to_database();
   }
 }
