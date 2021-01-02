@@ -222,6 +222,30 @@ int Company_list::get_environmental_impact_sum() {
 
 
 
+double Company_list::get_average_wage() {
+    Element_company * p;
+    double sum = 0;
+    int number_of_companies = 0;
+    double average_wage = 0;
+    
+    for (p = list_; p; p = p -> next_) {
+        sum += p -> get_company() -> get_average_wage();
+    }
+
+    number_of_companies = get_size();
+    
+    if(not(number_of_companies == 0)) {
+        average_wage = sum/number_of_companies;
+    }
+    else {
+        cout << "No companies found in company list get average wage" << endl;
+    }
+
+    return sum;
+}
+
+
+
 double Company_list::get_expected_net_flow_to_bank_sum() {
     Element_company * p;
     double sum = 0;

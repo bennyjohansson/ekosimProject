@@ -1426,7 +1426,8 @@ void City::adjust_money()
         Wages++;
     }
 
-    average_wage = sum / i;
+    //average_wage = sum / i;
+    average_wage = company_list_ -> get_average_wage();
 
     //cout << "I city adjust money, money change function " << function_select << endl;
 
