@@ -85,7 +85,7 @@ void World::initiate_city(string city_name) {
     City * myCity;
 	string email = "johansson.benny@gmail.com";
 	int no_consumers = 3000;
-	double share_capital_owners = 0.1;
+	double share_capital_owners = 0.2;
 	
 
     
