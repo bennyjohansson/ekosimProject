@@ -64,6 +64,7 @@ class City {
       double get_capital();
       double get_vat();
       double get_income_tax();
+      double get_capital_gains_tax();
       double get_budget_balance();
       double get_inflation_target();
       int get_no_years_laundry();
@@ -89,6 +90,7 @@ class City {
       void set_time_to_steal(int);
       void set_vat(double);
       void set_income_tax(double);
+      void set_capital_gains_tax(double);
       void set_budget_balance(double);
       void set_inflation_target(double);
       void set_market(Market *);
@@ -198,6 +200,7 @@ class City {
       double loans_to_bank_;
       double vat_;
       double income_tax_; 
+      double capital_gains_tax_;
       double budget_balance_;
       double inflation_target_;
       double capital_;

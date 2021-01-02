@@ -815,7 +815,7 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
   }
 }
 
-void Consumer_list::pay_all_dividends_log(double amount_company, double amount_market, double amount_bank)
+double Consumer_list::pay_all_dividends_log(double amount_company, double amount_market, double amount_bank)
 {
 
   Element_consumer *p;

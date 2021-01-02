@@ -40,6 +40,7 @@ City::City(string name) : name_(name),
                           capital_(0),
                           vat_(0.2),
                           income_tax_(0.3),
+                          capital_gains_tax_(0.3),
                           time_to_steal_(7919)
 {
 }
@@ -59,6 +60,7 @@ City::City(string name, Clock *clock) : name_(name),
                                         capital_(0),
                                         vat_(0.2),
                                         income_tax_(0.3),
+                                        capital_gains_tax_(0.3),
                                         budget_balance_(0.00),
                                         time_to_steal_(7919)
 {
@@ -322,6 +324,13 @@ double City::get_income_tax()
     return income_tax_;
 }
 
+double City::get_capital_gains_tax()
+{
+    return capital_gains_tax_;
+}
+
+
+
 double City::get_budget_balance()
 {
     return budget_balance_;
@@ -445,6 +454,11 @@ void City::set_vat(double vat)
 void City::set_income_tax(double income_tax)
 {
     income_tax_ = income_tax;
+}
+
+void City::set_capital_gains_tax(double capital_gains_tax)
+{
+    capital_gains_tax_ = capital_gains_tax;
 }
 
 void City::set_budget_balance(double budget_balance)
@@ -1542,26 +1556,34 @@ void City::company_pay_dividends()
     double total_profit_c = 0;
     double total_profit_m = 0;
     double total_profit_b = 0;
-    //double amount = 0;
+    double company_tax = 0;
+    double market_tax = 0;
+    double bank_tax = 0;
+
     int number_of_capital_owners = 0;
 
     number_of_capital_owners = capital_owners_->get_size();
 
+    //Companies paying tax to city
     total_profit_c = company_list_->pay_dividends();
     total_profit_b = bank_->pay_dividends();
     total_profit_m = market_->pay_dividends();
 
-    //amount = (total_profit_m + total_profit_c+ total_profit_b)/size;
+    //Calculating capital gains tax
+    company_tax = total_profit_c*capital_gains_tax_;
+    market_tax = total_profit_m*capital_gains_tax_;
+    bank_tax = total_profit_b*capital_gains_tax_;
 
-    //consumers_ -> pay_dividends_log(total_profit_c/size, "Company");
-    //consumers_ -> pay_dividends_log(total_profit_m/size, "Market");
-    //consumers_ -> pay_dividends_log(total_profit_b/size, "Bank");
-    capital_owners_->pay_all_dividends_log(total_profit_c / number_of_capital_owners, total_profit_m / number_of_capital_owners, total_profit_b / number_of_capital_owners);
+    //Paying dividends after tax to capital owners
+    capital_owners_->pay_all_dividends_log((total_profit_c - company_tax) / number_of_capital_owners, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
+
+    //Increasing city capital with collected tax
+    change_capital(company_tax + bank_tax + market_tax);
 
     cout << endl
-         << "Company dividends: " << total_profit_c << " $BJ" << endl
-         << "Bank dividends: " << total_profit_b << " $BJ" << endl
-         << "Market dividends: " << total_profit_m << " $BJ" << endl;
+         << "Company dividends: " << total_profit_c - company_tax << " $BJ" << endl
+         << "Bank dividends: " << total_profit_b - bank_tax << " $BJ" << endl
+         << "Market dividends: " << total_profit_m - market_tax << " $BJ" << endl;
 }
 
 void City::company_pay_dividends(string theCompanyString, string theConsumerString, double amount)

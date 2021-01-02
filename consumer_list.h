@@ -91,7 +91,7 @@ class Consumer_list {
       double pay_employees_individual(double, double, double, double, string, int); 
       void pay_dividends(double);
 		void pay_dividends_log(double, string);
-		void pay_all_dividends_log(double, double, double); 
+		double pay_all_dividends_log(double, double, double); 
 		void pay_transfers_log(double, string);
       void save_consumers();
 	
