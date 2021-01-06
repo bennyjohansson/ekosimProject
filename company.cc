@@ -980,6 +980,7 @@ int Company::get_desired_investment()
     double price_out = 0;
     double cost_of_investment = 0;
     double NPV = 0;
+    double NPV_old = 0;
     double discounted_cashflows = 0;
     double borrow = 0;
 
@@ -1003,12 +1004,12 @@ int Company::get_desired_investment()
 
 
     //Items ivested and increase
-    item_increase = 4000;
+    item_increase = 10000;
     invested_items_tot = 4;
 
     price_out = market_->get_price_out();
 
-    while (NPV >= 0 && (debts_ + borrow) / capital_ - 1 < max_leverage_)
+    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
     {
         //First split of invested items between capacity and efficiency
         invested_items_capacity = invested_items_tot*investment_capacity_vs_efficiency_split_;
@@ -1031,6 +1032,7 @@ int Company::get_desired_investment()
         //calculating NPV of investment
         discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); //items NET PRESENT VALUE OF FUTURE CASHFLOWS
 
+        NPV_old = NPV;
         NPV = discounted_cashflows - cost_of_investment;
 
         cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
