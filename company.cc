@@ -936,7 +936,7 @@ double Company::invest()
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
-    //ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
+    ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
     //Increasing capacity and efficiency
 
@@ -999,7 +999,7 @@ int Company::get_desired_investment()
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
-
+    ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
 
 
