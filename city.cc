@@ -778,7 +778,7 @@ void City::negotiate_market_price()
     price_in = price_out / (1 + marginal);
 
     cout << "I City neg. price"
-         << " Tot dmd: " << demand << " items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "ma it: " << market_items << " co it " << company_items << " co pl " << company_planned_production << endl;
+         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "ma it: " << market_items << " co it " << company_items << " co pl " << company_planned_production << endl;
 
     market_->set_price_out(price_out);
 
@@ -1300,7 +1300,7 @@ void City::produce()
 
     production_items = company_list_->produce(name_);
 
-    cout << "Actual production: " << production_items * price << " $BJ and items: " << production_items << endl;
+    cout << "Actual production: " << production_items * price << " $BJ and items: " << production_items << " at price: " << price << endl;
 }
 
 void City::sell_to_market()
