@@ -778,7 +778,7 @@ void City::negotiate_market_price()
     price_in = price_out / (1 + marginal);
 
     cout << "I City neg. price"
-         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "ma it: " << market_items << " co it " << company_items << " co pl " << company_planned_production << endl;
+         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
 
     market_->set_price_out(price_out);
 

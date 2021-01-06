@@ -831,7 +831,7 @@ void Company::sell_to_market()
     actual_cost = market_->market_buy_items(stock_);
     actual_items = actual_cost / price;
 
-    //cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items  << " and price: " << price << endl;
+    cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items  << " and price: " << price << " stock: " << stock_ << endl;
 
     change_capital(actual_cost);
     change_stock(-actual_items);
@@ -924,7 +924,7 @@ double Company::invest()
     change_capital(-own_capital_to_invest);
 
     //Getting items from market
-    change_stock(actual_items);
+    //change_stock(actual_items);
 
     //Updating loans from bank
     change_debts(loans);
