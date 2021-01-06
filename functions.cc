@@ -233,7 +233,7 @@ double factor_increase(double items, double sk, double mot, double capacity, dou
 
 double item_efficiency_increase(double items, double parameter1_rate) {
 
-    int item_efficiency_function = 1;
+    int item_efficiency_function = 2;
     double item_efficiency_increase = 0;   
     //double parameter1_rate = 0.001;
     

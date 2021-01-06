@@ -987,7 +987,7 @@ int Company::get_desired_investment()
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.00001;  //Should be updated from database
+    double ItemEfficiencyRate = 0.000001;  //Should be updated from database
 
     //Parameters settging investment split between capacity and efficiency
     // double investment_capacity_vs_efficiency_split = 0.5;
@@ -1017,6 +1017,7 @@ int Company::get_desired_investment()
         invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
         invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
 
+        //cout << "Invested tot: " << invested_items_tot << " invested cap: " << invested_items_capacity << " invested item_item" <<invested_items_efficiency_items << " invesested items_lab" << invested_items_efficiency_factor << endl;
 
         //Cost of investment
         cost_of_investment = price_out * invested_items_tot;
@@ -1032,7 +1033,7 @@ int Company::get_desired_investment()
 
         NPV = discounted_cashflows - cost_of_investment;
 
-        //cout << "I comp des inv new items: " << invested_items_temp << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
+        cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
         invested_items_tot += item_increase;
     }
