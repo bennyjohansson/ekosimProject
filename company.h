@@ -97,6 +97,7 @@ public:
     void change_capital(double);
     void change_prod_const_skill(double);
     void change_prod_const_motivation(double);
+    void change_item_efficiency(double);
     void change_wage_const(double);
     void change_stock(double);  
     void change_invest(double);

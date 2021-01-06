@@ -461,6 +461,13 @@ void Company::change_prod_const_motivation(double ch)
     prod_const_motivation_ += ch;
 }
 
+void Company::change_item_efficiency(double ch)
+{
+    item_efficiency_ += ch;
+}
+
+
+
 void Company::change_wage_const(double wcc)
 {
     wage_const_ += wcc;
@@ -958,6 +965,7 @@ double Company::invest()
     change_prod_const_skill(factor_change);
     change_prod_const_motivation(factor_change);
     change_capacity(capacity_change);
+    change_item_efficiency(-item_efficiency_change);
 
     //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
     //cout << "I comp inv items: " << actual_items << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
