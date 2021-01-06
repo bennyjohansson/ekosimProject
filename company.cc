@@ -44,7 +44,7 @@ Company::Company(string name, Market *market, Clock *clock) : name_(name),
 // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
 
 Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Bank *bank, Clock *clock) : name_(name),
-                                                                                                                                                                                                                        city_name_(city_name),
+                                                                                                                                                                                                                       city_name_(city_name),
                                                                                                                                                                                                                         capital_(capital),
                                                                                                                                                                                                                         stock_(stock),
                                                                                                                                                                                                                         debts_(0),
@@ -53,6 +53,8 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         production_function_(1),
                                                                                                                                                                                                                         current_production_items_(0),
                                                                                                                                                                                                                         production_parameter_(0.001),
+                                                                                                                                                                                                                        investment_capacity_vs_efficiency_split_(0.5),
+                                                                                                                                                                                                                        investment_item_vs_factor_split_(0.5),
                                                                                                                                                                                                                         prod_const_skill_(p_c_skill),
                                                                                                                                                                                                                         prod_const_motivation_(p_c_mot),
                                                                                                                                                                                                                         item_efficiency_(0.1),
@@ -316,6 +318,14 @@ double Company::get_desired_loans()
     double price_out = 0;
     double capital_to_invest = 0;
     double desired_loans = 0;
+
+    //Parameters settging investment split between capacity and efficiency
+    //SHOULD BE UPDATED FROM THE DATABASE
+    // double investment_capacity_vs_efficiency_split = 0.5;
+    // double investment_item_vs_factor_split = 0.5;
+
+
+    
 
     capital_to_invest = capital_ * pbr_;
     desired_investment = get_desired_investment();
@@ -833,32 +843,41 @@ double Company::invest()
 {
 
     int max_items = 0;
-    int actual_items = 0;
+    int actual_items = 0; 
+    int invested_items_tot = 0;
+    int invested_items_capacity = 0;
+    int invested_items_efficiency_items = 0;
+    int invested_items_efficiency_factor = 0;
+
     int desired_items = 0;
     double cost = 0;
     double actual_amount = 0;
     double loans = 0;
-    //double loans2 = 0;
-    //double desired_loans = 0;
     double available_capital = 0;
     double available_bank_financing = 0;
     double own_capital_to_invest = 0;
-    //double income = 0;
     double price_out = 0;
-    //double value = 0;
     double capacity_change = 0;
     double factor_change = 0;
+    double item_efficiency_change = 0;
     bool increase = true;
 
     //Database parameters
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
+    double ItemEfficiencyRate = 0.001;  //Should be updated from database
 
-    FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
-    CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
-    CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
+    //Parameters settging investment split between capacity and efficiency
+    // double investment_capacity_vs_efficiency_split = 0.5;
+    // double investment_item_vs_factor_split = 0.5;
 
+
+    // FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
+    // CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
+    // CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
+
+    //Getting priec and max items in market
     price_out = market_->get_price_out();
     max_items = market_->get_items();
 
@@ -887,7 +906,6 @@ double Company::invest()
     own_capital_to_invest = cost - loans;
 
     //Paying market for goods
-
     actual_items = market_->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
 
@@ -907,7 +925,6 @@ double Company::invest()
 
     //Getting items from market
     change_stock(actual_items);
-    //market_ -> change_items(-items);
 
     //Updating loans from bank
     change_debts(loans);
@@ -919,10 +936,21 @@ double Company::invest()
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
+    //ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
     //Increasing capacity and efficiency
-    capacity_change = capacity_increase(actual_items, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
-    factor_change = factor_increase(actual_items, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
+
+    //First split of invested items between capacity and efficiency
+    invested_items_capacity = invested_items_tot*investment_capacity_vs_efficiency_split_;
+
+    //Second split of invested items between item and labour efficiency
+    invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
+    invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
+
+    capacity_change = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
+    factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
+    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate);
+
 
     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
     //cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
@@ -941,8 +969,13 @@ double Company::invest()
 
 int Company::get_desired_investment()
 {
+    //Investments in different type of things
+    int invested_items_tot = 0;
+    int invested_items_capacity = 0;
+    int invested_items_efficiency_factor = 0;
+    int invested_items_efficiency_items = 0;
 
-    double invested_items = 0;
+
     double item_increase = 0;
     double price_out = 0;
     double cost_of_investment = 0;
@@ -954,21 +987,39 @@ int Company::get_desired_investment()
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
+    double ItemEfficiencyRate = 0.00001;  //Should be updated from database
+
+    //Parameters settging investment split between capacity and efficiency
+    // double investment_capacity_vs_efficiency_split = 0.5;
+    // double investment_item_vs_factor_split = 0.5;
+
+
 
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
 
-    invested_items = 1;
-    item_increase = 2500;
+
+
+
+    //Items ivested and increase
+    item_increase = 4000;
+    invested_items_tot = 4;
 
     price_out = market_->get_price_out();
 
     while (NPV >= 0 && (debts_ + borrow) / capital_ - 1 < max_leverage_)
     {
+        //First split of invested items between capacity and efficiency
+        invested_items_capacity = invested_items_tot*investment_capacity_vs_efficiency_split_;
+
+        //Second split of invested items between item and labour efficiency
+        invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
+        invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
+
 
         //Cost of investment
-        cost_of_investment = price_out * invested_items;
+        cost_of_investment = price_out * invested_items_tot;
 
         //If not sufficient own capital for investment, borrow money
         if (cost_of_investment > capital_ * pbr_)
@@ -977,19 +1028,19 @@ int Company::get_desired_investment()
         }
 
         //calculating NPV of investment
-        discounted_cashflows = get_investment_cashflow(invested_items, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1); //items NET PRESENT VALUE OF FUTURE CASHFLOWS
+        discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); //items NET PRESENT VALUE OF FUTURE CASHFLOWS
 
         NPV = discounted_cashflows - cost_of_investment;
 
         //cout << "I comp des inv new items: " << invested_items_temp << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
-        invested_items += item_increase;
+        invested_items_tot += item_increase;
     }
 
     //Adjusting for two extra loops
-    invested_items = invested_items - 2 * item_increase;
+    invested_items_tot = invested_items_tot - 2 * item_increase;
 
-    return invested_items;
+    return invested_items_tot;
 }
 
 // double Company::get_investment() {
@@ -1025,13 +1076,15 @@ int Company::get_desired_investment()
 //
 // }
 
-double Company::get_investment_cashflow(double items, double loans, double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1)
+double Company::get_investment_cashflow(double invested_items_capacity, double invested_items_efficiency_items, double invested_items_efficiency_factor, double loans, double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1, double ItemEfficiencyRate)
 {
 
     double interest_rate = 0;
 
     double capacity_incr = 0;
     double factor_change = 0;
+    double item_efficiency_change = 0;
+
     double new_capacity = 0;
     double old_capacity = 0;
     double production_old = 0;
@@ -1066,12 +1119,15 @@ double Company::get_investment_cashflow(double items, double loans, double FacIn
     pcm = prod_const_motivation_;
 
     //Capacity and efficiency increase
-    capacity_incr = capacity_increase(items, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
+    capacity_incr = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
 
     old_capacity = capacity_;
     new_capacity = capacity_ + capacity_incr;
 
-    factor_change = factor_increase(items, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
+    factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
+
+    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate);
+
 
     loan_cost = bank_->get_loan_cost(loans);
 
@@ -1083,7 +1139,7 @@ double Company::get_investment_cashflow(double items, double loans, double FacIn
 
         sales_value = (production_new - production_old) * price_in;
         est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
-        est_prod_cost = (item_cost(production_new, item_efficiency_) - item_cost(production_old, item_efficiency_)) * price_out;
+        est_prod_cost = (item_cost(production_new, item_efficiency_ - item_efficiency_change) - item_cost(production_old, item_efficiency_)) * price_out;
 
         value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
         t++;

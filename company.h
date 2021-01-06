@@ -64,7 +64,7 @@ public:
     double get_total_wages();
     double get_estimated_wages(double);
     double get_wage_change_limit();
-    double get_investment_cashflow(double, double, double, double, double);
+    double get_investment_cashflow(double, double,double, double, double, double, double, double);
     int get_desired_investment();
 
     double get_desired_loans();
@@ -158,6 +158,10 @@ private:
     int production_function_;
     int current_production_items_;
     double production_parameter_;
+
+    double investment_capacity_vs_efficiency_split_;
+    double investment_item_vs_factor_split_;
+
     double prod_const_skill_;
     double prod_const_motivation_;
     double item_efficiency_;

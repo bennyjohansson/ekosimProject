@@ -231,6 +231,34 @@ double factor_increase(double items, double sk, double mot, double capacity, dou
     return f_increase;
 }
 
+double item_efficiency_increase(double items, double parameter1_rate) {
+
+    int item_efficiency_function = 1;
+    double item_efficiency_increase = 0;   
+    //double parameter1_rate = 0.001;
+    
+    switch (item_efficiency_function) {
+        case 1:
+            item_efficiency_increase = parameter1_rate*items;
+            break;
+            
+        case 2:
+            item_efficiency_increase = 0.5*log(parameter1_rate*items + 1);
+            break;
+            
+        case 3:
+            item_efficiency_increase = 0; //parameter1_rate*items/capacity;
+            break;     
+            
+        default:
+            item_efficiency_increase = 0;
+            break;
+    }
+    
+       
+    return item_efficiency_increase;
+}
+
 double get_price(double excess) {
     
     double P_MAX = 100;
