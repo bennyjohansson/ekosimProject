@@ -931,7 +931,7 @@ double Company::invest()
     change_capital(-own_capital_to_invest);
 
     //Getting items from market
-    //change_stock(actual_items);
+    change_stock(actual_items);
 
     //Updating loans from bank
     change_debts(loans);
@@ -967,8 +967,8 @@ double Company::invest()
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    //cout << " New cap: " << capacity_ << ", own capital invested: " << capital << "  Loans: " << loans << " des loans" << loans2 << "   total capital: " << cost << " available capital: " << available_capital << endl;
-    //cout << "I comp inv items: " << actual_items << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
+    cout << " New cap: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << " des loans" << available_bank_financing << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
 
     investments_.push_front(actual_amount);
 
