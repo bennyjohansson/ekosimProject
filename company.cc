@@ -969,6 +969,7 @@ double Company::invest()
 
     cout << " New cap: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << " des loans" << available_bank_financing << "   total capital: " << cost << " available capital: " << available_capital << endl;
     cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
+    cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
 
     investments_.push_front(actual_amount);
 
