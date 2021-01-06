@@ -1035,7 +1035,7 @@ int Company::get_desired_investment()
         NPV_old = NPV;
         NPV = discounted_cashflows - cost_of_investment;
 
-        cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
+        //cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
         invested_items_tot += item_increase;
     }
