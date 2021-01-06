@@ -462,7 +462,8 @@ double Consumer::get_demand() {
 	double interest = 0;
 	
 	interest = bank_ -> get_interest();
-	demand_bank = get_consumer_demand_deposit(spendwill_, loans_, interest);
+
+	demand_bank = fmin(get_consumer_demand_deposit(spendwill_, loans_, interest), bank_ -> get_max_customer_borrow());
 	demand_cash = get_consumer_demand_cash(spendwill_, capital_);
 	
 	demand_total = demand_bank + demand_cash;
