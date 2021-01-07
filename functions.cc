@@ -243,7 +243,7 @@ double item_efficiency_increase(double items, double parameter1_rate, double ite
             break;
             
         case 2:
-            item_efficiency_increase = 5*item_efficiency*log(parameter1_rate*items + 1);
+            item_efficiency_increase = log(parameter1_rate*items*item_efficiency + 1);
             break;
             
         case 3:
