@@ -931,7 +931,7 @@ double Company::invest()
     change_capital(-own_capital_to_invest);
 
     //Getting items from market
-    change_stock(actual_items);
+    //change_stock(actual_items);
 
     //Updating loans from bank
     change_debts(loans);
