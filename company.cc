@@ -1158,7 +1158,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
         sales_value = (production_new - production_old) * price_in;
         est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
-        est_prod_cost = (item_cost(production_new, fmax(0, item_efficiency_ - item_efficiency_change)) - item_cost(production_old, item_efficiency_)) * price_out;
+        est_prod_cost = (item_cost(production_new, fmax(0, item_efficiency_ - item_efficiency_change)) - item_cost(production_old, fmax(0, item_efficiency_ - item_efficiency_change))) * price_out;
 
         value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
         t++;
