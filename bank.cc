@@ -446,7 +446,7 @@ double Bank::pay_dividends() {
     //cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
     
     //Safety amount
-    safety_amount = loans_*capital_reserve_ratio_ *(1+buffer);
+    safety_amount = loans_*capital_reserve_ratio_*(1+buffer);
     
 
         

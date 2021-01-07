@@ -948,11 +948,11 @@ double Company::invest()
     //Increasing capacity and efficiency
 
     //First split of invested items between capacity and efficiency
-    invested_items_capacity = invested_items_tot*investment_capacity_vs_efficiency_split_;
+    invested_items_capacity = actual_items*investment_capacity_vs_efficiency_split_;
 
     //Second split of invested items between item and labour efficiency
-    invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
-    invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
+    invested_items_efficiency_items = (actual_items - invested_items_capacity) * investment_item_vs_factor_split_;
+    invested_items_efficiency_factor = (actual_items - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
 
     capacity_change = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
