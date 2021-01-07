@@ -761,7 +761,7 @@ void City::negotiate_market_price()
 
     //Getting demand from participants
     consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
-    investment_demand = *investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
+    investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
     market_excess_demand = (market_->get_excess_demand_items()) * price_out;
 
