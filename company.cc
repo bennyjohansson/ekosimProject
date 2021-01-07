@@ -463,7 +463,14 @@ void Company::change_prod_const_motivation(double ch)
 
 void Company::change_item_efficiency(double ch)
 {
-    item_efficiency_ += ch;
+    if(item_efficiency_ += ch > 0) {
+        item_efficiency_ += ch;
+    }
+    else {
+        item_efficiency_ = 0;
+        cout << "Reached min of item investment = 0" << endl;
+
+    }
 }
 
 
@@ -1151,7 +1158,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
         sales_value = (production_new - production_old) * price_in;
         est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
-        est_prod_cost = (item_cost(production_new, item_efficiency_ - item_efficiency_change) - item_cost(production_old, item_efficiency_)) * price_out;
+        est_prod_cost = (item_cost(production_new, fmax(0, item_efficiency_ - item_efficiency_change)) - item_cost(production_old, item_efficiency_)) * price_out;
 
         value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
         t++;
