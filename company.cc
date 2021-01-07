@@ -963,7 +963,7 @@ double Company::invest()
 
     capacity_change = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
-    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate);
+    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
 
     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
@@ -1145,7 +1145,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
 
-    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate);
+    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
 
     loan_cost = bank_->get_loan_cost(loans);

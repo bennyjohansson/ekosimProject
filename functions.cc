@@ -231,7 +231,7 @@ double factor_increase(double items, double sk, double mot, double capacity, dou
     return f_increase;
 }
 
-double item_efficiency_increase(double items, double parameter1_rate) {
+double item_efficiency_increase(double items, double parameter1_rate, double item_efficiency) {
 
     int item_efficiency_function = 2;
     double item_efficiency_increase = 0;   
@@ -243,7 +243,7 @@ double item_efficiency_increase(double items, double parameter1_rate) {
             break;
             
         case 2:
-            item_efficiency_increase = 0.5*log(parameter1_rate*items + 1);
+            item_efficiency_increase = 5*item_efficiency*log(parameter1_rate*items + 1);
             break;
             
         case 3:
