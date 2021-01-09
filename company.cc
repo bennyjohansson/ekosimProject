@@ -631,6 +631,7 @@ void Company::update_from_database(string city_name)
     double decay = 0;
     double production_parameter = 0;
     int production_function = 0;
+    double investment_capacity_vs_efficiency_split = 0;
 
     //For loop for testing segmentation fault
     //for(int i = 0; i<100; i++){
@@ -651,6 +652,8 @@ void Company::update_from_database(string city_name)
     decay = std::stod(records[0][13]);
     //production_parameter = std::stod(records[0][13]);
     production_function = std::stoi(records[0][15]);
+    investment_capacity_vs_efficiency_split = std::stod(records[0][17]);
+
     //cout << "I company update_from_databbase4 " << endl;
     //}
     /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
@@ -667,6 +670,7 @@ void Company::update_from_database(string city_name)
     decay_ = decay;
     production_parameter_ = production_parameter;
     production_function_ = production_function;
+    investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
 }
 
 // THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE
