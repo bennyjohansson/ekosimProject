@@ -544,10 +544,15 @@ void Company::remove_employee(Consumer *consumer)
 
 void Company::update_company()
 {
-    capacity_ -= decay_ * capacity_;
-    prod_const_skill_ -= decay_ * prod_const_skill_;
-    prod_const_motivation_ -= decay_ * prod_const_motivation_;
-    item_efficiency_ += decay_ * item_efficiency_;
+    // capacity_ -= decay_ * capacity_;
+    // prod_const_skill_ -= decay_ * prod_const_skill_;
+    // prod_const_motivation_ -= decay_ * prod_const_motivation_;
+    // item_efficiency_ += decay_ * item_efficiency_;
+
+    change_capacity(-decay_ * capacity_);
+    change_prod_const_skill(-decay_ * prod_const_skill_);
+    change_prod_const_motivation(-decay_ * prod_const_motivation_);
+    change_item_efficiency(decay_ * item_efficiency_);
 }
 
 bool Company::update_employees(Consumer *opt)
