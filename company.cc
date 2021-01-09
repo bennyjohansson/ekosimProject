@@ -57,7 +57,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         investment_item_vs_factor_split_(0.5),
                                                                                                                                                                                                                         prod_const_skill_(p_c_skill),
                                                                                                                                                                                                                         prod_const_motivation_(p_c_mot),
-                                                                                                                                                                                                                        item_efficiency_(0.1),
+                                                                                                                                                                                                                        item_efficiency_(0.2),
                                                                                                                                                                                                                         wage_const_(wage_const),
                                                                                                                                                                                                                         wage_change_limit_(0.8),
                                                                                                                                                                                                                         capacity_(capacity),
@@ -307,6 +307,10 @@ double Company::get_items_for_production()
     production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
     items = item_cost(production, item_efficiency_);
+    if(item_efficiency_ < 0) {
+
+        cout << "I company get items for  production, item efficiency < 0: " << item_efficiency_ << endl;
+    }
 
     return items;
 }
@@ -463,10 +467,13 @@ void Company::change_prod_const_motivation(double ch)
 
 void Company::change_item_efficiency(double ch)
 {
-    if((item_efficiency_ += ch > 0) && (item_efficiency_ += ch < 1)) {
+    double item_efficiency_temp = 0;
+    item_efficiency_temp = item_efficiency_ + ch;
+
+    if((item_efficiency_temp > 0) && (item_efficiency_temp < 1)) {
         item_efficiency_ += ch;
     }
-    else if  (item_efficiency_ += ch > 1 ){
+    else if  (item_efficiency_temp > 1 ){
         item_efficiency_ = 1;
         cout << "Item investment > 1" << endl;    }
     else {
@@ -544,15 +551,15 @@ void Company::remove_employee(Consumer *consumer)
 
 void Company::update_company()
 {
-    capacity_ -= decay_ * capacity_;
-    prod_const_skill_ -= decay_ * prod_const_skill_;
-    prod_const_motivation_ -= decay_ * prod_const_motivation_;
+    // capacity_ -= decay_ * capacity_;
+    // prod_const_skill_ -= decay_ * prod_const_skill_;
+    // prod_const_motivation_ -= decay_ * prod_const_motivation_;
     // item_efficiency_ += decay_ * item_efficiency_;
 
-    // change_capacity(-decay_ * capacity_);
-    // change_prod_const_skill(-decay_ * prod_const_skill_);
-    // change_prod_const_motivation(-decay_ * prod_const_motivation_);
-    // change_item_efficiency(decay_ * item_efficiency_);
+    change_capacity(-decay_ * capacity_);
+    change_prod_const_skill(-decay_ * prod_const_skill_);
+    change_prod_const_motivation(-decay_ * prod_const_motivation_);
+    change_item_efficiency(decay_ * item_efficiency_);
 }
 
 bool Company::update_employees(Consumer *opt)
@@ -984,13 +991,13 @@ double Company::invest()
 
     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
     //cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
-
+    cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
     change_prod_const_skill(factor_change);
     change_prod_const_motivation(factor_change);
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << " New cap: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << " des loans" << available_bank_financing << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    cout << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans  << "   total capital: " << cost << " available capital: " << available_capital << endl;
     cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
     cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
 
