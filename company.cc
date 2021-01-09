@@ -1229,6 +1229,12 @@ double Company::get_total_wages()
     theIterator = wages_.begin();
     wages = (production * price - get_items_for_production() * price_out) * wage_const_;
 
+    if(wages <= 0) {
+
+        wages = 0;
+        cout << "I company get_total wages, wagess < 0" << endl;
+    }
+
     /*
      * Letting the wages change unlimited to let the system get to equilibrium
      * for the first 70 loops. After that we don't let it change by more than
