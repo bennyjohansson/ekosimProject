@@ -1222,6 +1222,8 @@ double Company::get_total_wages()
     double price = 0;
     double wages = 0;
     double price_out = 0;
+    double wage_change_limit_up = 0;
+    double wage_change_limit_down = wage_change_limit_;
 
     size = employees_->get_size();
 
@@ -1239,24 +1241,24 @@ double Company::get_total_wages()
     if(wages <= 0) {
 
         wages = 0;
-        cout << "I company get_total wages, wagess < 0" << endl;
+        cout << "I company get_total wages, wagess < 0" << wages << endl;
     }
 
     /*
      * Letting the wages change unlimited to let the system get to equilibrium
-     * for the first 70 loops. After that we don't let it change by more than
+     * for the first xx loops. After that we don't let it change by more than
      * 'wage_change_limit_'
      */
 
     if (clock_->get_time() > 30)
     {
-        if (wages / size > *theIterator * (1 + wage_change_limit_))
+        if (wages / size > *theIterator * (1 + wage_change_limit_up))
         {
-            wages = *theIterator * (1 + wage_change_limit_) * size;
+            wages = *theIterator * (1 + wage_change_limit_up) * size;
         }
-        if (wages / size < *theIterator * (1 - wage_change_limit_))
+        if (wages / size < *theIterator * (1 - wage_change_limit_down))
         {
-            wages = *theIterator * (1 - wage_change_limit_) * size;
+            wages = *theIterator * (1 - wage_change_limit_down) * size;
         }
     }
 
