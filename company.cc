@@ -656,7 +656,7 @@ void Company::update_from_database(string city_name)
     //production_parameter = std::stod(records[0][13]);
     production_function = std::stoi(records[0][15]);
 
-    investment_capacity_vs_efficiency_split = std::stod(records[0][18]);
+    investment_capacity_vs_efficiency_split = std::stod(records[0][19]);
 
     //cout << "I company update_from_databbase4 " << endl;
     //}
