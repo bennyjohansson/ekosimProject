@@ -358,7 +358,12 @@ double get_consumer_borrow(double borrowwill, double assets, double loans, doubl
             break;
 		case 2:
             if(assets > 0) {
-                amount = fmax(fmin(total_income*max_income_leverage, borrowwill*exp(-0.1*interest)*((1+max_asset_leverage)*(assets + loans) - debt)), 0);
+                amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_asset_leverage)*(assets + loans) - debt), 0);
+                //Checking max wage leverage
+                if(debt + amount > max_income_leverage*total_income) {
+                    amount = max_income_leverage*total_income - debt;
+                    cout << "consumer reaching max wage leverage in functions" << endl;
+                }
             }
             else {
                 amount = 0;
