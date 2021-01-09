@@ -1036,6 +1036,7 @@ void City::update_employees()
      */
 
     name = get_random_company()->get_name();
+    cout << "Name: " << name << endl;
     skill = get_company(name)->get_prod_const_skill();
     mot = get_company(name)->get_prod_const_motivation();
     prod_fcn = get_company(name)->get_production_function();

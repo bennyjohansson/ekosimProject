@@ -466,6 +466,9 @@ void Company::change_item_efficiency(double ch)
     if(item_efficiency_ += ch > 0) {
         item_efficiency_ += ch;
     }
+    else if  (item_efficiency_ += ch > 1 ){
+        item_efficiency_ = 1;
+        cout << "Item investment > 1" << endl;    }
     else {
         item_efficiency_ = 0;
         cout << "Reached min of item investment = 0" << endl;
@@ -652,7 +655,8 @@ void Company::update_from_database(string city_name)
     decay = std::stod(records[0][13]);
     //production_parameter = std::stod(records[0][13]);
     production_function = std::stoi(records[0][15]);
-    investment_capacity_vs_efficiency_split = std::stod(records[0][17]);
+
+    investment_capacity_vs_efficiency_split = std::stod(records[0][18]);
 
     //cout << "I company update_from_databbase4 " << endl;
     //}
@@ -671,6 +675,7 @@ void Company::update_from_database(string city_name)
     production_parameter_ = production_parameter;
     production_function_ = production_function;
     investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
+    cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
 
 // THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE
@@ -702,7 +707,7 @@ void Company::save_time_data_to_database(string city_name)
     company_data.push_back((double)employees_->get_size());
     company_data.push_back((double)item_efficiency_);
     company_data.push_back((double)investment_capacity_vs_efficiency_split_);
-    //cout << "I company save time database " << current_production_items_ << endl;
+    cout << "I company save time database " << investment_capacity_vs_efficiency_split_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 
     insertCompanyTimeData(company_data, city_name, name_);

@@ -376,7 +376,7 @@ bool Company_list::update_employees3(Consumer * opt) {
 bool Company_list::update_employees2(Consumer * opt) {
     Company * p = 0;
     bool hired = false;
-    double best_wage = 1000000;  
+    double best_wage = 10000000;  
     
     
     for(int i = 1; i < size_; i++){
