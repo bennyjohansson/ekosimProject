@@ -463,7 +463,7 @@ void Company::change_prod_const_motivation(double ch)
 
 void Company::change_item_efficiency(double ch)
 {
-    if(item_efficiency_ += ch > 0) {
+    if((item_efficiency_ += ch > 0) && (item_efficiency_ += ch < 1)) {
         item_efficiency_ += ch;
     }
     else if  (item_efficiency_ += ch > 1 ){
