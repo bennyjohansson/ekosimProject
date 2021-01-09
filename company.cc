@@ -688,7 +688,7 @@ void Company::update_from_database(string city_name)
     production_parameter_ = production_parameter;
     production_function_ = production_function;
     investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
-    cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
+    //cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
 
 // THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE

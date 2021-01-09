@@ -440,7 +440,7 @@ double Bank::pay_dividends() {
     
     double dividends = 0;
     double safety_amount = 0;
-    double buffer = 0.5;
+    double buffer = 0.2;
     
     //cout << "I bank pay_dividends, unchecked changes here and in get_sum_to_borrow. Change interest had min of 0" << endl;
     //cout << "And assets, loans and deposits are wrong, needs to be fixed" << endl;
