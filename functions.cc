@@ -337,11 +337,12 @@ double get_consumer_deposit(double savewill, double capital, double interest) {
     
 }
 
-double get_consumer_borrow(double borrowwill, double assets, double loans, double debt, double interest) {
+double get_consumer_borrow(double borrowwill, double assets, double loans, double debt, double interest, double total_income) {
     
     double amount = 0;
     //double factor = 5;
-    double max_leverage = 1;
+    double max_asset_leverage = 1;
+    double max_income_leverage = 5;
     
     int function_select = 2;
     
@@ -357,7 +358,7 @@ double get_consumer_borrow(double borrowwill, double assets, double loans, doubl
             break;
 		case 2:
             if(assets > 0) {
-                amount = fmax(borrowwill*exp(-0.1*interest)*((1+max_leverage)*(assets + loans) - debt), 0);
+                amount = fmax(fmin(total_income*max_income_leverage, borrowwill*exp(-0.1*interest)*((1+max_asset_leverage)*(assets + loans) - debt)), 0);
             }
             else {
                 amount = 0;
