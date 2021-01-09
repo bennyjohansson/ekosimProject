@@ -547,6 +547,7 @@ void Company::update_company()
     capacity_ -= decay_ * capacity_;
     prod_const_skill_ -= decay_ * prod_const_skill_;
     prod_const_motivation_ -= decay_ * prod_const_motivation_;
+    item_efficiency_ += decay_ * item_efficiency_;
 }
 
 bool Company::update_employees(Consumer *opt)
