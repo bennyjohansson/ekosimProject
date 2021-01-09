@@ -1222,8 +1222,8 @@ double Company::get_total_wages()
     double price = 0;
     double wages = 0;
     double price_out = 0;
-    double wage_change_limit_up = 0;
-    double wage_change_limit_down = wage_change_limit_;
+    double wage_change_limit_up = wage_change_limit_;
+    double wage_change_limit_down = 0;
 
     size = employees_->get_size();
 
