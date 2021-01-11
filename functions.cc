@@ -362,7 +362,7 @@ double get_consumer_borrow(double borrowwill, double assets, double loans, doubl
                 //Checking max wage leverage
                 if(debt + amount > max_income_leverage*total_income) {
                     amount = max_income_leverage*total_income - debt;
-                    cout << "consumer reaching max wage leverage in functions" << endl;
+                    //cout << "consumer reaching max wage leverage in functions" << endl;
                 }
             }
             else {
