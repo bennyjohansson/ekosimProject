@@ -1963,16 +1963,25 @@ void City::save_high_score()
 
     double CAGR = 0;
     double environmental_impact = 0;
+    double environmental_impact_per_year = 0;
     double GINI = 0;
     double palma_index = 0;
+    int total_years = 0;
     string timenow = "";
     string world_name = "Bennyworld";
+
+    total_years = clock_ -> get_time();
 
     std::vector<double> score;
 
     CAGR = calculate_CAGR(clock_->get_time() - 1);
     palma_index = calculate_Palma_ratio();
     environmental_impact = company_list_->get_environmental_impact_sum();
+
+    if(total_years > 0) {
+        cout << "I save highscore, years: " << total_years << endl;
+        environmental_impact_per_year = environmental_impact/total_years;
+    }
 
     std::time_t t = std::time(0); // get time now
     std::tm *now = std::localtime(&t);
@@ -1983,7 +1992,7 @@ void City::save_high_score()
 
     score.push_back(CAGR);
     score.push_back(palma_index);
-    score.push_back(environmental_impact);
+    score.push_back(environmental_impact_per_year);
 
     insertHighScore(score, name_, world_name, timenow);
 }
