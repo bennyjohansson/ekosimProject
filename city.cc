@@ -1980,7 +1980,7 @@ void City::save_high_score()
 
     if(total_years > 0) {
         cout << "I save highscore, years: " << total_years << endl;
-        environmental_impact_per_year = environmental_impact/total_years;
+        environmental_impact_per_year = round(environmental_impact/total_years);
     }
 
     std::time_t t = std::time(0); // get time now
