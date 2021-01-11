@@ -44,7 +44,7 @@ Company::Company(string name, Market *market, Clock *clock) : name_(name),
 // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
 
 Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Bank *bank, Clock *clock) : name_(name),
-                                                                                                                                                                                                                       city_name_(city_name),
+                                                                                                                                                                                                                        city_name_(city_name),
                                                                                                                                                                                                                         capital_(capital),
                                                                                                                                                                                                                         stock_(stock),
                                                                                                                                                                                                                         debts_(0),
@@ -307,7 +307,8 @@ double Company::get_items_for_production()
     production = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
     items = item_cost(production, item_efficiency_);
-    if(item_efficiency_ < 0) {
+    if (item_efficiency_ < 0)
+    {
 
         cout << "I company get items for  production, item efficiency < 0: " << item_efficiency_ << endl;
     }
@@ -327,9 +328,6 @@ double Company::get_desired_loans()
     //SHOULD BE UPDATED FROM THE DATABASE
     // double investment_capacity_vs_efficiency_split = 0.5;
     // double investment_item_vs_factor_split = 0.5;
-
-
-    
 
     capital_to_invest = capital_ * pbr_;
     desired_investment = get_desired_investment();
@@ -470,20 +468,21 @@ void Company::change_item_efficiency(double ch)
     double item_efficiency_temp = 0;
     item_efficiency_temp = item_efficiency_ + ch;
 
-    if((item_efficiency_temp > 0) && (item_efficiency_temp < 1)) {
+    if ((item_efficiency_temp > 0) && (item_efficiency_temp < 1))
+    {
         item_efficiency_ += ch;
     }
-    else if  (item_efficiency_temp > 1 ){
+    else if (item_efficiency_temp > 1)
+    {
         item_efficiency_ = 1;
-        cout << "Item investment > 1" << endl;    }
-    else {
+        cout << "Item investment > 1" << endl;
+    }
+    else
+    {
         item_efficiency_ = 0;
         cout << "Reached min of item investment = 0" << endl;
-
     }
 }
-
-
 
 void Company::change_wage_const(double wcc)
 {
@@ -662,18 +661,21 @@ void Company::update_from_database(string city_name)
     //cout << "I company update_from_databbase3 " << endl;
     Records records = select_stmt(stmt, dir);
     //cout << "I company update_from_databbase4 " << endl;
-    wage_const = std::stod(records[0][9]);
-    wage_change_limit = std::stod(records[0][10]);
-    pbr = std::stod(records[0][12]);
-    decay = std::stod(records[0][13]);
-    //production_parameter = std::stod(records[0][13]);
-    production_function = std::stoi(records[0][15]);
 
-    investment_capacity_vs_efficiency_split = std::stod(records[0][19]);
+    if (not(records.empty()))
+    {
+        wage_const = std::stod(records[0][9]);
+        wage_change_limit = std::stod(records[0][10]);
+        pbr = std::stod(records[0][12]);
+        decay = std::stod(records[0][13]);
+        //production_parameter = std::stod(records[0][13]);
+        production_function = std::stoi(records[0][15]);
 
-    //cout << "I company update_from_databbase4 " << endl;
-    //}
-    /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
+        investment_capacity_vs_efficiency_split = std::stod(records[0][19]);
+
+        //cout << "I company update_from_databbase4 " << endl;
+        //}
+        /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
     cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
     cout << "pbr: " << pbr << " was: " << pbr_ << endl;
     cout << "decay: " << decay << " was: " << decay_ << endl;
@@ -681,13 +683,14 @@ void Company::update_from_database(string city_name)
     cout << "production_function: " << production_function << " was: " << production_function_ << endl;
     cout << "wage_const: " << wage_const << " was: " << wage_const_ << endl;
  */
-    wage_const_ = wage_const;
-    wage_change_limit_ = wage_change_limit;
-    pbr_ = pbr;
-    decay_ = decay;
-    production_parameter_ = production_parameter;
-    production_function_ = production_function;
-    investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
+        wage_const_ = wage_const;
+        wage_change_limit_ = wage_change_limit;
+        pbr_ = pbr;
+        decay_ = decay;
+        production_parameter_ = production_parameter;
+        production_function_ = production_function;
+        investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
+    }
     //cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
 
@@ -868,7 +871,7 @@ void Company::sell_to_market()
     actual_cost = market_->market_buy_items(stock_);
     actual_items = actual_cost / price;
 
-    cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items  << " and price: " << price << " stock: " << stock_ << endl;
+    cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
 
     change_capital(actual_cost);
     change_stock(-actual_items);
@@ -880,7 +883,7 @@ double Company::invest()
 {
 
     int max_items = 0;
-    int actual_items = 0; 
+    int actual_items = 0;
     int invested_items_tot = 0;
     int invested_items_capacity = 0;
     int invested_items_efficiency_items = 0;
@@ -903,12 +906,11 @@ double Company::invest()
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.001;  //Should be updated from database
+    double ItemEfficiencyRate = 0.001; //Should be updated from database
 
     //Parameters settging investment split between capacity and efficiency
     // double investment_capacity_vs_efficiency_split = 0.5;
     // double investment_item_vs_factor_split = 0.5;
-
 
     // FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     // CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
@@ -978,7 +980,7 @@ double Company::invest()
     //Increasing capacity and efficiency
 
     //First split of invested items between capacity and efficiency
-    invested_items_capacity = actual_items*investment_capacity_vs_efficiency_split_;
+    invested_items_capacity = actual_items * investment_capacity_vs_efficiency_split_;
 
     //Second split of invested items between item and labour efficiency
     invested_items_efficiency_items = (actual_items - invested_items_capacity) * investment_item_vs_factor_split_;
@@ -986,8 +988,7 @@ double Company::invest()
 
     capacity_change = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
-    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
-
+    item_efficiency_change = item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
     //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
     //cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
@@ -997,7 +998,7 @@ double Company::invest()
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans  << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    cout << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
     cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
     cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
 
@@ -1014,7 +1015,6 @@ int Company::get_desired_investment()
     int invested_items_efficiency_factor = 0;
     int invested_items_efficiency_items = 0;
 
-
     double item_increase = 0;
     double price_out = 0;
     double cost_of_investment = 0;
@@ -1027,20 +1027,16 @@ int Company::get_desired_investment()
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.000001;  //Should be updated from database
+    double ItemEfficiencyRate = 0.000001; //Should be updated from database
 
     //Parameters settging investment split between capacity and efficiency
     // double investment_capacity_vs_efficiency_split = 0.5;
     // double investment_item_vs_factor_split = 0.5;
 
-
-
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
     ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
-
-
 
     //Items ivested and increase
     item_increase = 10000;
@@ -1051,7 +1047,7 @@ int Company::get_desired_investment()
     while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
     {
         //First split of invested items between capacity and efficiency
-        invested_items_capacity = invested_items_tot*investment_capacity_vs_efficiency_split_;
+        invested_items_capacity = invested_items_tot * investment_capacity_vs_efficiency_split_;
 
         //Second split of invested items between item and labour efficiency
         invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
@@ -1170,8 +1166,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
 
-    item_efficiency_change =  item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
-
+    item_efficiency_change = item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
     loan_cost = bank_->get_loan_cost(loans);
 
@@ -1241,7 +1236,8 @@ double Company::get_total_wages()
     theIterator = wages_.begin();
     wages = (production * price - get_items_for_production() * price_out) * wage_const_;
 
-    if(wages <= 0) {
+    if (wages <= 0)
+    {
 
         wages = 0;
         cout << "I company get_total wages, wagess < 0" << wages << endl;
