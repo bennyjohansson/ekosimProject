@@ -720,7 +720,7 @@ void Company::save_time_data_to_database(string city_name)
     company_data.push_back((double)employees_->get_size());
     company_data.push_back((double)item_efficiency_);
     company_data.push_back((double)investment_capacity_vs_efficiency_split_);
-    cout << "I company save time database " << investment_capacity_vs_efficiency_split_ << endl;
+    //cout << "I company save time database " << investment_capacity_vs_efficiency_split_ << endl;
     //company_data.push_back((double)prod_const_motivation_);
 
     insertCompanyTimeData(company_data, city_name, name_);
