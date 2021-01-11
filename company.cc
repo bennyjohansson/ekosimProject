@@ -1131,6 +1131,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
     double old_capacity = 0;
     double production_old = 0;
     double production_new = 0;
+    double item_efficiency = 0;
     double pcs = 0;
     double pcm = 0;
 
@@ -1165,6 +1166,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
     old_capacity = capacity_;
     new_capacity = capacity_ + capacity_incr;
+    item_efficiency = item_efficiency_;
 
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
 
@@ -1181,7 +1183,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 
         sales_value = (production_new - production_old) * price_in;
         est_wages = get_estimated_wages(production_new) - get_estimated_wages(production_old);
-        est_prod_cost = (item_cost(production_new, fmax(0, item_efficiency_ - item_efficiency_change)) - item_cost(production_old, fmax(0, item_efficiency_ - item_efficiency_change))) * price_out;
+        est_prod_cost = (item_cost(production_new, fmax(0, item_efficiency - item_efficiency_change)) - item_cost(production_old, fmax(0, item_efficiency - item_efficiency_change))) * price_out;
 
         value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
         t++;
@@ -1192,6 +1194,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
         pcs -= pcs * decay_;
         pcm -= pcm * decay_;
         factor_change -= factor_change * decay_;
+        item_efficiency += item_efficiency * decay_;
 
         //cout << "   - " << t << " " << "Capacity: " << capacity_ << " Capacity incr: " << capacity_incr << endl;
     }
