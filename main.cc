@@ -46,6 +46,11 @@ int main()
 	*/
 		bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
 
+		City * Saraland = bennyworld.get_city("Saraland");
+		City * Bennyland = bennyworld.get_city("Bennyland");
+		Market * BMarket = Bennyland -> get_market();
+		Saraland->set_market(BMarket);
+
 		/*
 	* Printing world database
 	*/
