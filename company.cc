@@ -367,6 +367,7 @@ double Company::get_expected_net_flow_to_bank()
     interest_to_bank = interest * debts_;
     loans_from_bank = get_desired_loans();
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
+    sum = interest_to_bank;
 
     //cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
 
@@ -1103,7 +1104,7 @@ int Company::get_desired_investment()
 //
 //         cost = price_out * items_temp;
 //
-//         income = get_investment_cashflow(items_temp, loans);
+//         income = get_investment_get_expected_net_flow_to_bankitems_temp, loans);
 //
 //
 //         items_temp += 10;
