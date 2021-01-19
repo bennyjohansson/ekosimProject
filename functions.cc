@@ -40,20 +40,21 @@ void randomize(double &average, double deviation) {
     }  
     average += randv;
 
-    //cout << "In functions randomize, my rand: " << average << endl;
+    cout << "In functions randomize, my rand: " << average << endl;
 }
 
 double randnorm(double average, double std){
 
     std::random_device rd;
     std::mt19937 e2(rd());
-    std::normal_distribution<double> distribution(average*100,std);
+    std::normal_distribution<double> distribution(average*10,std);
 
-    double number = distribution(e2)/100;
+    double number = distribution(e2)/10;
 
-    number = fmax(0, fmin(1,number));
+    // number = fmax(0, fmin(1,number));
 
-    //cout << "Functions randnorm, value: " << number << endl;
+    number = fmax(0, number);
+    // cout << "Functions randnorm, value: " << number << endl;
 
     return number;
 
@@ -76,18 +77,27 @@ Consumer * random_consumer(string country, Market * market, Bank * bank, Clock *
     double borrow = 0.010; //Was 0.02 2020-04-01
     
     
-    randomize(mot, 0.7);
-    randomize(sk, 0.7);
-    randomize(cap, 1);
-    randomize(spe, 0.5);
-    randomize(save, 0.5);
-    randomize(borrow, 0.2);
+    // randomize(mot, 0.7);
+    // randomize(sk, 0.7);
+    // randomize(cap, 1);
+    // randomize(spe, 0.5);
+    // randomize(save, 0.5);
+    // randomize(borrow, 0.2);
+    double std_dev = 2;
     
-    borrow = randnorm(borrow, 1);
-    normalize(spe);
-    normalize(sk);
-    normalize(mot);
-    normalize(save);
+    borrow = randnorm(borrow, std_dev);
+    save = randnorm(save, std_dev);
+    spe = randnorm(spe, std_dev);
+    cap = randnorm(cap, std_dev);
+    sk = randnorm(sk, std_dev);
+    mot = randnorm(mot, std_dev);
+
+    //cout << "Functions randnorm, value mot: " << mot << endl;
+
+    // normalize(spe);
+    // normalize(sk);
+    // normalize(mot);
+    // normalize(save);
     //normalize(borrow);
 
     //cout << "I functions rand cons, borrow: " << borrow << endl;

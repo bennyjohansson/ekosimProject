@@ -46,6 +46,7 @@ int main()
 	*/
 		bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
 
+		//If not commented out, creates one shared market
 		// City * Saraland = bennyworld.get_city("Saraland");
 		// City * Bennyland = bennyworld.get_city("Bennyland");
 		// Market * BMarket = Bennyland -> get_market();
@@ -55,11 +56,13 @@ int main()
 	* Printing world database
 	*/
 		bennyworld.printWorldDB();
+
 		/*
    	* A check so that no money is lost during the exec.
    	*/
 		double sum_before_BL = bennyworld.get_city("Bennyland")->get_capital_sum();
 		double sum_before_SL = bennyworld.get_city("Saraland")->get_capital_sum();
+
 		/*
 	* Setting parameters
 	*/
