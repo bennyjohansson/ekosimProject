@@ -9,6 +9,7 @@ CMD ["/usr/sbin/init"]
 #Create folder
 #RUN mkdir -p /home/ecosim
 RUN mkdir -p /home/ec2-user/ekosimProject
+RUN mkdir -p /home/ec2-user/ekosimProject/myDB
 
 #Copy executable to new folder
 #COPY main /home/ecosim
@@ -24,5 +25,5 @@ COPY main /home/ec2-user/ekosimProject
 
 
 #Run the file inside image
-CMD /home/ecosim/main
-#CMD /home/ec2-user/ekosimProject
+#CMD /home/ecosim/main
+CMD /home/ec2-user/ekosimProject
