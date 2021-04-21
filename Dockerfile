@@ -15,7 +15,7 @@ RUN mkdir -p /home/ec2-user/ekosimProject
 COPY main /home/ec2-user/ekosimProject
 
 #Copy company specification files
-COPY bempa_AB /home/ec2-user/ekosimProject
+#COPY bempa_AB /home/ec2-user/ekosimProject
 # COPY bempa_co /home/ecosim
 # COPY benny_inc /home/ecosim
 # COPY limpan_AB /home/ecosim
@@ -24,5 +24,5 @@ COPY bempa_AB /home/ec2-user/ekosimProject
 
 
 #Run the file inside image
-#CMD /home/ecosim/main
-CMD /home/ec2-user/ekosimProject
+CMD /home/ecosim/main
+#CMD /home/ec2-user/ekosimProject
