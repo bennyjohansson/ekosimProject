@@ -2,7 +2,7 @@ docker commands
 sudo docker build -t myapp .
 docker run -it --mount src=/var/app/current/myDB/,target=/home/ecosim/myDB/,type=bind myapp
 docker run -it --mount src=/var/app/current/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
-
+docker run -it --mount src=/Users/bennyjohansson/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
 docker ps
 docker kill "container id"
 
