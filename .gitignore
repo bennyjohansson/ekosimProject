@@ -27,4 +27,4 @@ launder_data.txt
 /Long-run-example/*
 
 #Ignore binary
-main
+#main
