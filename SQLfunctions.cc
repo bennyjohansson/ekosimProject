@@ -10,6 +10,7 @@
 
 
 //Amazon linux
+
 #include "/usr/include/mysql/mysql.h"
 
 //Mac OSX
