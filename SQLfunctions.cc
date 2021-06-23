@@ -5,12 +5,11 @@
 #include <cstring>
 #include <cmath>
 #include <fstream>
-//#include <filesystem>
 #include "SQLfunctions.h"
 
 
 //Amazon linux
-#include "/usr/include/mysql/mysql.h"
+//#include "/usr/include/mysql/mysql.h"
 
 //Mac OSX
 //#include "/usr/local/Cellar/mysql/8.0.23_1/include/mysql/mysql.h"
@@ -84,6 +83,9 @@ int initiateCityDB(string city_name)
     createMoneyTable(dir);
     createCompanyTable(dir);
     createConsumerTable(dir);
+
+    // Creating mySQL tables
+    createSQLParameterTable("Bennyland");
 
     cout << endl;
 
@@ -328,7 +330,77 @@ static int insertParameterData(const char *s)
         cout << "Parameter records created successfully" << endl;
     }
     sqlite3_close(DB);
+
+
+    /*
+    *TESTING NEW mySQL
+    */
+   string city = "Bennyland";
+
+    string sql2("INSERT INTO PARAMETERS_" + city + "(PARAMETER, VALUE) VALUES('InterestRateMethod', 2);");
+            //     "INSERT INTO PARAMETERS_" + city + "(PARAMETER, VALUE) VALUES('TargetInterestRate', 0.04);"
+            //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('CapitalReserveRatio', 0.4);");
+            //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('LiquidityReserveRatio', 0.5);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageSpendwill', 0.8);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageBorrowwill', 0.05);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseParam_1', 15000);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseRate_1', 0.001);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.000005);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('IncomeTax', 0.3);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapitalGainsTax', 0.3);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BudgetBalance', 0.00);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('InflationTarget', 0.01);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('PayWageInCash', 0);"
+            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BankDividendRatio', 0.1);");
+
+
+
+    /*
+    *TESTING NEW mySQL
+    */
+
+    // MYSQL_RES *result;
+    // MYSQL_ROW row;
+    // MYSQL *connection, mysql;
+
+    // int state;
+
+    // mysql_init(&mysql);
+
+    // connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
+
+    // // cout << connection;
+    // if (connection == NULL)
+    // {
+    //     std::cout << mysql_error(&mysql) << std::endl;
+    //     // return tables;
+    // }
+
+    // cout << sql2 << endl;
+    
+    // mysql_query(connection, sql2.c_str());
+
+    // state = mysql_query(connection, "SELECT * FROM PARAMETERS_Bennyland");
+    // if (state != 0)
+    // {
+    //     std::cout << mysql_error(connection) << std::endl;
+    // }
+
+    // result = mysql_store_result(connection);
+    // std::cout << "tables: " << mysql_num_rows(result) << std::endl;
+
+    // while ((row = mysql_fetch_row(result)) != NULL)
+    // {
+    //     cout << " | " << row[0] << " | " << row[1] << " | " << row[2] << " | " << row[3] << " | " << std::endl;
+    // }
+
+    // mysql_free_result(result);
+    // mysql_close(connection);
+
     return 0;
+
 }
 
 static int initiateCompanyTable(const char *s)
@@ -484,42 +556,42 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
     *TESTING NEW mySQL
     */
 
-    MYSQL_RES *result;
-    MYSQL_ROW row;
-    MYSQL *connection, mysql;
+    // MYSQL_RES *result;
+    // MYSQL_ROW row;
+    // MYSQL *connection, mysql;
 
-    int state;
+    // int state;
 
-    mysql_init(&mysql);
+    // mysql_init(&mysql);
 
-    connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
+    // connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
 
-    // cout << connection;
-    if (connection == NULL)
-    {
-        std::cout << mysql_error(&mysql) << std::endl;
-        // return tables;
-    }
+    // // cout << connection;
+    // if (connection == NULL)
+    // {
+    //     std::cout << mysql_error(&mysql) << std::endl;
+    //     // return tables;
+    // }
 
     
-    mysql_query(connection, sql.c_str());
+    // mysql_query(connection, sql.c_str());
 
-    state = mysql_query(connection, "SELECT * FROM WORLD_TABLE");
-    if (state != 0)
-    {
-        std::cout << mysql_error(connection) << std::endl;
-    }
+    // state = mysql_query(connection, "SELECT * FROM WORLD_TABLE");
+    // if (state != 0)
+    // {
+    //     std::cout << mysql_error(connection) << std::endl;
+    // }
 
-    result = mysql_store_result(connection);
-    std::cout << "tables: " << mysql_num_rows(result) << std::endl;
+    // result = mysql_store_result(connection);
+    // std::cout << "tables: " << mysql_num_rows(result) << std::endl;
 
-    while ((row = mysql_fetch_row(result)) != NULL)
-    {
-        cout << " | " << row[0] << " | " << row[1] << " | " << row[2] << " | " << row[3] << " | " << std::endl;
-    }
+    // while ((row = mysql_fetch_row(result)) != NULL)
+    // {
+    //     cout << " | " << row[0] << " | " << row[1] << " | " << row[2] << " | " << row[3] << " | " << std::endl;
+    // }
 
-    mysql_free_result(result);
-    mysql_close(connection);
+    // mysql_free_result(result);
+    // mysql_close(connection);
 
     return 0;
 }
@@ -831,22 +903,22 @@ static int deleteWorldData(const char *s)
     *TESTING NEW mySQL
     */
 
-    MYSQL *connection, mysql;
+    // MYSQL *connection, mysql;
 
-    mysql_init(&mysql);
+    // mysql_init(&mysql);
 
-    connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
+    // connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
 
-    // cout << connection;
-    if (connection == NULL)
-    {
-        std::cout << mysql_error(&mysql) << std::endl;
-        // return tables;
-    }
+    // // cout << connection;
+    // if (connection == NULL)
+    // {
+    //     std::cout << mysql_error(&mysql) << std::endl;
+    //     // return tables;
+    // }
 
-    mysql_query(connection, sql.c_str());
+    // mysql_query(connection, sql.c_str());
 
-    mysql_close(connection);
+    // mysql_close(connection);
 
 
     return 0;
@@ -881,6 +953,8 @@ static int createDB(const char *s)
     }
     return 0;
 }
+
+
 
 //Creating the table for parameters
 static int createParameterTable(const char *s)
@@ -918,6 +992,43 @@ static int createParameterTable(const char *s)
 
         cerr << e.what();
     }
+
+    return 0;
+}
+
+//Creating the table for parameters
+static int createSQLParameterTable(string country)
+{
+
+
+    string sql = "CREATE TABLE IF NOT EXISTS PARAMETERS_Bennyland("
+                 "ID INT PRIMARY KEY AUTO_INCREMENT, "
+                 "PARAMETER  TEXT    NOT NULL, "
+                 "VALUE      DECIMAL     NOT NULL );";
+    cout << sql <<  endl;
+
+    // MYSQL_RES *result;
+    // MYSQL_ROW row;
+    // MYSQL *connection, mysql;
+
+    // mysql_init(&mysql);
+
+    // connection = mysql_real_connect(&mysql, "localhost", "ecosim_db_user", "MyP@ssw0rd!", "ecosim", 0, 0, 0);
+
+    // if (connection == NULL)
+    // {
+    //     std::cout << mysql_error(&mysql) << std::endl;
+    // }
+
+    
+    // mysql_query(connection, sql.c_str());
+
+    // cout << "Parameter table created" << endl;
+
+    // string sql2 = "SHOW TABLES";
+    // mysql_query(connection, sql2.c_str());
+    // cout << "SQL2 i cereate parameter" << endl;
+    // mysql_close(connection);
 
     return 0;
 }

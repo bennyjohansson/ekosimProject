@@ -26,6 +26,14 @@ static int createWorldTable(const char* s);
 static int insertParameterData(const char* s);
 static int initiateCompanyTable(const char* s);
 
+static int createSQLParameterTable(string);
+static int createSQLDataTable(const char* s);
+static int createSQLMoneyTable(const char* s);
+static int createSQLCompanyTable(const char* s);
+static int createSQLHighScoreTable(const char* s);
+static int createSQLConsumerTable(const char *s);
+static int createSQLWorldTable(const char* s);
+
 
 int insertMoneyData(std::vector<int> money, string); //
 int insertTimeData(std::vector<double> timeData, string); //
