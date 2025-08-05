@@ -25,6 +25,13 @@ launder_data.txt
 /working/*
 /backup/*
 /Long-run-example/*
+/myDB/*
+/main.dSYM/*
+/.vscode/*
 
 #Ignore binary
 main
+
+#Ignore octave files
+octave-workspace
+octave-core

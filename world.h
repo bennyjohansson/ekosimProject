@@ -34,9 +34,9 @@ class World {
        * Get functions
        */
 
-      int get_time();
-      Clock * get_clock();
-      City * get_city(string);
+      int get_time() const;
+      Clock * get_clock() const;
+      City * get_city(const string& name) const;
       
       void tick();
       

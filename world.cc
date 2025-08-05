@@ -61,13 +61,19 @@ void World::print_GDP() {
 
 }
 
-int World::get_time() {
+int World::get_time() const {
 
     return clock_ -> get_time();
 
 }
 
-City * World::get_city(string name) {
+Clock * World::get_clock() const {
+
+    return clock_;
+
+}
+
+City * World::get_city(const string& name) const {
 
 	return cities_ -> get_city(name);
 
