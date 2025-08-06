@@ -45,17 +45,17 @@ class City {
        * Get-funktioner
        */
 
-      int get_time();
-      Clock * get_clock();
+      int get_time() const;
+      Clock * get_clock() const;
       Market * get_market();
       Bank * get_bank();
       double get_consumer_capital_sum();
       double get_company_capacity_sum();
       double get_expected_consumer_net_flow_to_bank_sum();
-      int get_no_companies(); 
+      int get_no_companies() const; 
       double get_capital_sum(); 
       double get_loans_to_bank();
-      Company * get_company(string name);
+      Company * get_company(const string& name);
       Consumer * get_random_consumer();
       Company * get_random_company();
       Consumer * get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
@@ -69,8 +69,8 @@ class City {
       double get_inflation_target();
       int get_no_years_laundry();
       int get_time_to_steal();
-      string get_name();
-      int get_no_consumers();
+      string get_name() const;
+      int get_no_consumers() const;
       
       /*
        * Change-functions
