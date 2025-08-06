@@ -92,7 +92,7 @@ void Consumer_list::print_list()
  * Get-functions
  */
 
-int Consumer_list::get_size()
+int Consumer_list::get_size() const
 {
   int size = 0;
 
@@ -108,7 +108,7 @@ int Consumer_list::get_size()
   return size;
 }
 
-double Consumer_list::get_item_sum()
+double Consumer_list::get_item_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -127,7 +127,7 @@ double Consumer_list::get_item_sum()
   }
 }
 
-double Consumer_list::get_skill_sum()
+double Consumer_list::get_skill_sum() const
 {
 
   Element_consumer *p;
@@ -147,7 +147,7 @@ double Consumer_list::get_skill_sum()
   }
 }
 
-double Consumer_list::get_capital_sum()
+double Consumer_list::get_capital_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -166,7 +166,7 @@ double Consumer_list::get_capital_sum()
   }
 }
 
-double Consumer_list::get_deposit_sum()
+double Consumer_list::get_deposit_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -185,7 +185,7 @@ double Consumer_list::get_deposit_sum()
   return sum;
 }
 
-double Consumer_list::get_debts_sum()
+double Consumer_list::get_debts_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -204,7 +204,7 @@ double Consumer_list::get_debts_sum()
   return sum;
 }
 
-double Consumer_list::get_spendwill_sum()
+double Consumer_list::get_spendwill_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -223,7 +223,7 @@ double Consumer_list::get_spendwill_sum()
   return sum;
 }
 
-double Consumer_list::get_motivation_sum()
+double Consumer_list::get_motivation_sum() const
 {
 
   Element_consumer *p;
@@ -275,7 +275,7 @@ double Consumer_list::get_motivation_sum()
 
 // }
 
-double Consumer_list::get_total_demand()
+double Consumer_list::get_total_demand() const
 {
 
   Element_consumer *p;
@@ -303,7 +303,7 @@ double Consumer_list::get_total_demand()
   return sum;
 }
 
-double Consumer_list::get_desired_deposit_sum()
+double Consumer_list::get_desired_deposit_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -315,7 +315,7 @@ double Consumer_list::get_desired_deposit_sum()
   return sum;
 }
 
-double Consumer_list::get_desired_borrow_sum()
+double Consumer_list::get_desired_borrow_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -327,7 +327,7 @@ double Consumer_list::get_desired_borrow_sum()
   return sum;
 }
 
-double Consumer_list::get_expected_net_flow_to_bank_sum()
+double Consumer_list::get_expected_net_flow_to_bank_sum() const
 {
   Element_consumer *p;
   double sum = 0;
@@ -339,7 +339,7 @@ double Consumer_list::get_expected_net_flow_to_bank_sum()
   return sum;
 }
 
-int Consumer_list::get_employed()
+int Consumer_list::get_employed() const
 {
   Element_consumer *p;
   int no = 0;
@@ -354,7 +354,7 @@ int Consumer_list::get_employed()
   return no;
 }
 
-int Consumer_list::get_unemployed()
+int Consumer_list::get_unemployed() const
 {
   Element_consumer *p;
   int no = 0;
@@ -369,7 +369,7 @@ int Consumer_list::get_unemployed()
   return no;
 }
 
-int Consumer_list::get_trustworthy()
+int Consumer_list::get_trustworthy() const
 {
   Element_consumer *p;
   int no = 0;
@@ -427,7 +427,7 @@ Consumer *Consumer_list::get_consumer(string name)
   }
 }
 
-bool Consumer_list::is_consumer(Consumer *consumer)
+bool Consumer_list::is_consumer(Consumer *consumer) const
 {
 
   Element_consumer *p = list_.get();

@@ -30,7 +30,7 @@ string Element_company::get_name() const {
   return company_ -> get_name();
 }
 
-Company* Element_company::get_company() {
+Company* Element_company::get_company() const {
   return company_;
 }
 

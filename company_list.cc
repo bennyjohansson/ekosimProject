@@ -77,7 +77,7 @@ void Company_list::print_employees(string company) {
  * Get-functions
  */
 
-int Company_list::get_size() {
+int Company_list::get_size() const {
     return size_;
 }
 
@@ -126,7 +126,7 @@ Company * Company_list::get_next_best_salary_company(double limit) {
     return r -> get_company() ;
 }
 
-Company * Company_list::get_company(string name) {
+Company * Company_list::get_company(string name) const {
     Element_company * p;
     
     if(list_) {
@@ -142,7 +142,7 @@ Company * Company_list::get_company(string name) {
     } 
 }
 
-double Company_list::get_capital_sum() {
+double Company_list::get_capital_sum() const{
     Element_company * p;
     double sum = 0;
     
@@ -152,7 +152,7 @@ double Company_list::get_capital_sum() {
     return sum;
 }
 
-double Company_list::get_item_sum() {
+double Company_list::get_item_sum() const{
     Element_company * p;
     double sum = 0;
     if(list_) {
@@ -163,7 +163,7 @@ double Company_list::get_item_sum() {
     return sum;
 }
 
-double Company_list::get_capacity_sum() {
+double Company_list::get_capacity_sum() const {
     Element_company * p;
     double sum = 0;
     
@@ -174,7 +174,7 @@ double Company_list::get_capacity_sum() {
 }
 
 
-double Company_list::get_investment_sum() {
+double Company_list::get_investment_sum() const {
     Element_company * p;
     int sum = 0;
     //double sum2 = 0;
@@ -187,7 +187,7 @@ double Company_list::get_investment_sum() {
     return sum;
 }
 
-double Company_list::get_desired_loans_sum() {
+double Company_list::get_desired_loans_sum() const {
     Element_company * p;
     double sum = 0;
     
@@ -198,7 +198,7 @@ double Company_list::get_desired_loans_sum() {
     return sum;
 }
 
-double Company_list::get_debts_sum() {
+double Company_list::get_debts_sum() const {
     Element_company * p;
     double sum = 0;
     
@@ -209,7 +209,7 @@ double Company_list::get_debts_sum() {
     return sum;
 }
 
-int Company_list::get_environmental_impact_sum() {
+int Company_list::get_environmental_impact_sum() const {
     Element_company * p;
     double sum = 0;
     
@@ -222,7 +222,7 @@ int Company_list::get_environmental_impact_sum() {
 
 
 
-double Company_list::get_average_wage() {
+double Company_list::get_average_wage() const {
     Element_company * p;
     double sum = 0;
     int number_of_companies = 0;
@@ -246,7 +246,7 @@ double Company_list::get_average_wage() {
 
 
 
-double Company_list::get_expected_net_flow_to_bank_sum() {
+double Company_list::get_expected_net_flow_to_bank_sum() const {
     Element_company * p;
     double sum = 0;
     //cout << "I company_list net cf to bank sum: " << sum << endl;
@@ -259,7 +259,7 @@ double Company_list::get_expected_net_flow_to_bank_sum() {
 
 
 
-double Company_list::get_items_for_production_sum() {
+double Company_list::get_items_for_production_sum() const {
     Element_company * p;
     double sum = 0;
     
@@ -269,7 +269,7 @@ double Company_list::get_items_for_production_sum() {
     return sum;
 }
 
-double Company_list::get_planned_production_sum() {
+double Company_list::get_planned_production_sum() const {
     Element_company * p;
     double sum = 0;
     

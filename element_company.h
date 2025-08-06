@@ -20,6 +20,6 @@ public:
 	Element_company(std::unique_ptr<Element_company> n, Company *c);
 
 	string get_name() const;
-	Company * get_company();
+	Company * get_company() const;
 };
 #endif

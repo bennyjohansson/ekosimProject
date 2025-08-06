@@ -19,6 +19,6 @@ public:
 	Element_city(std::unique_ptr<Element_city> n, City *c);
 
 	string get_name() const;
-	City * get_city();
+	City * get_city() const;
 };
 #endif

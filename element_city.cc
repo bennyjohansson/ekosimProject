@@ -30,6 +30,6 @@ string Element_city::get_name() const {
   return city_ -> get_name();
 }
 
-City* Element_city::get_city() {
+City* Element_city::get_city() const {
   return city_;
 }
