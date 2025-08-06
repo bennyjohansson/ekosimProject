@@ -126,70 +126,70 @@ void Consumer::info_short() {
  * Get-functions for the consumer
  */
 
-string Consumer::get_country(){
+string Consumer::get_country() const{
     return country_;
 }
 
-double Consumer::get_motivation(){
+double Consumer::get_motivation() const{
     return motivation_;
 }
 
-double Consumer::get_skill(){
+double Consumer::get_skill() const{
     return skill_;
 }
-double Consumer::get_capital(){
+double Consumer::get_capital() const{
     return capital_;
 }
-double Consumer::get_spendwill(){
+double Consumer::get_spendwill() const{
     return spendwill_;
 }
 
-double Consumer::get_savewill(){
+double Consumer::get_savewill() const{
     return savewill_;
 }
 
-double Consumer::get_borrowwill(){
+double Consumer::get_borrowwill() const{
     return borrowwill_;
 }
 
 
-double Consumer::get_income() {
+double Consumer::get_income() const {
     return income_;
 }
 
-double Consumer::get_dividends() {
+double Consumer::get_dividends() const {
     return dividends_;
 }
 
-double Consumer::get_transfers() {
+double Consumer::get_transfers() const {
     return transfers_;
 }
 
-bool Consumer::get_employment_status() {
+bool Consumer::get_employment_status() const {
     return employed_;
 }
 
-bool Consumer::get_trustworthy() {
+bool Consumer::get_trustworthy() const {
     return trustworthy_;
 }
 
-double Consumer::get_items() {
+double Consumer::get_items() const {
     return items_;
 }
 
-double Consumer::get_loans() {
+double Consumer::get_loans() const {
     return loans_;
 }
 
-double Consumer::get_debts() {
+double Consumer::get_debts() const {
     return debts_;
 }
 
-string Consumer::get_name() {
+string Consumer::get_name() const {
 	return name_;
 }
 
-string Consumer::get_employer() {
+string Consumer::get_employer() const {
 	return employer_;
 }
 

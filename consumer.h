@@ -34,27 +34,27 @@ class Consumer {
       /*
        * Functions to get things from a consumer
        */
-      string get_country();
-      double get_motivation();
-      double get_skill();
-      double get_capital();
-      double get_spendwill();
-      double get_borrowwill();
-      double get_savewill();
-      double get_income();
-      double get_dividends();
-      double get_transfers();
-      double get_items();
-      double get_loans();
-      double get_debts();
+      string get_country() const;
+      double get_motivation() const;
+      double get_skill() const;
+      double get_capital() const;
+      double get_spendwill() const;
+      double get_borrowwill() const;
+      double get_savewill() const;
+      double get_income() const;
+      double get_dividends() const;
+      double get_transfers() const;
+      double get_items() const;
+      double get_loans() const;
+      double get_debts() const;
       double get_desired_deposit();
       double get_desired_borrow();
       double get_borrow();
       double get_demand();
-      bool get_employment_status();
-      bool get_trustworthy();
-      string get_name();
-      string get_employer();
+      bool get_employment_status() const;
+      bool get_trustworthy() const;
+      string get_name() const;
+      string get_employer() const;
       /*
        *Functions to set consumer parameters
        */
