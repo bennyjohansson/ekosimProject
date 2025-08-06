@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "company.h"
 #include "element_company.h"
@@ -83,7 +84,7 @@ public:
 
 private:
   string name_;
-  Element_company *list_;
+  std::unique_ptr<Element_company> list_;
   int size_;
 };
 

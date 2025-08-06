@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <memory>
 
 #include "consumer.h"
 #include "company.h"
@@ -12,13 +13,13 @@ using namespace std;
 
 class Element_company {
 public:
-	Element_company *next_;
-	Company *company_;
+	std::unique_ptr<Element_company> next_;
+	Company *company_;  // Non-owning pointer - Company is owned by the list
 
 	Element_company();
-	Element_company(Element_company *n, Company *c);
+	Element_company(std::unique_ptr<Element_company> n, Company *c);
 
-	string get_name();
+	string get_name() const;
 	Company * get_company();
 };
 #endif

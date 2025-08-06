@@ -14,19 +14,19 @@ using namespace std;
  */
 
 Element_company::Element_company() :
-  next_(0),
-  company_(0)
+  next_(nullptr),
+  company_(nullptr)
 {}
 
-Element_company::Element_company(Element_company *n, Company *c) :
-  next_(n), company_(c)
+Element_company::Element_company(std::unique_ptr<Element_company> n, Company *c) :
+  next_(std::move(n)), company_(c)
 {}
 
 /*
  *Functions to get the company or company name
  */
 
-string Element_company::get_name() {
+string Element_company::get_name() const {
   return company_ -> get_name();
 }
 
