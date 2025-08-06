@@ -255,12 +255,12 @@ void City::print_GDP()
  *
  */
 
-int City::get_time()
+int City::get_time() const
 {
     return clock_->get_time();
 }
 
-Clock *City::get_clock()
+Clock *City::get_clock() const
 {
     return clock_;
 }
@@ -299,7 +299,7 @@ double City::get_capital_sum()
     return csum;
 }
 
-int City::get_no_companies()
+int City::get_no_companies() const
 {
     return company_list_->get_size();
 }
@@ -341,7 +341,7 @@ double City::get_inflation_target()
     return inflation_target_;
 }
 
-Company *City::get_company(string name)
+Company *City::get_company(const string& name)
 {
     return company_list_->get_company(name);
 }
@@ -393,12 +393,12 @@ int City::get_time_to_steal()
     return time_to_steal_;
 }
 
-string City::get_name()
+string City::get_name() const
 {
     return name_;
 }
 
-int City::get_no_consumers()
+int City::get_no_consumers() const
 {
     return consumers_->get_size();
     ;
