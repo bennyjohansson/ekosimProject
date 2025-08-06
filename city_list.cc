@@ -11,13 +11,13 @@
 using namespace std;
 
 City_list::City_list(string name) :
-list_(new Element_city(0, new City("Bennyland"))),
+list_(std::make_unique<Element_city>(nullptr, new City("Bennyland"))),
 size_(1), 
 name_(name)
 {}
 
 City_list::City_list(string name, Clock * clock) :
-list_(new Element_city(0, new City("Bennyland", clock))),
+list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock))),
 size_(1), 
 name_(name)
 {}
@@ -30,7 +30,7 @@ City * City_list::get_city(string name) {
     Element_city * p;
     
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             if (p ->get_name() == name) {
                 return p -> get_city() ;
             }
@@ -54,10 +54,10 @@ void City_list::add_city(City * city) {
     size_++;
     
     if(list_) {
-        list_ = new Element_city(list_, city);
+        list_ = std::make_unique<Element_city>(std::move(list_), city);
     }
     else {
-        list_ = new Element_city(0, city);
+        list_ = std::make_unique<Element_city>(nullptr, city);
     }
 }
 
@@ -76,7 +76,7 @@ void City_list::print_list() {
     
     info();
     if(list_) {
-        for (Element_city *p = list_; p; p = p -> next_) {
+        for (Element_city *p = list_.get(); p; p = p -> next_.get()) {
             p->city_->info();
         }
     }
@@ -87,7 +87,7 @@ void City_list::print_list() {
 void City_list::print_GDP() {
     
     if(list_) {
-        for (Element_city *p = list_; p; p = p -> next_) {
+        for (Element_city *p = list_.get(); p; p = p -> next_.get()) {
             p->city_-> print_GDP();
         }
     }
@@ -99,7 +99,7 @@ bool City_list::update_employees() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_employees();
@@ -117,7 +117,7 @@ bool City_list::run_production_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             cout << "Updating employees" << endl;
             p -> get_city() -> update_employees();
@@ -145,7 +145,7 @@ bool City_list::run_sales_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_companies();
             p -> get_city() -> save_data();
@@ -170,7 +170,7 @@ bool City_list::run_investment_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_interest_parameters();
             p -> get_city() -> update_interest_rate();
@@ -195,7 +195,7 @@ bool City_list::run_banking_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> consumers_bank_business();
             p -> get_city() -> company_pay_interest();
@@ -217,7 +217,7 @@ bool City_list::run_dividend_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> company_pay_dividends();
             p -> get_city() -> pay_transfers();
@@ -237,7 +237,7 @@ bool City_list::run_save_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> save_money_data();
         }
@@ -257,7 +257,7 @@ bool City_list::run_adjust_money_and_consumer_cycle() {
 
     Element_city * p;
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> adjust_money(); 
             p -> get_city() -> update_consumer_list();
@@ -281,7 +281,7 @@ bool City_list::update_companies_from_database() {
     Element_city * p;
 
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_companies_from_database();
         }
@@ -299,7 +299,7 @@ bool City_list::write_time_data_to_company_database() {
     Element_city * p;
 
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> write_time_data_to_company_database();
         }
@@ -320,7 +320,7 @@ bool City_list::update_country_from_database() {
     Element_city * p;
 
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> update_parameters_from_database();
         }
@@ -339,7 +339,7 @@ bool City_list::save_high_score() {
     Element_city * p;
 
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> save_high_score();
         }
@@ -357,7 +357,7 @@ bool City_list::save_consumers() {
     Element_city * p;
 
     if(list_) {
-        for(p = list_; p; p = p -> next_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             p -> get_city() -> save_consumers();
         }

@@ -15,7 +15,7 @@ class Clock {
 
   Clock();
 
-  int get_time();
+  int get_time() const;
   void set_time(int);
   void tick(); 
 
