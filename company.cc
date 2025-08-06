@@ -134,57 +134,57 @@ void Company::save(string project)
  * Get-functions
  */
 
-string Company::get_name()
+string Company::get_name() const
 {
     return name_;
 }
 
-double Company::get_capital()
+double Company::get_capital() const
 {
     return capital_;
 }
 
-double Company::get_debts()
+double Company::get_debts() const
 {
     return debts_;
 }
 
-int Company::get_environmental_impact()
+int Company::get_environmental_impact() const
 {
     return environmental_impact_;
 }
 
-double Company::get_prod_const_skill()
+double Company::get_prod_const_skill() const
 {
     return prod_const_skill_;
 }
 
-double Company::get_prod_const_motivation()
+double Company::get_prod_const_motivation() const
 {
     return prod_const_motivation_;
 }
 
-double Company::get_item_efficiency()
+double Company::get_item_efficiency() const
 {
     return item_efficiency_;
 }
 
-double Company::get_wage_const()
+double Company::get_wage_const() const
 {
     return wage_const_;
 }
 
-double Company::get_wage_change_limit()
+double Company::get_wage_change_limit() const
 {
     return wage_change_limit_;
 }
 
-int Company::get_production_function()
+int Company::get_production_function() const
 {
     return production_function_;
 }
 
-double Company::get_production_parameter()
+double Company::get_production_parameter() const
 {
     return production_parameter_;
 }
@@ -273,18 +273,18 @@ double Company::get_production(Consumer *consumer)
     return prod;
 }
 
-double Company::get_stock()
+double Company::get_stock() const
 {
     //cout << name_ << " i cmp get stock: " << stock_ << endl;
     return stock_;
 }
 
-double Company::get_invest()
+double Company::get_invest() const
 {
     return invest_;
 }
 
-double Company::get_capacity()
+double Company::get_capacity() const
 {
     return capacity_;
 }

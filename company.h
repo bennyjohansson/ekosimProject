@@ -39,31 +39,31 @@ public:
      * Get functions
      */
     
-    string get_name();
-    double get_capital();
-    double get_prod_const_skill();
-    double get_prod_const_motivation();
-    double get_item_efficiency();
-    double get_wage_const();  
+    string get_name() const;
+    double get_capital() const;
+    double get_prod_const_skill() const;
+    double get_prod_const_motivation() const;
+    double get_item_efficiency() const;
+    double get_wage_const() const;  
     double get_production();
-    int get_production_function();
-    double get_production_parameter();
+    int get_production_function() const;
+    double get_production_parameter() const;
     int get_no_employees();
 
 
     double get_production(Consumer *);
-    double get_stock();
+    double get_stock() const;
     double get_items_for_production();
     double get_investment();
-    double get_invest();
-    double get_debts();
-    int get_environmental_impact();
-    double get_capacity();
+    double get_invest() const;
+    double get_debts() const;
+    int get_environmental_impact() const;
+    double get_capacity() const;
     double get_pbr();
     double get_average_wage();
     double get_total_wages();
     double get_estimated_wages(double);
-    double get_wage_change_limit();
+    double get_wage_change_limit() const;
     double get_investment_cashflow(double, double,double, double, double, double, double, double);
     int get_desired_investment();
 
