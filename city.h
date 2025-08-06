@@ -59,16 +59,16 @@ class City {
       Consumer * get_random_consumer();
       Company * get_random_company();
       Consumer * get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
-      double get_shareToSteal();
-      double get_laundry_factor();
-      double get_capital();
-      double get_vat();
-      double get_income_tax();
-      double get_capital_gains_tax();
-      double get_budget_balance();
-      double get_inflation_target();
-      int get_no_years_laundry();
-      int get_time_to_steal();
+      double get_shareToSteal() const;
+      double get_laundry_factor() const;
+      double get_capital() const;
+      double get_vat() const;
+      double get_income_tax() const;
+      double get_capital_gains_tax() const;
+      double get_budget_balance() const;
+      double get_inflation_target() const;
+      int get_no_years_laundry() const;
+      int get_time_to_steal() const;
       string get_name() const;
       int get_no_consumers() const;
       
