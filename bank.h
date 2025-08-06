@@ -21,24 +21,24 @@ public:
 
    void info();
 
-   double get_interest();
-   double get_interest_margin();
+   double get_interest() const;
+   double get_interest_margin() const;
    double get_interest_rate_deposits();
    double get_interest_rate_loans();
-   double get_target_interest();
-   int get_interest_rate_method();
-   double get_capital();
-   double get_deposits();
-   double get_loans();
-   double get_liquidity();
-   double get_payback_time();
+   double get_target_interest() const;
+   int get_interest_rate_method() const;
+   double get_capital() const;
+   double get_deposits() const;
+   double get_loans() const;
+   double get_liquidity() const;
+   double get_payback_time() const;
    double get_loan_cost(double);
    double get_sum_to_borrow();
    double get_max_customer_borrow();
-   double get_dividend_ratio();
-   double get_capital_reserve_ratio();
-   double get_liquidity_reserve_ratio();
-   bool get_trustworthy();
+   double get_dividend_ratio() const;
+   double get_capital_reserve_ratio() const;
+   double get_liquidity_reserve_ratio() const;
+   bool get_trustworthy() const;
 
    void set_interest(double);
    void set_target_interest(double);

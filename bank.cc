@@ -47,11 +47,11 @@ void Bank::info() {
     
 }
 
-double Bank::get_interest() {
+double Bank::get_interest() const {
     return interest_rate_;
 }
 
-double Bank::get_interest_margin() {
+double Bank::get_interest_margin() const {
 	
 	return interest_margin_;
 }
@@ -73,31 +73,31 @@ double Bank::get_interest_rate_loans() {
 
 
 
-double Bank::get_target_interest() {
+double Bank::get_target_interest() const {
     return target_interest_;
 }
 
-int Bank::get_interest_rate_method() {
+int Bank::get_interest_rate_method() const {
     return interest_rate_method_;
 }
 
-double Bank::get_capital() {
+double Bank::get_capital() const {
     return capital_;
 }
 
-double Bank::get_deposits() {
+double Bank::get_deposits() const {
     return deposits_;
 }
 
-double Bank::get_loans() {
+double Bank::get_loans() const {
     return loans_;
 }
 
-double Bank::get_liquidity() {
+double Bank::get_liquidity() const {
     return liquidity_;
 }
 
-double Bank::get_payback_time() {
+double Bank::get_payback_time() const {
     return payback_time_;
 }
 
@@ -166,20 +166,20 @@ double Bank::get_max_customer_borrow() {
 
 
 
-double Bank::get_dividend_ratio() {
+double Bank::get_dividend_ratio() const {
     return div_ratio_;
 }
 
-double Bank::get_liquidity_reserve_ratio() {
+double Bank::get_liquidity_reserve_ratio() const {
     return liquidity_reserve_ratio_;
 }
 
-double Bank::get_capital_reserve_ratio() {
+double Bank::get_capital_reserve_ratio() const {
     return capital_reserve_ratio_;
 }
 
 
-bool Bank::get_trustworthy() {
+bool Bank::get_trustworthy() const {
     return trustworthy_;
 }
 
