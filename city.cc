@@ -309,34 +309,34 @@ double City::get_loans_to_bank()
     return loans_to_bank_;
 }
 
-double City::get_capital()
+double City::get_capital() const
 {
     return capital_;
 }
 
-double City::get_vat()
+double City::get_vat() const
 {
     return vat_;
 }
 
-double City::get_income_tax()
+double City::get_income_tax() const
 {
     return income_tax_;
 }
 
-double City::get_capital_gains_tax()
+double City::get_capital_gains_tax() const
 {
     return capital_gains_tax_;
 }
 
 
 
-double City::get_budget_balance()
+double City::get_budget_balance() const
 {
     return budget_balance_;
 }
 
-double City::get_inflation_target()
+double City::get_inflation_target() const
 {
     return inflation_target_;
 }
@@ -373,22 +373,22 @@ Consumer *City::get_optimal_consumer(double mot_we, double skill_we, int product
     return 0;
 }
 
-double City::get_shareToSteal()
+double City::get_shareToSteal() const
 {
     return shareToSteal_;
 }
 
-double City::get_laundry_factor()
+double City::get_laundry_factor() const
 {
     return laundry_factor_;
 }
 
-int City::get_no_years_laundry()
+int City::get_no_years_laundry() const
 {
     return no_years_laundry_;
 }
 
-int City::get_time_to_steal()
+int City::get_time_to_steal() const
 {
     return time_to_steal_;
 }
