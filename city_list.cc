@@ -40,7 +40,7 @@ City * City_list::get_city(string name) {
     }
     else {
         // throw no_return_error("no list"); 
-        throw std::runtime_error(std::string("No ciry list"));
+        throw std::runtime_error(std::string("No city list"));
         
     } 
 }

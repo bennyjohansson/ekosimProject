@@ -15,12 +15,12 @@ using namespace std;
  */
 
 Element_consumer::Element_consumer() :
-  next_(0),
-  consumer_(0)
+  next_(nullptr),
+  consumer_(nullptr)
 {}
 
-Element_consumer::Element_consumer(Element_consumer *n, Consumer *c) :
-  next_(n), consumer_(c)
+Element_consumer::Element_consumer(std::unique_ptr<Element_consumer> n, Consumer *c) :
+  next_(std::move(n)), consumer_(c)
 {}
 
 Element_consumer::~Element_consumer() {} 

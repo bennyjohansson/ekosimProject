@@ -378,6 +378,10 @@ bool Company_list::update_employees2(Consumer * opt) {
     bool hired = false;
     double best_wage = 10000000;  
     
+    // Check if opt is null - this happens when no optimal consumer is found
+    if (!opt) {
+        return false;
+    }
     
     for(int i = 1; i < size_; i++){
         p = get_next_best_salary_company(best_wage);

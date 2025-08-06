@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <memory>
 
 #include "consumer.h"
 //#include "city.h"
@@ -13,10 +14,10 @@ class Element_consumer {
 public:
 
 	Element_consumer();
-	Element_consumer(Element_consumer *n, Consumer *c);
+	Element_consumer(std::unique_ptr<Element_consumer> n, Consumer *c);
 	~Element_consumer();
 
-	Element_consumer *next_;
+	std::unique_ptr<Element_consumer> next_;
 	Consumer * consumer_;
 
 	Consumer * get_consumer();

@@ -1058,7 +1058,7 @@ void City::update_employees()
 
         if (p)
         {
-            for (p; p->next_; p = p->next_)
+            for (p; p->next_; p = p->next_.get())
             {
 
                 company_list_->update_employees2(p->get_consumer());

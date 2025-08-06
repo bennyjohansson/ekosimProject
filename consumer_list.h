@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <memory>
 //#include <tuple>
 
 #include "element_consumer.h"
@@ -98,7 +99,7 @@ class Consumer_list {
    protected:
 
       string name_;
-      Element_consumer * list_;
+      std::unique_ptr<Element_consumer> list_;
       int size_;
   
 };
