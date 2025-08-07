@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <memory>
 //#include <tuple>
 
 #include "element_consumer.h"
@@ -29,27 +30,27 @@ class Consumer_list {
        * Get-functions
        */
 
-      int get_size();
-      double get_skill_sum();
-      double get_motivation_sum();
-      double get_capital_sum();
-      double get_deposit_sum();
-    double get_debts_sum();
-      double get_spendwill_sum();
-      double get_item_sum();
+      int get_size() const;
+      double get_skill_sum() const;
+      double get_motivation_sum() const;
+      double get_capital_sum() const;
+      double get_deposit_sum() const;
+    double get_debts_sum() const;
+      double get_spendwill_sum() const;
+      double get_item_sum() const;
       //std::tuple<double, double, double, double, double> get_misc_sum();
-      double get_desired_deposit_sum();
-      double get_desired_borrow_sum();
-      double get_expected_net_flow_to_bank_sum();
-      double get_total_demand();
-      int get_employed();
-      int get_unemployed();
-      int get_trustworthy();
+      double get_desired_deposit_sum() const;
+      double get_desired_borrow_sum() const;
+      double get_expected_net_flow_to_bank_sum() const;
+      double get_total_demand() const;
+      int get_employed() const;
+      int get_unemployed() const;
+      int get_trustworthy() const;
       
       Element_consumer * get_first_unemployed();
       Element_consumer * get_first_consumer();
       
-      bool is_consumer(Consumer *);
+      bool is_consumer(Consumer *) const;
       Consumer * get_random_consumer();
       Consumer * get_optimal_consumer(double, double, double, int, double);
       Consumer * get_usless_employee(double, double, double, int, double);
@@ -98,7 +99,7 @@ class Consumer_list {
    protected:
 
       string name_;
-      Element_consumer * list_;
+      std::unique_ptr<Element_consumer> list_;
       int size_;
   
 };

@@ -14,22 +14,22 @@ using namespace std;
  */
 
 Element_city::Element_city() :
-  next_(0),
-  city_(0)
+  next_(nullptr),
+  city_(nullptr)
 {}
 
-Element_city::Element_city(Element_city *n, City *c) :
-  next_(n), city_(c)
+Element_city::Element_city(std::unique_ptr<Element_city> n, City *c) :
+  next_(std::move(n)), city_(c)
 {}
 
 /*
  *Functions to get the company or company name
  */
 
-string Element_city::get_name() {
+string Element_city::get_name() const {
   return city_ -> get_name();
 }
 
-City* Element_city::get_city() {
+City* Element_city::get_city() const {
   return city_;
 }

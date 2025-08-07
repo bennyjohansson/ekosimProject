@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <memory>
 
 #include "city.h"
 
@@ -11,13 +12,13 @@ using namespace std;
 
 class Element_city {
 public:
-	Element_city *next_;
-	City *city_;
+	std::unique_ptr<Element_city> next_;
+	City *city_;  // Non-owning pointer - City is owned by the list
 
 	Element_city();
-	Element_city(Element_city *n, City *c);
+	Element_city(std::unique_ptr<Element_city> n, City *c);
 
-	string get_name();
-	City * get_city();
+	string get_name() const;
+	City * get_city() const;
 };
 #endif

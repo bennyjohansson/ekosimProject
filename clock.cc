@@ -13,7 +13,7 @@ Clock::Clock() :
   time_(0) //
 {}
 
-int Clock::get_time() {
+int Clock::get_time() const {
   return time_;
 }
 

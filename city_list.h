@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "city.h"
 #include "element_city.h"
@@ -60,7 +61,7 @@ class City_list {
 
  private:
   string name_;
-  Element_city * list_;
+  std::unique_ptr<Element_city> list_;
   int size_;
 
 };

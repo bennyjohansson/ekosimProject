@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <memory>
 #include "consumer_list.h"
 #include "company_list.h"
 #include "bank.h"
@@ -189,13 +190,13 @@ class City {
 
       string name_;
 
-      Consumer_list * consumers_;
-      Consumer_list * labour_market_;
-      Consumer_list * capital_owners_;
-      Company_list * company_list_;
-      Market * market_;
-      Bank * bank_;
-      Clock * clock_;
+      std::unique_ptr<Consumer_list> consumers_;
+      std::unique_ptr<Consumer_list> labour_market_;
+      std::unique_ptr<Consumer_list> capital_owners_;
+      std::unique_ptr<Company_list> company_list_;
+      std::unique_ptr<Market> market_;
+      std::unique_ptr<Bank> bank_;
+      Clock * clock_;  // Keep as raw pointer - may be shared resource
       int flash_counter_;
       double loans_to_bank_;
       double vat_;

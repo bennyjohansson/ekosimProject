@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "company.h"
 #include "element_company.h"
@@ -31,20 +32,20 @@ public:
    * Get-functions
    */
 
-  int get_size();
-  double get_capital_sum();
-  double get_item_sum();
-  double get_capacity_sum();
-  double get_investment_sum();
-  double get_desired_loans_sum();
-  double get_debts_sum();
-  int get_environmental_impact_sum();
-  double get_average_wage();
+  int get_size() const;
+  double get_capital_sum() const;
+  double get_item_sum() const;
+  double get_capacity_sum() const;
+  double get_investment_sum() const;
+  double get_desired_loans_sum() const;
+  double get_debts_sum() const;
+  int get_environmental_impact_sum() const;
+  double get_average_wage() const;
 
-  double get_expected_net_flow_to_bank_sum();
-  double get_items_for_production_sum();
-  double get_planned_production_sum();
-  Company *get_company(string name);
+  double get_expected_net_flow_to_bank_sum() const;
+  double get_items_for_production_sum() const;
+  double get_planned_production_sum() const;
+  Company *get_company(string name) const;
   Element_company *get_random_company();
   Company *get_next_best_salary_company(double);
 
@@ -83,7 +84,7 @@ public:
 
 private:
   string name_;
-  Element_company *list_;
+  std::unique_ptr<Element_company> list_;
   int size_;
 };
 

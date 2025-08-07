@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <memory>
 
 #include "consumer.h"
 //#include "city.h"
@@ -13,21 +14,21 @@ class Element_consumer {
 public:
 
 	Element_consumer();
-	Element_consumer(Element_consumer *n, Consumer *c);
+	Element_consumer(std::unique_ptr<Element_consumer> n, Consumer *c);
 	~Element_consumer();
 
-	Element_consumer *next_;
+	std::unique_ptr<Element_consumer> next_;
 	Consumer * consumer_;
 
-	Consumer * get_consumer();
+	Consumer * get_consumer() const;
 
-	double get_motivation();
-	double get_skill();
-	double get_capital();
-	double get_spendwill();
-	double get_income();
-	double get_loans();
-	bool get_employment_status();
+	double get_motivation() const;
+	double get_skill() const;
+	double get_capital() const;
+	double get_spendwill() const;
+	double get_income() const;
+	double get_loans() const;
+	bool get_employment_status() const;
 	void set_employment_status(bool);
 
 };

@@ -6,21 +6,21 @@
 //#include "element_consumer.h"
 #include "consumer_list.h"
 //#include "consumer.h"
-//#include "error_no_return.h"
+#include "error_no_return.h"
 #include "functions.h"
 #include "SQLfunctions.h"
 
 using namespace std;
 
 Consumer_list::Consumer_list() : name_(""),
-                                 list_(0),
+                                 list_(nullptr),
                                  size_(0)
 
 {
 }
 
 Consumer_list::Consumer_list(string name_string) : name_(name_string),
-                                                   list_(0),
+                                                   list_(nullptr),
                                                    size_(0)
 {
 }
@@ -80,7 +80,7 @@ void Consumer_list::print_list()
        << endl;
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       p->consumer_->info();
       cout << endl;
@@ -92,7 +92,7 @@ void Consumer_list::print_list()
  * Get-functions
  */
 
-int Consumer_list::get_size()
+int Consumer_list::get_size() const
 {
   int size = 0;
 
@@ -108,14 +108,14 @@ int Consumer_list::get_size()
   return size;
 }
 
-double Consumer_list::get_item_sum()
+double Consumer_list::get_item_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += (p->get_consumer())->get_items();
     }
@@ -127,7 +127,7 @@ double Consumer_list::get_item_sum()
   }
 }
 
-double Consumer_list::get_skill_sum()
+double Consumer_list::get_skill_sum() const
 {
 
   Element_consumer *p;
@@ -135,7 +135,7 @@ double Consumer_list::get_skill_sum()
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += p->get_skill();
     }
@@ -147,14 +147,14 @@ double Consumer_list::get_skill_sum()
   }
 }
 
-double Consumer_list::get_capital_sum()
+double Consumer_list::get_capital_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += p->get_capital();
     }
@@ -166,14 +166,14 @@ double Consumer_list::get_capital_sum()
   }
 }
 
-double Consumer_list::get_deposit_sum()
+double Consumer_list::get_deposit_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += p->get_consumer()->get_loans();
     }
@@ -185,14 +185,14 @@ double Consumer_list::get_deposit_sum()
   return sum;
 }
 
-double Consumer_list::get_debts_sum()
+double Consumer_list::get_debts_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += p->get_consumer()->get_debts();
     }
@@ -204,14 +204,14 @@ double Consumer_list::get_debts_sum()
   return sum;
 }
 
-double Consumer_list::get_spendwill_sum()
+double Consumer_list::get_spendwill_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       sum += p->get_spendwill();
     }
@@ -223,7 +223,7 @@ double Consumer_list::get_spendwill_sum()
   return sum;
 }
 
-double Consumer_list::get_motivation_sum()
+double Consumer_list::get_motivation_sum() const
 {
 
   Element_consumer *p;
@@ -231,7 +231,7 @@ double Consumer_list::get_motivation_sum()
 
   if (list_)
   {
-    for (p = list_; p->next_; p = p->next_)
+    for (p = list_.get(); p->next_; p = p->next_.get())
     {
       sum += p->get_skill();
     }
@@ -275,7 +275,7 @@ double Consumer_list::get_motivation_sum()
 
 // }
 
-double Consumer_list::get_total_demand()
+double Consumer_list::get_total_demand() const
 {
 
   Element_consumer *p;
@@ -286,7 +286,7 @@ double Consumer_list::get_total_demand()
 
   if (list_)
   {
-    for (p = list_; p->next_; p = p->next_)
+    for (p = list_.get(); p->next_; p = p->next_.get())
     {
 
       sum += p->get_consumer()->get_demand();
@@ -303,48 +303,48 @@ double Consumer_list::get_total_demand()
   return sum;
 }
 
-double Consumer_list::get_desired_deposit_sum()
+double Consumer_list::get_desired_deposit_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     sum += p->get_consumer()->get_desired_deposit();
   }
   return sum;
 }
 
-double Consumer_list::get_desired_borrow_sum()
+double Consumer_list::get_desired_borrow_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     sum += p->get_consumer()->get_desired_borrow();
   }
   return sum;
 }
 
-double Consumer_list::get_expected_net_flow_to_bank_sum()
+double Consumer_list::get_expected_net_flow_to_bank_sum() const
 {
   Element_consumer *p;
   double sum = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     sum += p->get_consumer()->get_expected_net_flow_to_bank();
   }
   return sum;
 }
 
-int Consumer_list::get_employed()
+int Consumer_list::get_employed() const
 {
   Element_consumer *p;
   int no = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     if (p->get_employment_status())
     {
@@ -354,12 +354,12 @@ int Consumer_list::get_employed()
   return no;
 }
 
-int Consumer_list::get_unemployed()
+int Consumer_list::get_unemployed() const
 {
   Element_consumer *p;
   int no = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     if (!(p->get_employment_status()))
     {
@@ -369,12 +369,12 @@ int Consumer_list::get_unemployed()
   return no;
 }
 
-int Consumer_list::get_trustworthy()
+int Consumer_list::get_trustworthy() const
 {
   Element_consumer *p;
   int no = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     if (p->get_consumer()->get_trustworthy())
     {
@@ -387,20 +387,20 @@ int Consumer_list::get_trustworthy()
 Element_consumer *Consumer_list::get_first_consumer()
 {
 
-  return list_;
+  return list_.get();
 }
 
 Consumer *Consumer_list::get_random_consumer()
 {
   int nr = (rand() % size_);
-  Element_consumer *p = list_;
+  Element_consumer *p = list_.get();
 
   //cout << "random nr: " << nr << endl;
 
   for (int i = 0; i < nr; i++)
   {
     //cout << i << endl;
-    p = p->next_;
+    p = p->next_.get();
   }
 
   return p->get_consumer();
@@ -412,31 +412,29 @@ Consumer *Consumer_list::get_consumer(string name)
 
   if (list_)
   {
-    for (p = list_; p; p = p->next_)
+    for (p = list_.get(); p; p = p->next_.get())
     {
       if (p->get_consumer()->get_name() == name)
       {
         return p->get_consumer();
       }
     }
-    //throw no_return_error("Cant find the consumer");
-    throw std::runtime_error(std::string("Failed: to find a consumer"));
+    throw no_return_error("Cant find the consumer");
   }
   else
   {
-    // throw no_return_error("No list");
-    throw std::runtime_error(std::string("No list"));
+    throw no_return_error("No list");
   }
 }
 
-bool Consumer_list::is_consumer(Consumer *consumer)
+bool Consumer_list::is_consumer(Consumer *consumer) const
 {
 
-  Element_consumer *p = list_;
+  Element_consumer *p = list_.get();
 
   if (list_)
   {
-    for (; p; p = p->next_)
+    for (; p; p = p->next_.get())
     {
       if (consumer == p->get_consumer())
       {
@@ -455,16 +453,16 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
                                               double mot_we, double capacity, int production_function, double production_parameter)
 {
   Element_consumer *p;
-  Element_consumer *best = new Element_consumer(0, new Consumer(0, 0, 0, 0));
+  auto best_temp = std::make_unique<Element_consumer>(nullptr, new Consumer(0, 0, 0, 0));
+  Element_consumer *best = best_temp.get();
   best->set_employment_status(true);
 
   if (!list_)
   {
-    // throw no_return_error("No optimal consumer");
-    throw std::runtime_error(std::string("No optimal consumer"));
+    throw no_return_error("No optimal consumer");
   }
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     Consumer *besta = best->get_consumer();
@@ -479,10 +477,9 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
     }
   }
 
-  if (p == best)
+  if (best == best_temp.get())
   {
-    //throw no_return_error("No optimal consumer");
-    throw std::runtime_error(std::string("No optimal consumer"));
+    throw no_return_error("No optimal consumer");
   }
 
   return best->get_consumer();
@@ -492,17 +489,16 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
 {
 
   Element_consumer *p;
-  Element_consumer *worst = new Element_consumer(0, new Consumer(3, 3, 3, 3));
-  Element_consumer *wors = worst;
+  auto worst_temp = std::make_unique<Element_consumer>(nullptr, new Consumer(3, 3, 3, 3));
+  Element_consumer *wors = worst_temp.get();
   wors->get_consumer()->set_employment_status(true);
 
   if (!list_)
   {
-    //throw no_return_error("No usless consumer");
-    throw std::runtime_error(std::string("No usless consumer"));
+    throw no_return_error("No usless consumer");
   }
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     Consumer *worst = wors->get_consumer();
@@ -513,10 +509,9 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
     }
   }
 
-  if (wors == worst)
+  if (wors == worst_temp.get())
   {
-    //throw no_return_error("No usless consumer");
-    throw std::runtime_error(std::string("No usless consumer"));
+    throw no_return_error("No usless consumer");
   }
   //  cout << "I cons list get usles" << endl;
   return wors->get_consumer();
@@ -541,11 +536,11 @@ void Consumer_list::add_first(Consumer *cons)
   {
     if (list_)
     {
-      list_ = new Element_consumer(list_, cons);
+      list_ = std::make_unique<Element_consumer>(std::move(list_), cons);
     }
     else
     {
-      list_ = new Element_consumer(0, cons);
+      list_ = std::make_unique<Element_consumer>(nullptr, cons);
     }
     size_++;
   }
@@ -557,28 +552,28 @@ void Consumer_list::add_last(Consumer *cons)
   size_++;
   if (list_)
   {
-    for (p = list_; p->next_; p = p->next_)
+    for (p = list_.get(); p->next_; p = p->next_.get())
     {
     }
-    p->next_ = new Element_consumer(0, cons);
+    p->next_ = std::make_unique<Element_consumer>(nullptr, cons);
   }
   else
   {
-    list_ = new Element_consumer(0, cons);
+    list_ = std::make_unique<Element_consumer>(nullptr, cons);
   }
 }
 
 void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
 {
 
-  Element_consumer *p = list_;
-  Element_consumer *q = list_;
+  Element_consumer *p = list_.get();
+  Element_consumer *q = list_.get();
 
   //check that the list is not empty and if the first consumer is the one to remove
   if (list_ && list_->get_consumer() == consumer)
   {
 
-    list_ = (p->next_);
+    list_ = std::move(p->next_);
     size_--;
     consumer->set_employment_status(false);
     consumer->set_employer("");
@@ -587,18 +582,22 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
   //If list not empty and not the first consumer
   else if (list_)
   {
-
-    for (p = list_->next_; p; p = p->next_)
+    q = list_.get();
+    for (p = list_->next_.get(); p; p = p->next_.get())
     {
 
       //Is it the consumer we are pointing at?
       if (p->get_consumer() == consumer)
       {
-        size_--;
-        q->next_ = (p->next_);
+        // Set employment status BEFORE removing from list
         p->get_consumer()->set_employment_status(false);
+        p->get_consumer()->set_employer("");
+        
+        size_--;
+        q->next_ = std::move(p->next_);
+        break; // Exit loop after removal
       }
-      q = q->next_;
+      q = p; // Move q to current p for next iteration
     }
   }
   else
@@ -617,7 +616,7 @@ void Consumer_list::update(double spendwill, double borrowwill)
 
   Element_consumer *p = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     p->consumer_->update_values(spendwill, borrowwill);
   }
@@ -628,7 +627,7 @@ double Consumer_list::consumers_buy()
   double sum = 0;
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     sum += (p->get_consumer())->buy();
   }
@@ -641,7 +640,7 @@ void Consumer_list::deposit_and_borrow_from_bank()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     (p->get_consumer())->deposit_and_borrow_from_bank();
   }
@@ -654,7 +653,7 @@ void Consumer_list::bank_business()
   double received_interest_sum = 0;
   //double repayments = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     received_interest_sum += consumer->get_interest(); //Check, some error
@@ -671,7 +670,7 @@ void Consumer_list::deposit_money_to_bank()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     (p->get_consumer())->deposit_to_bank();
   }
@@ -681,7 +680,7 @@ void Consumer_list::borrow_money_from_bank()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     (p->get_consumer())->borrow_from_bank();
   }
@@ -691,7 +690,7 @@ void Consumer_list::get_repayment_from_bank()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     (p->get_consumer())->get_repayment_from_bank();
   }
@@ -701,7 +700,7 @@ void Consumer_list::repay_to_bank()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     (p->get_consumer())->repay_to_bank();
   }
@@ -711,7 +710,7 @@ void Consumer_list::get_and_pay_interest()
 {
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     consumer->get_interest();
@@ -724,7 +723,7 @@ void Consumer_list::pay_employees(double wage)
 
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     consumer->change_capital(wage);
@@ -742,7 +741,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
   double income_tax_sum = 0;
   string country = "";
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     skill = consumer->get_skill();
@@ -774,7 +773,7 @@ void Consumer_list::pay_dividends(double amount)
 
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     consumer->change_capital(amount);
@@ -786,7 +785,7 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
 
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     //consumer -> change_capital(amount);
@@ -800,7 +799,7 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
 
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     //consumer -> change_capital(amount);
@@ -818,7 +817,7 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
   string name;
   int pay_dividends_in_cash = 0;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
 
@@ -850,7 +849,7 @@ void Consumer_list::save_consumers()
 
   Element_consumer *p;
 
-  for (p = list_; p; p = p->next_)
+  for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
     consumer->save_to_database();
