@@ -149,6 +149,7 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << endl;
 
+			//Creating a shared market, need some additional work to function well though
 			// if(current_cycle == 20) {
 
 			// 	City * Saraland = bennyworld.get_city("Saraland");
