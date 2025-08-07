@@ -65,6 +65,7 @@ public:
   bool update_employees(Consumer *);
   bool update_employees2(Consumer *);
   bool update_employees3(Consumer *);
+  void set_market(Market * newMarket);
 
   void remove_usless_employees();
   void update_companies_from_database(string city_name);

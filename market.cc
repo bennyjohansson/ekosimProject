@@ -51,6 +51,14 @@ int Market::get_excess_demand_items() {
 	return excess_demand_items_;
 }
 
+double Market::get_aggregate_supply() {
+  return aggregate_supply_;
+}
+
+double Market::get_aggregate_demand() {
+  return aggregate_demand_;
+}
+
 void Market::set_items(double items) {
   items_ = items;
 }
@@ -82,6 +90,19 @@ void Market::set_price_out(double price) {
   else {
     price = 1;
   }
+}
+
+void Market::change_aggregate_demand(double ch) {
+  aggregate_demand_ += ch;
+}
+
+void Market::change_aggregate_supply(double ch) {
+  aggregate_supply_ += ch;
+}
+
+void Market::reset_aggregate_demand_and_supply() {
+  aggregate_demand_ = 0;
+  aggregate_supply_ = 0;
 }
 
 void Market::reset_excess_demand_items() {

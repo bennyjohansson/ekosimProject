@@ -40,7 +40,10 @@ class World {
       
       void tick();
       
+      bool run_employee_cycle();
+      bool run_pricing_cycle();
       bool run_production_cycle();
+      bool run_employee_pricing_and_production_cycle();
       bool run_sales_cycle();
       bool run_investment_cycle();
       bool run_banking_cycle();

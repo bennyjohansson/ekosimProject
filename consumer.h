@@ -73,6 +73,7 @@ class Consumer {
       void set_name(string);
       void set_employer(string);
       void set_trustworthy(bool);
+      void set_market(Market *newMarket);
       /*
        *Functions to change consumer parameters
        */

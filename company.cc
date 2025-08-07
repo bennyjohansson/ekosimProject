@@ -439,6 +439,12 @@ void Company::set_wage_change_limit(double wcl)
     wage_change_limit_ = wcl;
 }
 
+void Company::set_market(Market *newMarket) {
+
+    market_ = newMarket;
+
+}
+
 /*
  * Change-functions
  */
@@ -870,7 +876,14 @@ void Company::sell_to_market()
     price = market_->get_price_in();
 
     actual_cost = market_->market_buy_items(stock_);
-    actual_items = actual_cost / price;
+
+    //calculating items if price > 0
+    if(price > 0) {
+        actual_items = actual_cost / price;
+    }
+    else {
+        cout << "I comp sell to mkt, no items sold, price: " << price << " stock: " << stock_ << endl;
+    }
 
     cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
 

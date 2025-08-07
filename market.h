@@ -21,6 +21,8 @@ class Market {
   void info();
   double get_items();
   int get_excess_demand_items();
+  double get_aggregate_supply();
+  double get_aggregate_demand();
   double get_marginal();
   double get_capital();
   long double get_price_in();
@@ -38,6 +40,10 @@ class Market {
   bool change_capital(double);
   void change_price_in(double);
   void change_price_out(double);
+  void change_aggregate_demand(double);
+  void change_aggregate_supply(double);
+  
+  void reset_aggregate_demand_and_supply();
   void reset_excess_demand_items();
 
   void negotiate_price(double);
@@ -50,6 +56,8 @@ class Market {
   string name_;
   double items_;
   double excess_demand_items_;
+  double aggregate_supply_;
+  double aggregate_demand_;
   double marginal_;
   double capital_;  
   double price_in_;

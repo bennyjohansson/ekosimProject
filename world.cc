@@ -115,16 +115,50 @@ void World::initiate_city(string city_name) {
 
 }
 
+//Running updating of emplyees cycle
 
+bool World::run_employee_cycle() {
 
+	bool success = false;
+
+	success = cities_ -> update_employees();
+
+	return success;
+
+}
+
+// running the pricing cycle
+
+bool World::run_pricing_cycle() {
+
+	cities_ -> run_supply_demand_cycle();
+
+	cities_ -> update_market_price();
+	
+	cities_ -> reset_market_calculations();
+
+}
+
+//Production cycle
 bool World::run_production_cycle() {
+	
+	bool success = false;
+
+	success = cities_ -> run_production_cycle();
+
+	return success;
+	}
+
+
+
+bool World::run_employee_pricing_and_production_cycle() {
 
 		//Running the following lines
 		// bennyland.update_employees();
     	// bennyland.negotiate_market_price();
 		// bennyland.produce();
 
-    return cities_ -> run_production_cycle();
+    return cities_ -> run_employee_pricing_and_production_cycle();
     
 }
 

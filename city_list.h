@@ -46,7 +46,11 @@ class City_list {
 
 
   bool update_employees();
+  bool run_supply_demand_cycle();
+	bool update_market_price();
+  bool reset_market_calculations();
   bool run_production_cycle();
+  bool run_employee_pricing_and_production_cycle();
   bool run_sales_cycle();
   bool run_investment_cycle();
   bool run_banking_cycle();
@@ -58,6 +62,7 @@ class City_list {
   bool update_country_from_database();
   bool save_high_score();
   bool save_consumers();
+  bool change_market(Market * newMarket);
 
  private:
   string name_;

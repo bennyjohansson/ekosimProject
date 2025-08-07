@@ -113,7 +113,77 @@ bool City_list::update_employees() {
     
 }
 
+bool City_list::run_supply_demand_cycle() {
+    
+    Element_city * p;
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << "Running supply demand cycle" << endl;
+            p -> get_city() -> update_supply_and_demand();
+        }
+    }
+    else {
+        cout << "No countries to run supply demand cycle" << endl;
+        return false;
+    }
+    return true;
+}
+
+bool City_list::update_market_price() {
+    Element_city * p;
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << "Updating market price" << endl;
+            p -> get_city() -> update_market_price();
+
+        }
+    }
+    else {
+        cout << "No countries to update price" << endl;
+        return false;
+    }
+    return true;
+    
+}
+
+bool City_list::reset_market_calculations() {
+    Element_city * p;
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << "Resetting market calculations" << endl;
+            p -> get_city() -> reset_supply_and_demand();
+        }
+    }
+    else {
+        cout << "No countries to reset market calculations" << endl;
+        return false;
+    }
+    return true;
+    
+}
+
 bool City_list::run_production_cycle() {
+
+    Element_city * p;
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << "Produce" << endl;
+            p -> get_city() -> produce();
+        }
+    }
+    else {
+        cout << "No countries to run production cycle" << endl;
+        return false;
+    }
+    return true;
+    
+}
+
+bool City_list::run_employee_pricing_and_production_cycle() {
 
     Element_city * p;
     if(list_) {
@@ -369,4 +439,17 @@ bool City_list::save_consumers() {
     return true;
 
     
+}
+
+bool City_list::change_market(Market * newMarket) {
+
+    Element_city * p;
+
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            p -> get_city() -> set_market(newMarket);
+        }
+
+    }
 }

@@ -526,6 +526,16 @@ void Consumer_list::set_name(string name_string)
   name_ = name_string;
 }
 
+void Consumer_list::set_market(Market * newMarket) {
+
+  Element_consumer *p;
+  
+  for (p = list_.get(); p; p = p->next_.get())
+  {
+    p->get_consumer()->set_market(newMarket);
+  }
+}
+
 /*
  * Functions for adding and removing consumers
  */

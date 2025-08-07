@@ -322,6 +322,11 @@ void Consumer::set_trustworthy(bool tw) {
     trustworthy_ = tw;
 }
 
+void Consumer::set_market(Market *newMarket) {
+
+    market_ = newMarket;
+}
+
 
 /*
  * Change-functions for the consumer

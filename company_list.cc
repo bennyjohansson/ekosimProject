@@ -403,6 +403,14 @@ bool Company_list::update_employees2(Consumer * opt) {
 
 }
 
+void Company_list::set_market(Market * newMarket) {
+    Element_company * p;
+
+    for(p = list_.get(); p; p = p -> next_.get()) {
+        (p -> get_company()) -> set_market(newMarket);
+    }
+}
+
 void Company_list::remove_usless_employees() {
     
     Element_company * p;

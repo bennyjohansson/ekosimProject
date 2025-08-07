@@ -116,6 +116,9 @@ class City {
        * The update_company_employees() is also not in use
        */
 
+      void update_supply_and_demand();
+      void reset_supply_and_demand();
+      void update_market_price();
       void negotiate_market_price();
       void update_consumer_list();
       void update_interest_rate();

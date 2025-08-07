@@ -87,7 +87,7 @@ public:
     void set_capacity(double); 
     void set_pbr(double);
     void set_wage_change_limit(double);
-    //void set_market(Market * market);
+    void set_market(Market * newMarket);
     
     
     /*

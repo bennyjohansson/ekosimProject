@@ -473,7 +473,15 @@ void City::set_inflation_target(double inflation_target)
 
 void City::set_market(Market *market)
 {
+    //Changing market for the City
     market_.reset(market);
+
+    //Changing market for all consumers
+    consumers_ -> set_market(market);
+
+
+    //Changing market for all companies
+    company_list_ -> set_market(market);
 }
 
 /*
@@ -721,6 +729,105 @@ void City::load_launder_parameters()
  * Functions to update Bennyland. Note that update_market() is old and not in use.
  * The update_company_employees() is also not in use
  */
+
+void City::update_supply_and_demand() {
+
+    double demand = 0;
+    double consumer_demand = 0;
+    double investment_demand = 0;
+    // double expected_investment = 0;
+    double production_demand = 0;
+    double market_items = 0;
+    double market_excess_demand = 0;
+    double company_items = 0;
+    double company_planned_production = 0;
+
+    double aggregate_demand = 0;
+    double aggregate_supply = 0;
+
+    double marginal = 0;
+    double items = 0;
+    double price_out = 0;
+    double price_in = 0;
+    double price_old = 0;
+    int size = 0;
+    //int i = 0;
+    list<double>::iterator invest; // = NULL;//list::end();
+
+    invest = investments_.begin();
+    marginal = market_->get_marginal();
+    size = consumers_->get_size();
+    price_out = market_->get_price_out();
+    price_old = price_out;
+    
+
+    //Getting demand from participants
+    consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
+    investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
+    production_demand = (company_list_->get_items_for_production_sum()) * price_out;
+    market_excess_demand = (market_->get_excess_demand_items()) * price_out;
+
+    //Getting avilable items;
+    company_items = company_list_->get_item_sum();
+    company_planned_production = company_list_->get_planned_production_sum();
+    market_items = market_->get_items();
+
+    demand = consumer_demand + production_demand + investment_demand + market_excess_demand;
+
+    items = market_items + company_items + company_planned_production;
+
+    // price_out = demand / items;
+    // price_in = price_out / (1 + marginal);
+
+    //Printing market aggregate supply and demand
+    cout << "I City " << name_ << " update supply and demand"
+         << " Tot dmd: " << market_ -> get_aggregate_demand() << "$BJ, items " << market_ -> get_aggregate_supply() << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
+
+    market_-> change_aggregate_demand(demand);
+    market_ -> change_aggregate_supply(items);
+
+    aggregate_demand = market_ -> get_aggregate_demand();
+    aggregate_supply = market_ -> get_aggregate_supply();
+
+    cout << "I City " << name_ << " update supply and demand"
+         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl
+         << "Aggregate demand: " << aggregate_demand << ", Aggregate supply: " << aggregate_supply << endl;
+
+
+
+}
+
+void City::update_market_price() {
+
+    double aggregate_supply = 0;
+    double aggregate_demand = 0;
+    double price_out = 0;
+    double market_excess_demand = 0;
+
+    //Getting aggregate supply and demand from market
+
+    aggregate_demand = market_ ->get_aggregate_demand();
+    aggregate_supply = market_ ->get_aggregate_supply();
+    market_excess_demand = market_ -> get_excess_demand_items();
+
+    price_out = aggregate_demand / aggregate_supply;
+    //price_in = price_out / (1 + marginal);
+
+    cout << "I City update price"
+         << " Tot dmd: " << aggregate_demand << "$BJ, items " << aggregate_supply << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << endl;
+
+    market_->set_price_out(price_out);
+
+    //cout << "I city neg market price, price: " << price_out << endl;
+    market_->reset_excess_demand_items();
+
+
+}
+
+void City::reset_supply_and_demand() {
+    market_->reset_aggregate_demand_and_supply();
+}
+
 
 void City::negotiate_market_price()
 {
