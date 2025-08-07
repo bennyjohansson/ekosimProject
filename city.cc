@@ -16,22 +16,22 @@
 using namespace std;
 
 City::City() : name_("bennyland"),
-               consumers_(new Consumer_list("CONSUMERS")),
-               company_list_(new Company_list("COMPANIES")),
-               labour_market_(new Consumer_list("LABOUR MARKET")),
-               market_(new Market()),
-               bank_(new Bank("BENNYBANK", 0.02, 3)),
+               consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
+               company_list_(std::make_unique<Company_list>("COMPANIES")),
+               labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+               market_(std::make_unique<Market>()),
+               bank_(std::make_unique<Bank>("BENNYBANK", 0.02, 3)),
                clock_(new Clock())
 {
 }
 
 City::City(string name) : name_(name),
-                          consumers_(new Consumer_list("CONSUMERS")),
-                          company_list_(new Company_list("COMPANIES")),
-                          labour_market_(new Consumer_list("LABOUR MARKET")),
-                          capital_owners_(new Consumer_list("CAPITAL OWNERS")),
-                          market_(new Market()),
-                          bank_(new Bank("BENNYBANK", 0.05, 3)),
+                          consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
+                          company_list_(std::make_unique<Company_list>("COMPANIES")),
+                          labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                          capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
+                          market_(std::make_unique<Market>()),
+                          bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
                           clock_(new Clock()),
                           flash_counter_(0),
                           shareToSteal_(0.95),
@@ -46,12 +46,12 @@ City::City(string name) : name_(name),
 }
 
 City::City(string name, Clock *clock) : name_(name),
-                                        consumers_(new Consumer_list("CONSUMERS")),
-                                        company_list_(new Company_list("COMPANIES")),
-                                        labour_market_(new Consumer_list("LABOUR MARKET")),
-                                        capital_owners_(new Consumer_list("CAPITAL OWNERS")),
-                                        market_(new Market()),
-                                        bank_(new Bank("BENNYBANK", 0.05, 3)),
+                                        consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
+                                        company_list_(std::make_unique<Company_list>("COMPANIES")),
+                                        labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                                        capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
+                                        market_(std::make_unique<Market>()),
+                                        bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
                                         clock_(clock),
                                         flash_counter_(0),
                                         shareToSteal_(0.95),
@@ -267,7 +267,7 @@ Clock *City::get_clock() const
 
 Bank *City::get_bank()
 {
-    return bank_;
+    return bank_.get();
 }
 
 double City::get_company_capacity_sum()
@@ -283,7 +283,7 @@ double City::get_consumer_capital_sum()
 
 Market *City::get_market()
 {
-    return market_;
+    return market_.get();
 }
 
 Consumer *City::get_random_consumer()
@@ -419,11 +419,11 @@ void City::change_capital(double ch)
 
 void City::set_consumers(Consumer_list *consumer_list)
 {
-    consumers_ = consumer_list;
+    consumers_.reset(consumer_list);
 }
 void City::set_companies(Company_list *company_list)
 {
-    company_list_ = company_list;
+    company_list_.reset(company_list);
 }
 
 void City::set_shareToSteal(double share)
@@ -473,7 +473,7 @@ void City::set_inflation_target(double inflation_target)
 
 void City::set_market(Market *market)
 {
-    market_ = market;
+    market_.reset(market);
 }
 
 /*
@@ -494,7 +494,7 @@ void City::add_random_consumers(int number_of_consumers)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(name_, market_, bank_, clock_);
+        Consumer *benny = random_consumer(name_, market_.get(), bank_.get(), clock_);
         benny->set_name("Consumer" + std::to_string(i));
         add_consumer(benny);
     }
@@ -511,7 +511,7 @@ void City::add_random_consumers(int number_of_consumers, double capital)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(name_, market_, bank_, clock_);
+        Consumer *benny = random_consumer(name_, market_.get(), bank_.get(), clock_);
         benny->set_name("Consumer" + std::to_string(i));
         benny->set_capital(capital);
         add_consumer(benny);
@@ -548,7 +548,7 @@ void City::add_company(Company *company)
 
 void City::add_company(string name)
 {
-    Company *company = new Company(name, market_, clock_);
+    Company *company = new Company(name, market_.get(), clock_);
     company_list_->add_company(company);
 }
 
@@ -665,7 +665,7 @@ void City::load_company(string nameactual)
     //pbr = 0.3;
     wage_const = 0.7;
     cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
-    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
+    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), bank_.get(), clock_));
 }
 
 void City::load_launder_parameters()
@@ -1929,7 +1929,7 @@ void City::add_companies_from_database()
         decay = std::stod(records[i][13]);
         production_function = std::stoi(records[i][15]);
 
-        add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_, bank_, clock_));
+        add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), bank_.get(), clock_));
 
         cout << endl
              << "Added company: " << name << endl
