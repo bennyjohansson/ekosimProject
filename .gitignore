@@ -28,6 +28,7 @@ launder_data.txt
 /myDB/*
 /main.dSYM/*
 /.vscode/*
+/archive/*
 
 #Ignore binary
 main
