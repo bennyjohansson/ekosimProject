@@ -44,6 +44,8 @@ class City_list {
 
   void add_city(City * city);
 
+  double get_capital_sum() const;
+  double get_added_capital_sum() const;
 
   bool update_employees();
   bool run_supply_demand_cycle();

@@ -41,6 +41,7 @@ public:
   double get_debts_sum() const;
   int get_environmental_impact_sum() const;
   double get_average_wage() const;
+  double get_average_wage_historical(int years) const;
 
   double get_expected_net_flow_to_bank_sum() const;
   double get_items_for_production_sum() const;

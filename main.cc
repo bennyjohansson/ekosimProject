@@ -62,7 +62,7 @@ int main()
    	*/
 		double sum_before_BL = bennyworld.get_city("Bennyland")->get_capital_sum();
 		double sum_before_SL = bennyworld.get_city("Saraland")->get_capital_sum();
-
+		double total_money_before = sum_before_BL + sum_before_SL;
 		/*
 	* Setting parameters
 	*/
@@ -92,6 +92,7 @@ int main()
 			bennyworld.run_pricing_cycle();
 
 			bennyworld.run_production_cycle();
+			bennyworld.check_money_consistency(total_money_before);
 
 			// bennyworld.run_employee_pricing_and_production_cycle();
 
@@ -103,6 +104,7 @@ int main()
 			cout << "------------------------------------" << endl;
 
 			bennyworld.run_sales_cycle();
+			bennyworld.check_money_consistency(total_money_before);
 
 			//Timer checkpoint buy/sell
 			timer2 = stopwatch();
@@ -112,6 +114,7 @@ int main()
 			cout << "------------------------" << endl;
 
 			bennyworld.run_investment_cycle();
+			bennyworld.check_money_consistency(total_money_before);
 
 			//Timer checkpoint update interest & invest
 			timer3 = stopwatch();
@@ -121,6 +124,8 @@ int main()
 			cout << "-------------" << endl;
 
 			bennyworld.run_banking_cycle();
+			bennyworld.check_money_consistency(total_money_before);
+
 
 			//Timer checkpoint bank business
 			timer4 = stopwatch();
@@ -131,6 +136,7 @@ int main()
 
 			bennyworld.run_dividend_cycle();
 			bennyworld.run_adjust_money_and_consumer_cycle();
+			bennyworld.check_money_consistency(total_money_before);
 
 			//Timer checkpoint last part
 			timer5 = stopwatch(); // - timer4;
@@ -152,18 +158,24 @@ int main()
 			bennyworld.write_time_data_to_company_database();
 			bennyworld.update_country_from_database();
 
-			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
-			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << endl;
+
+			cout << endl
+				 << "CHECKING FOR MONEY LEAKAGE" << endl;
+			cout << "------------------------------" << endl;
+			// Check if money is lost
+			bennyworld.check_money_consistency(total_money_before);
+			// cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
+			// cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << endl;
 
 			//Creating a shared market, need some additional work to function well though
-			if(current_cycle == 20) {
+			// if(current_cycle == 20) {
 
-				City * Saraland = bennyworld.get_city("Saraland");
-				City * Bennyland = bennyworld.get_city("Bennyland");
-				Market * BMarket = Bennyland -> get_market();
-				Saraland->set_market(BMarket);
+			// 	City * Saraland = bennyworld.get_city("Saraland");
+			// 	City * Bennyland = bennyworld.get_city("Bennyland");
+			// 	Market * BMarket = Bennyland -> get_market();
+			// 	Saraland->set_market(BMarket);
 
-			}
+			// }
 
 			cout << endl
 				 << "TIME MEASUREMENTS" << endl;

@@ -303,3 +303,29 @@ void World::printWorldDB()
     }
 
 }
+
+bool World::check_money_consistency(double sum_before) {
+
+	double total_added_money = 0;
+	double total_money = 0;
+	
+	bool consistent = true;
+	
+	total_money = cities_ -> get_capital_sum();
+	total_added_money = cities_ -> get_added_capital_sum();
+
+	//Checking that sum before + total_added_money is equal to total_money
+	if (std::abs(sum_before + total_added_money - total_money) > 1) {
+		cout << "Money inconsistency detected!" << endl;
+		cout << "Sum before: " << sum_before << ", Total added money: " << total_added_money << ", Total money: " << total_money << endl;
+		cout << "Difference: " << std::abs(sum_before + total_added_money - total_money) << endl;
+		// Set consistent to false to indicate inconsistency
+		consistent = false;
+	} else {
+		cout << "Money consistency check passed." << endl;
+	}
+	return consistent;
+}
+
+// End of World class implementation
+// This file contains the implementation of the World class, which manages a collection of cities and their interactions in a simulated environment.

@@ -45,6 +45,38 @@ City * City_list::get_city(string name) {
     } 
 }
 
+double City_list::get_capital_sum() const {
+    Element_city * p;
+    double sum = 0;
+    
+    if(list_) {
+        for (p = list_.get(); p; p = p -> next_.get()) {
+            sum += p -> get_city() -> get_capital_sum();
+        }
+    } 
+    else {
+        throw std::runtime_error(std::string("No city list"));
+    }
+    
+    return sum; 
+}
+
+double City_list::get_added_capital_sum() const {
+    Element_city * p;
+    double sum = 0;
+    
+    if(list_) {
+        for (p = list_.get(); p; p = p -> next_.get()) {
+            sum += p -> get_city() -> get_loans_to_bank();
+        }
+    }   
+    else {
+        throw std::runtime_error(std::string("No city list"));
+    }
+    
+    return sum; 
+}
+
 /*
  * Functions to add cities
  */ 
@@ -213,15 +245,24 @@ bool City_list::run_sales_cycle() {
 		// bennyland.consumers_buy();
 		// bennyland.pay_company_employees();
 
+        double temp_money = 0;
+        
+
     Element_city * p;
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
+            temp_money = p-> get_city() -> get_capital_sum();
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            
             p -> get_city() -> update_companies();
+            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {cout << "Leakage in update_companies!" << endl; temp_money = p-> get_city() -> get_capital_sum();}
             p -> get_city() -> save_data();
             p -> get_city() -> sell_to_market();
+            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {cout << "Leakage in sell_to_market!" << endl; temp_money = p-> get_city() -> get_capital_sum();}
             p -> get_city() -> consumers_buy();
+            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {cout << "Leakage in consumers_buy!" << endl; temp_money = p-> get_city() -> get_capital_sum();}
             p -> get_city() -> pay_company_employees();
+            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {cout << "Leakage in pay_employees!" << endl; temp_money = p-> get_city() -> get_capital_sum();}
         }
     }
     else {

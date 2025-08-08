@@ -527,6 +527,12 @@ double Consumer::buy() {
      * Have to check if the market has got enough intems to sell 
      */
     //cout << "I cons buy Amount cash: " << amount_cash << " Amount bank: " << amount_bank << " Total amount: " << actual_amount << endl;
+
+    //Chacking for capital consistency
+    if(std::abs(actual_amount - (amount_cash + amount_bank)) > 0.01) {
+        cout << "Leakage in consumer buy, actual amount: " << actual_amount << " amount cash: " << amount_cash << " amount bank: " << amount_bank << endl;
+        actual_amount = amount_cash + amount_bank;
+    }
     
     change_capital(-amount_cash);
     change_loans(-amount_bank);

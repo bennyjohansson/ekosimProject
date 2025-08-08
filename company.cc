@@ -1226,6 +1226,24 @@ double Company::get_average_wage()
     return average_wage;
 }
 
+double Company::get_average_wage_historical(int years) {
+
+    double average_wage = 0;
+    
+    list<double>::iterator theIterator;
+    theIterator = wages_.begin();
+    //Looping over the last "years" number of wages
+    for (int i = 0; i < years && theIterator != wages_.end(); ++i, ++theIterator) {
+        average_wage += *theIterator;
+    }
+
+    //Dividing by number of years to get average
+    average_wage /= years;
+
+    return average_wage;
+
+}
+
 double Company::get_total_wages()
 {
 

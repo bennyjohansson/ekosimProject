@@ -55,6 +55,7 @@ class World {
       bool update_country_from_database();
       bool save_high_score();
       bool save_consumers();
+      bool check_money_consistency(double);
 
  
 

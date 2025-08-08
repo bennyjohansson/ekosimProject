@@ -61,6 +61,7 @@ public:
     double get_capacity() const;
     double get_pbr();
     double get_average_wage();
+    double get_average_wage_historical(int);
     double get_total_wages();
     double get_estimated_wages(double);
     double get_wage_change_limit() const;

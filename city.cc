@@ -1157,7 +1157,7 @@ void City::update_employees()
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
     //Employees looking for new jobs every 10(?) years
-    if ((clock_->get_time()) % 10 == 0)
+    if ((clock_->get_time()) % 5 == 0)
     {
         Element_consumer *p;
 
@@ -1461,7 +1461,7 @@ void City::adjust_money()
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.5;
+    double scale_factor = 0.5; //0.5
     double target_inflation = 0;
 
     double MAX_CHANGE_FACTOR = 0.6;
@@ -1473,12 +1473,17 @@ void City::adjust_money()
      */
 
     int function_select = 3;
+    int payment_function_select = 1;
 
     int i = 0;
+    int number_of_companies = 0;
+    int average_history = 6;
     double items_a = 0;
     double price_a = 0;
     double wages_a = 0;
-    int payment_function_select = 1;
+    double average_wage_now = 0;
+    double average_wage_historical = 0;
+    
 
     double sum = 0;
     double sum_items = 0;
@@ -1489,6 +1494,7 @@ void City::adjust_money()
 
     Price_out = price_out_.begin();
     Items = GDP_.begin();
+
     Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
 
     total_money = get_capital_sum();
@@ -1524,6 +1530,9 @@ void City::adjust_money()
 
     //Function 3
 
+    
+    
+    //OLD CODE - REMOVE!
     wages_a = *Wages;
     Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
 
@@ -1553,9 +1562,22 @@ void City::adjust_money()
         break;
 
     case 3:
+       
+        //Checking for 0 average wage
 
-        inflation = wages_a / average_wage - 1;
+        average_wage_now = company_list_.get() -> get_average_wage();
+        average_wage_historical = company_list_.get() -> get_average_wage_historical(average_history);
 
+        
+        cout << "I City adjust money, using wage inflation, average now = " << average_wage_now << " average historical = " << average_wage_historical << endl;
+        if(average_wage_historical != 0) {
+            inflation = average_wage_now / average_wage_historical - 1;
+        }
+        else {
+            average_wage_historical = 1; //To avoid division by zero
+            inflation = average_wage_now / average_wage_historical - 1;
+            cout << "Warning: Average wage historical is zero, setting to 1 to avoid division by zero" << endl;
+        }
         break;
 
     default:
@@ -1604,14 +1626,14 @@ void City::adjust_money()
     {
 
     case 0:
-        bank_->change_capital(money_change);
-        bank_->change_liquidity(money_change);
-        loans_to_bank_ += money_change;
+        bank_->change_capital(std::round(money_change));
+        bank_->change_liquidity(std::round(money_change));
+        loans_to_bank_ += std::round(money_change);
 
         break;
     case 1:
-        change_capital(money_change);
-        loans_to_bank_ += money_change;
+        change_capital(std::round(money_change));
+        loans_to_bank_ += std::round(money_change);
         break;
     }
 }
