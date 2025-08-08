@@ -319,6 +319,7 @@ bool World::check_money_consistency(double sum_before) {
 		cout << "Money inconsistency detected!" << endl;
 		cout << "Sum before: " << sum_before << ", Total added money: " << total_added_money << ", Total money: " << total_money << endl;
 		cout << "Difference: " << std::abs(sum_before + total_added_money - total_money) << endl;
+		cout << "MArket capital / 2: " << get_city("Bennyland") -> get_market()->get_capital() << endl;
 		// Set consistent to false to indicate inconsistency
 		consistent = false;
 	} else {
