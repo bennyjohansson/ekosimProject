@@ -394,7 +394,7 @@ double get_consumer_demand_cash(double spendwill, double capital) {
 
 	double amount_cash = 0;
 	
-	amount_cash = capital * spendwill;
+	amount_cash = fmax(0, capital * spendwill);
 	
 	
 	return amount_cash;
@@ -405,7 +405,7 @@ double get_consumer_demand_deposit(double spendwill, double loans, double intere
 
 	double amount_bank = 0;
 	
-	amount_bank = loans * spendwill*fmin(1,exp(-interest));
+	amount_bank = fmax(0, loans * spendwill*fmin(1,exp(-interest)));
 	//amount_bank = loans_ * spendwill_;
 	
 	

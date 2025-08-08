@@ -128,7 +128,7 @@ int Market::customer_buy_items(double money) {
 	int items_available = 0;
 	double purchase_amount = 0;
 	
-	items_wanted = money/price_out_;
+	items_wanted = floor(money/price_out_);
 	
 	items_available = items_;
 	
