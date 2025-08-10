@@ -23,7 +23,7 @@ public:
     Company(string name);
     Company(string, Market*, Clock*);
     Company(string, string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
-    Company(string, string, double, double, double, double, double, double, double, Market*, Market*, Bank *, Clock*);  //Local market firtst then global market
+    Company(string, string, double, double, double, double, double, double, double, Market*, Market*, Bank *, Clock*);  //Local market first then global market
     // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
     
     /*
@@ -71,6 +71,8 @@ public:
 
     double get_desired_loans();
     double get_expected_net_flow_to_bank();
+
+    Market * get_active_market();
     
     /*
      * Set functions
@@ -177,7 +179,7 @@ private:
     
     Consumer_list * employees_;
     Market *market_;
-    Market *global_market_;  // Pointer to global market (owned by World)
+    Market *global_market_;  // Raw pointer to shared global market (owned by World)
     Bank *bank_;
     Clock * clock_;
     

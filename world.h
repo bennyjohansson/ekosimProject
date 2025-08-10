@@ -20,6 +20,7 @@ class World {
 
       World();
       World(string name);
+      ~World();  // Destructor to clean up global_market
 
       /*
        * Info-funktioner
@@ -64,9 +65,9 @@ class World {
    private:
 
     string name_;
-    std::shared_ptr<Clock> clock_;
+    Clock * clock_;
     std::unique_ptr<City_list> cities_;
-    std::unique_ptr<Market> global_market_;
+    Market * global_market_;
 
 
 

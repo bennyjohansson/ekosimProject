@@ -74,6 +74,7 @@ class City {
       int get_time_to_steal() const;
       string get_name() const;
       int get_no_consumers() const;
+      Market * get_active_market();
       
       /*
        * Change-functions

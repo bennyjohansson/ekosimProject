@@ -56,6 +56,7 @@ class Consumer {
       bool get_trustworthy() const;
       string get_name() const;
       string get_employer() const;
+      Market * get_active_market();
       /*
        *Functions to set consumer parameters
        */
@@ -141,7 +142,7 @@ class Consumer {
       Bank * bank_;
       Clock * clock_;
       Market * market_; 
-      Market * global_market_;  // Pointer to global market (owned by World) 
+      Market * global_market_;  // Raw pointer to shared global market (owned by World) 
       
       //Company * employer_;
       //Employee_list employee_info_;

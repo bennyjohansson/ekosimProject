@@ -221,6 +221,22 @@ string Consumer::get_employer() const {
 	return employer_;
 }
 
+Market * Consumer::get_active_market() {
+
+    bool intercity_trading = false;
+
+    // if (clock_ -> get_time()>20) {
+    //     intercity_trading = true;
+    // }
+
+    if (intercity_trading) {
+        return global_market_;
+    }
+    else {
+        return market_;
+    }
+}
+
 double Consumer::get_time() {
 
 	return clock_ -> get_time();
@@ -532,69 +548,33 @@ double Consumer::buy() {
     double initial_loans = loans_;
     double initial_items = items_;
     
-    price = market_ -> get_price_out();
-    max_items = market_ -> get_items();
+    price = get_active_market() -> get_price_out();
+    max_items = get_active_market() -> get_items();
     interest = bank_ -> get_interest();
     
     
     //Desired amount to purchase
-    //amount_cash = capital_ * spendwill_;
-    //amount_bank = loans_ * spendwill_;
-	//total_amount = amount_bank + amount_cash;
 	amount_bank = fmin(get_consumer_demand_deposit(spendwill_, loans_, interest), bank_ -> get_max_customer_borrow());
 	amount_cash = get_consumer_demand_cash(spendwill_, capital_);
 	total_amount = amount_bank + amount_cash;
 	
-	// Only log if there are potential issues
-	bool potential_issue = false;
-	// if(get_time() >= 12) {
-	//     if(amount_cash < 0 || amount_bank < 0 || total_amount < 0) {
-	//         potential_issue = true;
-	//         cout << "CONSUMER BUY ISSUE [" << name_ << " @ time " << get_time() << "]: Negative amounts detected!" << endl;
-	//         cout << "  Initial capital: " << initial_capital << ", Initial loans: " << initial_loans << ", Initial items: " << initial_items << endl;
-	//         cout << "  Calculated amount_cash: " << amount_cash << ", amount_bank: " << amount_bank << ", total_amount: " << total_amount << endl;
-	//         cout << "  Bank max customer borrow: " << bank_->get_max_customer_borrow() << ", Price: " << price << endl;
-	//     }
-	// }
-	
    	desired_items = fmax(0, total_amount/price);
    	
    	//Actual amount purchased
-   	actual_items = market_ -> customer_buy_items(total_amount);
+   	actual_items = get_active_market() -> customer_buy_items(total_amount);
    	actual_amount = actual_items*price;
    	
-   	// Only log if there's a significant discrepancy between requested and actual
-   	// if(get_time() >= 12 && std::abs(total_amount - actual_amount) > 0.01) {
-   	//     potential_issue = true;
-   	//     cout << "CONSUMER BUY DISCREPANCY [" << name_ << "]: Market transaction mismatch" << endl;
-   	//     cout << "  Desired items: " << desired_items << ", Market has items: " << max_items << endl;
-   	//     cout << "  Market returned actual_items: " << actual_items << ", calculated actual_amount: " << actual_amount << endl;
-   	//     cout << "  Difference between requested (" << total_amount << ") and actual (" << actual_amount << "): " << total_amount - actual_amount << endl;
-   	// }
    	
    	if(actual_amount < amount_cash) {
    		double old_amount_cash = amount_cash;
    		double old_amount_bank = amount_bank;
    		amount_cash = actual_amount;
    		amount_bank = 0;
-   		
-   		// if(get_time() >= 12 && std::abs(old_amount_cash - amount_cash) > 0.01) {
-   		//     potential_issue = true;
-   		//     cout << "CONSUMER BUY ADJUSTMENT [" << name_ << "]: CASE 1 - actual_amount < amount_cash" << endl;
-   		//     cout << "  Changed amount_cash from " << old_amount_cash << " to " << amount_cash << endl;
-   		//     cout << "  Changed amount_bank from " << old_amount_bank << " to " << amount_bank << endl;
-   		// }
    	}
    	else {
    		double old_amount_bank = amount_bank;
    		amount_bank = fmax(actual_amount - amount_cash, 0);
    		
-   		// if(get_time() >= 12 && std::abs(old_amount_bank - amount_bank) > 0.01) {
-   		//     potential_issue = true;
-   		//     cout << "CONSUMER BUY ADJUSTMENT [" << name_ << "]: CASE 2 - actual_amount >= amount_cash" << endl;
-   		//     cout << "  Changed amount_bank from " << old_amount_bank << " to " << amount_bank << endl;
-   		//     cout << "  amount_cash remains: " << amount_cash << endl;
-   		// }
    	}
    	
    	//Changing inventory and money
@@ -605,15 +585,6 @@ double Consumer::buy() {
      */
     //cout << "I cons buy Amount cash: " << amount_cash << " Amount bank: " << amount_bank << " Total amount: " << actual_amount << endl;
 
-    //Chacking for capital consistency
-    if(std::abs(actual_amount - (amount_cash + amount_bank)) > 0.01) {
-        cout << "*** LEAKAGE in consumer buy [" << name_ << " @ time " << get_time() << "] ***" << endl;
-        cout << "  actual amount: " << actual_amount << " amount cash: " << amount_cash << " amount bank: " << amount_bank << endl;
-        cout << "  Difference: " << actual_amount - (amount_cash + amount_bank) << " (threshold: 0.01)" << endl;
-        actual_amount = amount_cash + amount_bank;
-        cout << "  Corrected actual_amount to: " << actual_amount << endl;
-        potential_issue = true;
-    }
     
     // Store pre-transaction values for validation
     double pre_capital = capital_;
@@ -626,13 +597,6 @@ double Consumer::buy() {
     double actual_withdrawal = bank_ -> customer_withdraw_money(amount_bank);
     change_loans(-actual_withdrawal);  // Use actual withdrawal amount, not requested
     
-    // Only log bank withdrawal issues
-    if(get_time() >= 12 && std::abs(actual_withdrawal - amount_bank) > 0.01) {
-        cout << "*** BANK WITHDRAWAL MISMATCH [" << name_ << " @ time " << get_time() << "] ***" << endl;
-        cout << "  Requested: " << amount_bank << ", Actually withdrew: " << actual_withdrawal << endl;
-        cout << "  Difference: " << actual_withdrawal - amount_bank << endl;
-        potential_issue = true;
-    }
     
     // Final money conservation check - only log if there are leakages
     double capital_change = capital_ - initial_capital;
@@ -645,25 +609,6 @@ double Consumer::buy() {
     bool money_leakage = std::abs(total_money_change - expected_money_change) > 0.01;
     bool items_leakage = std::abs(items_change - actual_items) > 0.01;
     
-    // if(get_time() >= 12 && (money_leakage || items_leakage || potential_issue)) {
-    //     cout << "=== FINAL VALIDATION [" << name_ << " @ time " << get_time() << "] ===" << endl;
-    //     cout << "  Initial state: capital=" << initial_capital << ", loans=" << initial_loans << ", items=" << initial_items << endl;
-    //     cout << "  Final state: capital=" << capital_ << ", loans=" << loans_ << ", items=" << items_ << endl;
-    //     cout << "  Capital change: " << capital_change << " (expected: " << -amount_cash << ")" << endl;
-    //     cout << "  Loans change: " << loans_change << " (expected: " << -actual_withdrawal << ")" << endl;
-    //     cout << "  Items change: " << items_change << " (expected: " << actual_items << ")" << endl;
-    //     cout << "  Total money change: " << total_money_change << " (expected: " << expected_money_change << ")" << endl;
-        
-    //     if(money_leakage) {
-    //         cout << "  *** MONEY LEAKAGE DETECTED! Difference: " << total_money_change - expected_money_change << " ***" << endl;
-    //     }
-    //     if(items_leakage) {
-    //         cout << "  *** ITEMS LEAKAGE DETECTED! Difference: " << items_change - actual_items << " ***" << endl;
-    //     }
-    //     cout << "=======================================" << endl;
-    // }
-    
-        
     log_transaction_full(name_, "Market", actual_amount, "Purchase", get_time());
     log_transaction(name_, actual_amount, "Purchase", get_time());
     log_transaction(name_, amount_bank, "Deposit", get_time());

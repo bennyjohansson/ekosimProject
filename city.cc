@@ -426,7 +426,25 @@ string City::get_name() const
 int City::get_no_consumers() const
 {
     return consumers_->get_size();
-    ;
+    
+}
+
+Market *City::get_active_market()
+{
+    bool intercity_trading = false;
+
+    // if (clock_ -> get_time()>20) {
+    //     intercity_trading = true;
+    // }
+
+    if (intercity_trading)
+    {
+        return global_market_;
+    }
+    else
+    {
+        return market_.get();
+    }
 }
 
 /*
@@ -844,12 +862,13 @@ void City::update_market_price() {
     market_->set_price_out(price_out);
 
     //cout << "I city neg market price, price: " << price_out << endl;
-    market_->reset_excess_demand_items();
+    
 
 
 }
 
 void City::reset_supply_and_demand() {
+    market_->reset_excess_demand_items();
     market_->reset_aggregate_demand_and_supply();
 }
 

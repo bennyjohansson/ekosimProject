@@ -7,11 +7,11 @@
 #include <cstring>
 #include <list>
 
-//#include "consumer.h"
+// #include "consumer.h"
 #include "company.h"
 #include "functions.h"
 #include "SQLfunctions.h"
-//#include "error_no_return.h"
+// #include "error_no_return.h"
 
 using namespace std;
 
@@ -76,32 +76,32 @@ Company::Company(string name, string city_name, double capital, double stock, do
 }
 
 Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Market *global_market, Bank *bank, Clock *clock) : name_(name),
-                                                                                                                                                                                                                        city_name_(city_name),
-                                                                                                                                                                                                                        capital_(capital),
-                                                                                                                                                                                                                        stock_(stock),
-                                                                                                                                                                                                                        debts_(0),
-                                                                                                                                                                                                                        environmental_impact_(0),
-                                                                                                                                                                                                                        invest_(0),
-                                                                                                                                                                                                                        production_function_(1),
-                                                                                                                                                                                                                        current_production_items_(0),
-                                                                                                                                                                                                                        production_parameter_(0.001),
-                                                                                                                                                                                                                        investment_capacity_vs_efficiency_split_(0.5),
-                                                                                                                                                                                                                        investment_item_vs_factor_split_(0.5),
-                                                                                                                                                                                                                        prod_const_skill_(p_c_skill),
-                                                                                                                                                                                                                        prod_const_motivation_(p_c_mot),
-                                                                                                                                                                                                                        item_efficiency_(0.2),
-                                                                                                                                                                                                                        wage_const_(wage_const),
-                                                                                                                                                                                                                        wage_change_limit_(0.8),
-                                                                                                                                                                                                                        capacity_(capacity),
-                                                                                                                                                                                                                        capacity_0_(capacity),
-                                                                                                                                                                                                                        pbr_(plow_back_ratio),
-                                                                                                                                                                                                                        decay_(0.001),
-                                                                                                                                                                                                                        max_leverage_(1),
-                                                                                                                                                                                                                        market_(market),
-                                                                                                                                                                                                                        global_market_(global_market),
-                                                                                                                                                                                                                        bank_(bank),
-                                                                                                                                                                                                                        clock_(clock),
-                                                                                                                                                                                                                        employees_(new Consumer_list("Employees"))
+                                                                                                                                                                                                                                               city_name_(city_name),
+                                                                                                                                                                                                                                               capital_(capital),
+                                                                                                                                                                                                                                               stock_(stock),
+                                                                                                                                                                                                                                               debts_(0),
+                                                                                                                                                                                                                                               environmental_impact_(0),
+                                                                                                                                                                                                                                               invest_(0),
+                                                                                                                                                                                                                                               production_function_(1),
+                                                                                                                                                                                                                                               current_production_items_(0),
+                                                                                                                                                                                                                                               production_parameter_(0.001),
+                                                                                                                                                                                                                                               investment_capacity_vs_efficiency_split_(0.5),
+                                                                                                                                                                                                                                               investment_item_vs_factor_split_(0.5),
+                                                                                                                                                                                                                                               prod_const_skill_(p_c_skill),
+                                                                                                                                                                                                                                               prod_const_motivation_(p_c_mot),
+                                                                                                                                                                                                                                               item_efficiency_(0.2),
+                                                                                                                                                                                                                                               wage_const_(wage_const),
+                                                                                                                                                                                                                                               wage_change_limit_(0.8),
+                                                                                                                                                                                                                                               capacity_(capacity),
+                                                                                                                                                                                                                                               capacity_0_(capacity),
+                                                                                                                                                                                                                                               pbr_(plow_back_ratio),
+                                                                                                                                                                                                                                               decay_(0.001),
+                                                                                                                                                                                                                                               max_leverage_(1),
+                                                                                                                                                                                                                                               market_(market),
+                                                                                                                                                                                                                                               global_market_(global_market),
+                                                                                                                                                                                                                                               bank_(bank),
+                                                                                                                                                                                                                                               clock_(clock),
+                                                                                                                                                                                                                                               employees_(new Consumer_list("Employees"))
 {
 }
 
@@ -308,7 +308,7 @@ double Company::get_production(Consumer *consumer)
 
 double Company::get_stock() const
 {
-    //cout << name_ << " i cmp get stock: " << stock_ << endl;
+    // cout << name_ << " i cmp get stock: " << stock_ << endl;
     return stock_;
 }
 
@@ -357,20 +357,20 @@ double Company::get_desired_loans()
     double capital_to_invest = 0;
     double desired_loans = 0;
 
-    //Parameters settging investment split between capacity and efficiency
-    //SHOULD BE UPDATED FROM THE DATABASE
-    // double investment_capacity_vs_efficiency_split = 0.5;
-    // double investment_item_vs_factor_split = 0.5;
+    // Parameters settging investment split between capacity and efficiency
+    // SHOULD BE UPDATED FROM THE DATABASE
+    //  double investment_capacity_vs_efficiency_split = 0.5;
+    //  double investment_item_vs_factor_split = 0.5;
 
     capital_to_invest = capital_ * pbr_;
     desired_investment = get_desired_investment();
-    price_out = market_->get_price_out();
+    price_out = get_active_market()->get_price_out();
 
     desired_loans = fmax(0, desired_investment * price_out - capital_to_invest);
 
-    //if(desired_loans < 0) {
-    //    desired_loans = 0;
-    //}
+    // if(desired_loans < 0) {
+    //     desired_loans = 0;
+    // }
 
     return desired_loans;
 }
@@ -400,11 +400,30 @@ double Company::get_expected_net_flow_to_bank()
     interest_to_bank = interest * debts_;
     loans_from_bank = get_desired_loans();
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
-    //sum = interest_to_bank;
+    // sum = interest_to_bank;
 
-    //cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
+    // cout << "Company net flows, interest: " << interest_to_bank << " borrow from bank: " << loans_from_bank << " repayment_to_bank: " << repayment_to_bank << endl;
 
     return sum;
+}
+
+Market *Company::get_active_market()
+{
+
+    bool intercity_trading = false;
+
+    // if (clock_ -> get_time()>20) {
+    //     intercity_trading = true;
+    // }
+
+    if (intercity_trading)
+    {
+        return global_market_;
+    }
+    else
+    {
+        return market_;
+    }
 }
 
 /*
@@ -472,10 +491,10 @@ void Company::set_wage_change_limit(double wcl)
     wage_change_limit_ = wcl;
 }
 
-void Company::set_market(Market *newMarket) {
+void Company::set_market(Market *newMarket)
+{
 
     market_ = newMarket;
-
 }
 
 /*
@@ -487,14 +506,14 @@ void Company::change_capital(double ch)
     //  if (capital_ + ch > 0) {
     capital_ += ch;
     // }
-    //else {
-    //cout << "Fel i company ch cap" << endl;
+    // else {
+    // cout << "Fel i company ch cap" << endl;
     // }
 }
 
 void Company::change_prod_const_skill(double ch)
 {
-    //out << "Increasing skill i company" << endl;
+    // out << "Increasing skill i company" << endl;
     prod_const_skill_ += ch;
 }
 
@@ -610,7 +629,7 @@ bool Company::update_employees(Consumer *opt)
         {
             try
             {
-                //cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << endl;
+                // cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << endl;
                 add_employee(opt);
             }
             catch (std::exception a)
@@ -628,7 +647,7 @@ bool Company::update_employees(Consumer *opt)
     }
     else
     {
-        //cout << opt->get_name() << " already employed by " << name_ << endl;
+        // cout << opt->get_name() << " already employed by " << name_ << endl;
         return true;
     }
 }
@@ -676,9 +695,9 @@ void Company::update_from_database(string city_name)
     // char dir[100];
     // dir = full_path.c_str();
 
-    //cout << "I company update_from_databbase1 " << endl;
+    // cout << "I company update_from_databbase1 " << endl;
     const char *dir = full_path.c_str();
-    //cout << "I company update_from_databbase2 " << endl;
+    // cout << "I company update_from_databbase2 " << endl;
 
     double wage_const = 0;
     double wage_change_limit = 0;
@@ -688,19 +707,19 @@ void Company::update_from_database(string city_name)
     int production_function = 0;
     double investment_capacity_vs_efficiency_split = 0;
 
-    //For loop for testing segmentation fault
-    //for(int i = 0; i<100; i++){
+    // For loop for testing segmentation fault
+    // for(int i = 0; i<100; i++){
     production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
 
-    //const char* stmt = "SELECT * FROM PARAMETERS";
+    // const char* stmt = "SELECT * FROM PARAMETERS";
     string stmt = "SELECT * FROM COMPANY_TABLE WHERE NAME = ";
     stmt.append("'");
     stmt.append(name_);
     stmt.append("'");
     stmt.append(" AND TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM COMPANY_TABLE)");
-    //cout << "I company update_from_databbase3 " << endl;
+    // cout << "I company update_from_databbase3 " << endl;
     Records records = select_stmt(stmt, dir);
-    //cout << "I company update_from_databbase4 " << endl;
+    // cout << "I company update_from_databbase4 " << endl;
 
     if (not(records.empty()))
     {
@@ -708,13 +727,13 @@ void Company::update_from_database(string city_name)
         wage_change_limit = std::stod(records[0][10]);
         pbr = std::stod(records[0][12]);
         decay = std::stod(records[0][13]);
-        //production_parameter = std::stod(records[0][13]);
+        // production_parameter = std::stod(records[0][13]);
         production_function = std::stoi(records[0][15]);
 
         investment_capacity_vs_efficiency_split = std::stod(records[0][19]);
 
-        //cout << "I company update_from_databbase4 " << endl;
-        //}
+        // cout << "I company update_from_databbase4 " << endl;
+        // }
         /*     cout << "Company update from database: " << name_ << " updated in "<< city_name << endl;
     cout << "wage_change_limit: " << wage_change_limit << " was: " << wage_change_limit_ << endl;
     cout << "pbr: " << pbr << " was: " << pbr_ << endl;
@@ -731,7 +750,7 @@ void Company::update_from_database(string city_name)
         production_function_ = production_function;
         investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
     }
-    //cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
+    // cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
 
 // THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE
@@ -742,8 +761,8 @@ void Company::save_time_data_to_database(string city_name)
     int time_stamp = 0;
     time_stamp = clock_->get_time();
 
-    //TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT,
-    //WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN) VALUES(";
+    // TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT,
+    // WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN) VALUES(";
 
     company_data.push_back((double)time_stamp);
     company_data.push_back((double)capital_);
@@ -763,13 +782,13 @@ void Company::save_time_data_to_database(string city_name)
     company_data.push_back((double)employees_->get_size());
     company_data.push_back((double)item_efficiency_);
     company_data.push_back((double)investment_capacity_vs_efficiency_split_);
-    //cout << "I company save time database " << investment_capacity_vs_efficiency_split_ << endl;
-    //company_data.push_back((double)prod_const_motivation_);
+    // cout << "I company save time database " << investment_capacity_vs_efficiency_split_ << endl;
+    // company_data.push_back((double)prod_const_motivation_);
 
     insertCompanyTimeData(company_data, city_name, name_);
 }
 
-//Checks how the expected income changes by adding consumer
+// Checks how the expected income changes by adding consumer
 double Company::contribution_adding(Consumer *consumer)
 {
     double skill = 0;
@@ -791,8 +810,8 @@ double Company::contribution_adding(Consumer *consumer)
     skill_sum = employees_->get_skill_sum();
     mot_sum = employees_->get_motivation_sum();
     size = employees_->get_size();
-    price = market_->get_price_in();
-    price_out = market_->get_price_out();
+    price = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
 
     //  cout << "I company contribution adding"<< endl << "skill och mot" << skill << "  " << mot << "  " << "tabort"<< endl;
 
@@ -801,13 +820,13 @@ double Company::contribution_adding(Consumer *consumer)
 
     /*
      * This estimates the wage, but will not be the correct one...
-     * Might as well use the previous wage to estimate... 
+     * Might as well use the previous wage to estimate...
      */
 
     //  if (size != 0) {
     //  wage = get_total_wages()/size;
     // }
-    //else {
+    // else {
     //  wage = get_total_wages();
     //}
 
@@ -815,15 +834,15 @@ double Company::contribution_adding(Consumer *consumer)
     theIterator = wages_.begin();
     wage = *theIterator;
 
-    //contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
+    // contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
 
     delta_sales = (prod_after - prod_before) * price;
     material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
     contribution = delta_sales - wage - material_cost_delta;
 
-    //cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
+    // cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
 
-    //cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
+    // cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
 
     return contribution;
 }
@@ -849,8 +868,8 @@ double Company::contribution_removing(Consumer *consumer)
     mot = consumer->get_motivation();
     skill_sum = employees_->get_skill_sum();
     mot_sum = employees_->get_motivation_sum();
-    price = market_->get_price_in();
-    price_out = market_->get_price_out();
+    price = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
     size = employees_->get_size();
 
     prod_before = get_production();
@@ -862,24 +881,24 @@ double Company::contribution_removing(Consumer *consumer)
 
         delta_sales = (prod_after - prod_before) * price;
         material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
-        //contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
+        // contribution = (prod_after - prod_before)*price - (item_cost(prod_after) - item_cost(prod_before))*price_out + wage;
         contribution = delta_sales + wage - material_cost_delta;
 
-        //cout << "I comp contrib removing for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
+        // cout << "I comp contrib removing for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
     }
     else
     {
         contribution = 0;
     }
 
-    //list<double>::iterator theIterator;
-    //theIterator = wages_.begin();
+    // list<double>::iterator theIterator;
+    // theIterator = wages_.begin();
 
-    //wage = *theIterator;
-    //  cout << "cont rem i company, cont = " << endl
-    //     << "Contr before: " << prod_before << endl
-    //     << "Prod_after" << prod_after << endl
-    //     << "Contribution: " << contribution << endl;
+    // wage = *theIterator;
+    //   cout << "cont rem i company, cont = " << endl
+    //      << "Contr before: " << prod_before << endl
+    //      << "Prod_after" << prod_after << endl
+    //      << "Contribution: " << contribution << endl;
 
     return contribution;
 }
@@ -893,7 +912,7 @@ double Company::produce(string city_name)
     production = get_production();
     current_production_items_ = production;
     stock_ += production;
-    //insertCompanyDatapoint("PRODUCTION", production, clock_ -> get_time(), city_name, name_);
+    // insertCompanyDatapoint("PRODUCTION", production, clock_ -> get_time(), city_name, name_);
 
     cout << "I Company produce, share of full capacity: " << production / (capacity_ * 3.1415 / 2) << " capacity: " << capacity_ << " employees: " << employees_->get_size() << " for " << name_ << endl;
 
@@ -906,15 +925,17 @@ void Company::sell_to_market()
     int actual_items = 0;
     double actual_cost = 0;
 
-    price = market_->get_price_in();
+    price = get_active_market()->get_price_in();
 
-    actual_cost = market_->market_buy_items(stock_);
+    actual_cost = get_active_market()->market_buy_items(stock_);
 
-    //calculating items if price > 0
-    if(price > 0) {
+    // calculating items if price > 0
+    if (price > 0)
+    {
         actual_items = actual_cost / price;
     }
-    else {
+    else
+    {
         cout << "I comp sell to mkt, no items sold, price: " << price << " stock: " << stock_ << endl;
     }
 
@@ -949,38 +970,38 @@ double Company::invest()
     double item_efficiency_change = 0;
     bool increase = true;
 
-    //Database parameters
+    // Database parameters
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.001; //Should be updated from database
+    double ItemEfficiencyRate = 0.001; // Should be updated from database
 
-    //Parameters settging investment split between capacity and efficiency
-    // double investment_capacity_vs_efficiency_split = 0.5;
-    // double investment_item_vs_factor_split = 0.5;
+    // Parameters settging investment split between capacity and efficiency
+    //  double investment_capacity_vs_efficiency_split = 0.5;
+    //  double investment_item_vs_factor_split = 0.5;
 
     // FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     // CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     // CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
 
-    //Getting priec and max items in market
-    price_out = market_->get_price_out();
-    max_items = market_->get_items();
+    // Getting priec and max items in market
+    price_out = get_active_market()->get_price_out();
+    max_items = get_active_market()->get_items();
 
-    //Getting the desired investment for the company (after max leverage) and available items
+    // Getting the desired investment for the company (after max leverage) and available items
     desired_items = fmax(0, get_desired_investment());
 
-    //Calculating cost of the desired investment and available capital
+    // Calculating cost of the desired investment and available capital
     cost = desired_items * price_out;
     available_capital = fmax(capital_ * pbr_, 0);
     loans = fmax(0, cost - available_capital);
 
-    //If not all money available in the bank
+    // If not all money available in the bank
     available_bank_financing = fmax(0, bank_->get_max_customer_borrow());
 
     if (available_bank_financing < loans)
     {
-        //cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
+        // cout << "Not enough money in bank (from company invest)" << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items" << items << " Max items " << max_items << endl;
         loans = fmax(0, available_bank_financing);
         cost = (available_capital + loans);
         desired_items = cost / price_out;
@@ -988,11 +1009,11 @@ double Company::invest()
              << " Desired loans: " << loans << " Avail bank cap: " << available_bank_financing << " Items: " << desired_items << " Max items " << max_items << endl;
     }
 
-    //Total amount to invest from own money
+    // Total amount to invest from own money
     own_capital_to_invest = cost - loans;
 
-    //Paying market for goods
-    actual_items = market_->customer_buy_items(own_capital_to_invest + loans);
+    // Paying market for goods
+    actual_items = get_active_market()->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
 
     cout << "I cmp inv, des it: " << desired_items << " Act. ite: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
@@ -1003,16 +1024,16 @@ double Company::invest()
         loans = 0;
     }
     else
-    { //Need loans as well
+    { // Need loans as well
         loans = actual_amount - own_capital_to_invest;
     }
 
     change_capital(-own_capital_to_invest);
 
-    //Getting items from market
-    //change_stock(actual_items);
+    // Getting items from market
+    // change_stock(actual_items);
 
-    //Updating loans from bank
+    // Updating loans from bank
     change_debts(loans);
     bank_->customer_borrow_money(loans);
 
@@ -1024,12 +1045,12 @@ double Company::invest()
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
     ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
-    //Increasing capacity and efficiency
+    // Increasing capacity and efficiency
 
-    //First split of invested items between capacity and efficiency
+    // First split of invested items between capacity and efficiency
     invested_items_capacity = actual_items * investment_capacity_vs_efficiency_split_;
 
-    //Second split of invested items between item and labour efficiency
+    // Second split of invested items between item and labour efficiency
     invested_items_efficiency_items = (actual_items - invested_items_capacity) * investment_item_vs_factor_split_;
     invested_items_efficiency_factor = (actual_items - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
 
@@ -1037,8 +1058,8 @@ double Company::invest()
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
     item_efficiency_change = item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
-    //cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
-    //cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
+    // cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
+    // cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
     cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
     change_prod_const_skill(factor_change);
     change_prod_const_motivation(factor_change);
@@ -1056,7 +1077,7 @@ double Company::invest()
 
 int Company::get_desired_investment()
 {
-    //Investments in different type of things
+    // Investments in different type of things
     int invested_items_tot = 0;
     int invested_items_capacity = 0;
     int invested_items_efficiency_factor = 0;
@@ -1070,59 +1091,59 @@ int Company::get_desired_investment()
     double discounted_cashflows = 0;
     double borrow = 0;
 
-    //Database parameters
+    // Database parameters
     double FacIncreaseRate_1 = 0.002;
     double CapIncreaseParam_1 = 8000;
     double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.000001; //Should be updated from database
+    double ItemEfficiencyRate = 0.000001; // Should be updated from database
 
-    //Parameters settging investment split between capacity and efficiency
-    // double investment_capacity_vs_efficiency_split = 0.5;
-    // double investment_item_vs_factor_split = 0.5;
+    // Parameters settging investment split between capacity and efficiency
+    //  double investment_capacity_vs_efficiency_split = 0.5;
+    //  double investment_item_vs_factor_split = 0.5;
 
     FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
     CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
     CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
     ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
-    //Items ivested and increase
+    // Items ivested and increase
     item_increase = 10000;
     invested_items_tot = 4;
 
-    price_out = market_->get_price_out();
+    price_out = get_active_market()->get_price_out();
 
     while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
     {
-        //First split of invested items between capacity and efficiency
+        // First split of invested items between capacity and efficiency
         invested_items_capacity = invested_items_tot * investment_capacity_vs_efficiency_split_;
 
-        //Second split of invested items between item and labour efficiency
+        // Second split of invested items between item and labour efficiency
         invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
         invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
 
-        //cout << "Invested tot: " << invested_items_tot << " invested cap: " << invested_items_capacity << " invested item_item" <<invested_items_efficiency_items << " invesested items_lab" << invested_items_efficiency_factor << endl;
+        // cout << "Invested tot: " << invested_items_tot << " invested cap: " << invested_items_capacity << " invested item_item" <<invested_items_efficiency_items << " invesested items_lab" << invested_items_efficiency_factor << endl;
 
-        //Cost of investment
+        // Cost of investment
         cost_of_investment = price_out * invested_items_tot;
 
-        //If not sufficient own capital for investment, borrow money
+        // If not sufficient own capital for investment, borrow money
         if (cost_of_investment > capital_ * pbr_)
         {
             borrow = cost_of_investment - capital_ * pbr_;
         }
 
-        //calculating NPV of investment
-        discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); //items NET PRESENT VALUE OF FUTURE CASHFLOWS
+        // calculating NPV of investment
+        discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); // items NET PRESENT VALUE OF FUTURE CASHFLOWS
 
         NPV_old = NPV;
         NPV = discounted_cashflows - cost_of_investment;
 
-        //cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
+        // cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
         invested_items_tot += item_increase;
     }
 
-    //Adjusting for two extra loops
+    // Adjusting for two extra loops
     invested_items_tot = invested_items_tot - 2 * item_increase;
 
     return invested_items_tot;
@@ -1195,8 +1216,8 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
     double zero_limit = 1;
 
     interest_rate = bank_->get_interest();
-    price_in = market_->get_price_in();
-    price_out = market_->get_price_out();
+    price_in = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
     size = employees_->get_size();
     skill_sum = employees_->get_skill_sum();
     mot_sum = employees_->get_motivation_sum();
@@ -1204,7 +1225,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
     pcs = prod_const_skill_;
     pcm = prod_const_motivation_;
 
-    //Capacity and efficiency increase
+    // Capacity and efficiency increase
     capacity_incr = capacity_increase(invested_items_capacity, capacity_, CapIncreaseParam_1, CapIncreaseRate_1);
 
     old_capacity = capacity_;
@@ -1230,7 +1251,7 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
         value += (sales_value - est_prod_cost - est_wages) / (pow((1 + interest_rate), t));
         t++;
 
-        //Simulating decay of production factors
+        // Simulating decay of production factors
         new_capacity -= new_capacity * decay_;
         old_capacity -= old_capacity * decay_;
         pcs -= pcs * decay_;
@@ -1238,11 +1259,11 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
         factor_change -= factor_change * decay_;
         item_efficiency += item_efficiency * decay_;
 
-        //cout << "   - " << t << " " << "Capacity: " << capacity_ << " Capacity incr: " << capacity_incr << endl;
+        // cout << "   - " << t << " " << "Capacity: " << capacity_ << " Capacity incr: " << capacity_incr << endl;
     }
-    //cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
+    // cout << "Years:in compny casflows " << t/12 << "  Value: " << value << " Loan cost " << loan_cost << endl;
     value -= loan_cost;
-    //cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
+    // cout << "I Company investment Cashflows - error in factor increase for skill and motivation" << endl;
     return value;
 }
 
@@ -1259,22 +1280,23 @@ double Company::get_average_wage()
     return average_wage;
 }
 
-double Company::get_average_wage_historical(int years) {
+double Company::get_average_wage_historical(int years)
+{
 
     double average_wage = 0;
-    
+
     list<double>::iterator theIterator;
     theIterator = wages_.begin();
-    //Looping over the last "years" number of wages
-    for (int i = 0; i < years && theIterator != wages_.end(); ++i, ++theIterator) {
+    // Looping over the last "years" number of wages
+    for (int i = 0; i < years && theIterator != wages_.end(); ++i, ++theIterator)
+    {
         average_wage += *theIterator;
     }
 
-    //Dividing by number of years to get average
+    // Dividing by number of years to get average
     average_wage /= years;
 
     return average_wage;
-
 }
 
 double Company::get_total_wages()
@@ -1293,8 +1315,8 @@ double Company::get_total_wages()
     if (size)
     {
         production = get_production();
-        price = market_->get_price_in();
-        price_out = market_->get_price_out();
+        price = get_active_market()->get_price_in();
+        price_out = get_active_market()->get_price_out();
     }
 
     list<double>::iterator theIterator;
@@ -1339,8 +1361,8 @@ double Company::get_estimated_wages(double production)
 
     size = employees_->get_size();
 
-    price = market_->get_price_in();
-    price_out = market_->get_price_out();
+    price = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
 
     wages = (production * price - get_items_for_production() * price_out) * wage_const_;
 
@@ -1358,7 +1380,7 @@ double Company::pay_employees_individual(double income_tax)
     double motivation_sum = 0;
     int pay_wages_in_cash = 1;
 
-    price = market_->get_price_in();
+    price = get_active_market()->get_price_in();
     size = employees_->get_size();
 
     skill_sum = employees_->get_skill_sum();
@@ -1366,26 +1388,26 @@ double Company::pay_employees_individual(double income_tax)
 
     pay_wages_in_cash = getDatabaseParameter("'PayWageInCash'", city_name_);
 
-    //cout << "Pay in cash: " << pay_wages_in_cash << endl;
+    // cout << "Pay in cash: " << pay_wages_in_cash << endl;
 
     wage_tot = get_total_wages();
-    //cout << name_ << "I company pay wage employ1" << endl;
+    // cout << name_ << "I company pay wage employ1" << endl;
 
     if (size)
     {
         wage = wage_tot / size;
         income_tax_sum = employees_->pay_employees_individual(wage_tot, skill_sum, motivation_sum, income_tax, name_, pay_wages_in_cash);
         capital_ -= wage_tot;
-        //log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
+        // log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
 
-    //cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;
+    // cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;
     wages_.push_front(wage);
     employees_no_.push_front(size);
 
     return income_tax_sum;
 
-    //cout << "I company pay employ23" << endl;
+    // cout << "I company pay employ23" << endl;
 }
 
 void Company::pay_employees()
@@ -1394,13 +1416,13 @@ void Company::pay_employees()
     double wage_tot = 0;
     double wage = 0;
     double price = 0;
-    //double sum_after = 0;
+    // double sum_after = 0;
 
-    price = market_->get_price_in();
+    price = get_active_market()->get_price_in();
     size = employees_->get_size();
 
     wage_tot = get_total_wages();
-    //cout << name_ << "I company pay wage employ1" << endl;
+    // cout << name_ << "I company pay wage employ1" << endl;
 
     if (size)
     {
@@ -1414,17 +1436,17 @@ void Company::pay_employees()
     wages_.push_front(wage);
     employees_no_.push_front(size);
 
-    //cout << "I company pay employ23" << endl;
+    // cout << "I company pay employ23" << endl;
 }
 
 void Company::pay_interest()
 {
-    //double amount = 0;
+    // double amount = 0;
     double max_amount = 0;
     double interest = 0;
 
-    //interest = bank_ -> get_interest();
-    //amount = debts_*interest;
+    // interest = bank_ -> get_interest();
+    // amount = debts_*interest;
 
     max_amount = fmax(capital_, 0);
     interest = bank_->customer_pay_interest(debts_, max_amount, 1);
@@ -1440,7 +1462,7 @@ void Company::repay_to_bank()
     double amount = 0;
     double repayment = 0;
 
-    //amount = fmax(amount,0);
+    // amount = fmax(amount,0);
 
     repayment = bank_->customer_repay_loans(debts_, capital_, 1);
 
@@ -1483,39 +1505,39 @@ void Company::buy_items_for_production()
     double actual_amount = 0;
 
     desired_items = get_items_for_production();
-    price = market_->get_price_out();
+    price = get_active_market()->get_price_out();
     desired_amount = desired_items * price;
 
     //  cout << "I comapny buy items, cost = " << items << endl;
 
-    actual_items = market_->customer_buy_items(desired_amount);
+    actual_items = get_active_market()->customer_buy_items(desired_amount);
     actual_amount = actual_items * price;
 
     change_capital(-actual_amount);
     change_environmental_impact(actual_items);
-    //market_ -> change_capital(amount);
-    //market_ -> change_items(-items);
+    // get_active_market() -> change_capital(amount);
+    // get_active_market() -> change_items(-items);
 
     log_transaction_full(name_, "Market", actual_amount, "Inventory", clock_->get_time());
 }
 
-//void Company::invest() {
-//  double investment = 0;
-//  double limit = 500000;
-//  if(capital_ > 0 && investment < limit) {
-//    investment = invest_ * capital_;
-//capital_ -= investment;
+// void Company::invest() {
+//   double investment = 0;
+//   double limit = 500000;
+//   if(capital_ > 0 && investment < limit) {
+//     investment = invest_ * capital_;
+// capital_ -= investment;
 
 /*
- * Borde kunna investera bade i storlek, dvs rate, och effektivitet, dvs 
+ * Borde kunna investera bade i storlek, dvs rate, och effektivitet, dvs
  * prod const skill och motivation. Gor ett enkelt forsok, men borde eg
  *kolla pa reapektive derivator
  */
 //  }
 
-//else if(investment > limit) {
-//investment = limit;
-//}
+// else if(investment > limit) {
+// investment = limit;
+// }
 
 // prod_const_motivation_ *= 1 + 0.5*investment/limit;
 // prod_const_skill_ *= 1 + 0.5*investment/limit;
