@@ -46,17 +46,23 @@ int main()
 	*/
 		bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
 
-		//If not commented out, creates one shared market
-		// City * Saraland = bennyworld.get_city("Saraland");
-		// City * Bennyland = bennyworld.get_city("Bennyland");
-		// Market * BMarket = Bennyland -> get_market();
-		// Saraland->set_market(BMarket);
 
 		/*
 	* Printing world database
 	*/
 		bennyworld.printWorldDB();
 
+		/*
+		* Merging markets - should be revised
+		*/
+
+		// City * Saraland = bennyworld.get_city("Saraland");
+		// City * Bennyland = bennyworld.get_city("Bennyland");
+		// Market * BMarket = Bennyland -> get_market();
+		// Market * SMarket = Saraland -> get_market();	
+		// Saraland->set_market(BMarket);
+
+		
 		/*
    	* A check so that no money is lost during the exec.
    	*/
@@ -165,34 +171,33 @@ int main()
 			cout << "------------------------------" << endl;
 			// Check if money is lost
 			bennyworld.check_money_consistency(total_money_before);
-			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
-			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << endl;
+			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Bennyland")->get_market()->get_capital() << endl;
+			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
 			//Creating a shared market, need some additional work to function well though
-			if(current_cycle == 20) {
+			// if(current_cycle == 20) {
 
-				City * Saraland = bennyworld.get_city("Saraland");
-				City * Bennyland = bennyworld.get_city("Bennyland");
-				Market * BMarket = Bennyland -> get_market();
-				Market * SMarket = Saraland -> get_market();
+			// 	City * Saraland = bennyworld.get_city("Saraland");
+			// 	City * Bennyland = bennyworld.get_city("Bennyland");
+			// 	Market * BMarket = Bennyland -> get_market();
+			// 	Market * SMarket = Saraland -> get_market();
 
-				//Transfer funds from Saraland market to Bennyland market
-				double transfer_amount = SMarket->get_capital(); // Transfer 10% of Saraland's funds
-				double bMarket_capital = BMarket->get_capital();
+			// 	//Transfer funds from Saraland market to Bennyland market
+			// 	double transfer_amount = SMarket->get_capital(); // Transfer 10% of Saraland's funds
+			// 	double bMarket_capital = BMarket->get_capital();
 
-				SMarket->change_capital(-transfer_amount);
-				BMarket->change_capital(transfer_amount);
-				cout << "Transfered capital from Sara to Benny: " << transfer_amount << endl;
-				bennyworld.check_money_consistency(total_money_before);
-				Saraland->set_market(BMarket);
-				sum_before_BL += transfer_amount;	
-				sum_before_SL += bMarket_capital;
-				total_money_before = sum_before_BL + sum_before_SL;
-				cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << endl;
-				cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << endl;
-				bennyworld.check_money_consistency(total_money_before);
+			// 	// SMarket->change_capital(-transfer_amount);
+			// 	// BMarket->change_capital(transfer_amount);
+			// 	// cout << "Transfered capital from Sara to Benny: " << transfer_amount << endl;
+			// 	bennyworld.check_money_consistency(total_money_before);
+			// 	Saraland->set_market(BMarket);
+			// 	sum_before_SL += transfer_amount;
+			// 	total_money_before = sum_before_BL + sum_before_SL;
+			// 	cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << " Market capital: " << BMarket->get_capital() << endl;
+			// 	cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << SMarket->get_capital() << endl;
+			// 	bennyworld.check_money_consistency(total_money_before);
 
-			}
+			// }
 
 			cout << endl
 				 << "TIME MEASUREMENTS" << endl;
