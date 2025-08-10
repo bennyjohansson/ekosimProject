@@ -11,7 +11,7 @@
 #include "company_list.h"
 #include "bank.h"
 #include "clock.h"
-//#include "market.h"
+#include "market.h"
 //#include "consumer.h"
 
 using namespace std;
@@ -22,6 +22,7 @@ class City {
       City();
       City(string name);
       City(string name, Clock * clock);
+      City(string name, Clock * clock, Market * global_market);
 
       /*
        * Info-funktioner
@@ -49,6 +50,7 @@ class City {
       int get_time() const;
       Clock * get_clock() const;
       Market * get_market();
+      Market * get_global_market() const;
       Bank * get_bank();
       double get_consumer_capital_sum();
       double get_company_capacity_sum();
@@ -198,6 +200,7 @@ class City {
       std::unique_ptr<Consumer_list> capital_owners_;
       std::unique_ptr<Company_list> company_list_;
       std::unique_ptr<Market> market_;
+      Market * global_market_;  // Pointer to global market (owned by World)
       std::unique_ptr<Bank> bank_;
       Clock * clock_;  // Keep as raw pointer - may be shared resource
       int flash_counter_;

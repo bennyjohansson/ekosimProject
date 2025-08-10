@@ -20,6 +20,7 @@ City::City() : name_("bennyland"),
                company_list_(std::make_unique<Company_list>("COMPANIES")),
                labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                market_(std::make_unique<Market>()),
+               global_market_(nullptr),
                bank_(std::make_unique<Bank>("BENNYBANK", 0.02, 3)),
                clock_(new Clock())
 {
@@ -31,6 +32,7 @@ City::City(string name) : name_(name),
                           labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                           capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
                           market_(std::make_unique<Market>()),
+                          global_market_(nullptr),
                           bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
                           clock_(new Clock()),
                           flash_counter_(0),
@@ -51,6 +53,29 @@ City::City(string name, Clock *clock) : name_(name),
                                         labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                                         capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
                                         market_(std::make_unique<Market>()),
+                                        global_market_(nullptr),
+                                        bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
+                                        clock_(clock),
+                                        flash_counter_(0),
+                                        shareToSteal_(0.95),
+                                        laundry_factor_(0.95),
+                                        no_years_laundry_(4),
+                                        capital_(0),
+                                        vat_(0.2),
+                                        income_tax_(0.3),
+                                        capital_gains_tax_(0.3),
+                                        budget_balance_(0.00),
+                                        time_to_steal_(7919)
+{
+}
+
+City::City(string name, Clock *clock, Market *global_market) : name_(name),
+                                        consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
+                                        company_list_(std::make_unique<Company_list>("COMPANIES")),
+                                        labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                                        capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
+                                        market_(std::make_unique<Market>()),
+                                        global_market_(global_market),
                                         bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
                                         clock_(clock),
                                         flash_counter_(0),
@@ -502,7 +527,7 @@ void City::add_random_consumers(int number_of_consumers)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(name_, market_.get(), bank_.get(), clock_);
+        Consumer *benny = random_consumer(name_, market_.get(), global_market_, bank_.get(), clock_);
         benny->set_name("Consumer" + std::to_string(i));
         add_consumer(benny);
     }
@@ -519,7 +544,7 @@ void City::add_random_consumers(int number_of_consumers, double capital)
     for (int i = 0; i < number_of_consumers; i++)
     {
 
-        Consumer *benny = random_consumer(name_, market_.get(), bank_.get(), clock_);
+        Consumer *benny = random_consumer(name_, market_.get(), global_market_, bank_.get(), clock_);
         benny->set_name("Consumer" + std::to_string(i));
         benny->set_capital(capital);
         add_consumer(benny);
@@ -2058,7 +2083,7 @@ void City::add_companies_from_database()
         decay = std::stod(records[i][13]);
         production_function = std::stoi(records[i][15]);
 
-        add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), bank_.get(), clock_));
+        add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_));
 
         cout << endl
              << "Added company: " << name << endl

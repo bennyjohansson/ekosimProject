@@ -21,7 +21,8 @@ skill_(0),
 capital_(0),
 spendwill_(0),
 employed_(false),
-name_("")
+name_(""),
+global_market_(nullptr)
 //city_(0)
 {}
 
@@ -33,7 +34,8 @@ employed_(false),
 capital_(cap),
 income_(0),
 items_(0),
-name_("")
+name_(""),
+global_market_(nullptr)
 {}
 
 Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, string country, Market * m, Bank *b, Clock * c) :
@@ -55,7 +57,33 @@ employed_(false),
 trustworthy_(true),
 bank_(b),
 clock_(c),
-market_(m), 
+market_(m),
+global_market_(nullptr),
+employer_ ("")
+
+{}
+
+Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, string country, Market * m, Market * global_m, Bank *b, Clock * c) :
+name_(""), 
+country_(country),
+motivation_(mot),
+skill_(sk),
+capital_(cap),
+spendwill_(spe),
+savewill_(save),
+borrowwill_(borrow),
+items_(0),
+loans_(0), 
+debts_(0),
+income_(0),
+dividends_(0),
+transfers_(0),
+employed_(false),
+trustworthy_(true),
+bank_(b),
+clock_(c),
+market_(m),
+global_market_(global_m),
 employer_ ("")
 
 {}

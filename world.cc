@@ -10,8 +10,9 @@ using namespace std;
 
 World::World(string name) : 
 	name_(name),
-	clock_(new Clock()),
-    cities_(new City_list("CITIES", clock_))
+	clock_(std::make_shared<Clock>()),
+    cities_(std::make_unique<City_list>("CITIES", clock_.get())),
+    global_market_(std::make_unique<Market>("Global Market"))
 {}
 
 void World::add_city(City * city) {
@@ -23,7 +24,7 @@ void World::add_city(City * city) {
 
 void World::add_city(string city_name, string email) {
 
-	City * myCity = new City(city_name, clock_);
+	City * myCity = new City(city_name, clock_.get(), global_market_.get());
 	int size = 0;
 	size = myCity -> get_no_consumers();
 	double share_capital_owners = 0.3;
@@ -69,13 +70,19 @@ int World::get_time() const {
 
 Clock * World::get_clock() const {
 
-    return clock_;
+    return clock_.get();
 
 }
 
 City * World::get_city(const string& name) const {
 
 	return cities_ -> get_city(name);
+
+}
+
+Market * World::get_global_market() const {
+
+    return global_market_.get();
 
 }
 

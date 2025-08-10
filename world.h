@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <memory>
 #include "bank.h"
 #include "clock.h"
 #include "city_list.h"
-//#include "market.h"
+#include "market.h"
 //#include "consumer.h"
 
 using namespace std;
@@ -37,6 +38,7 @@ class World {
       int get_time() const;
       Clock * get_clock() const;
       City * get_city(const string& name) const;
+      Market * get_global_market() const;
       
       void tick();
       
@@ -62,8 +64,9 @@ class World {
    private:
 
     string name_;
-    Clock * clock_;
-    City_list * cities_;
+    std::shared_ptr<Clock> clock_;
+    std::unique_ptr<City_list> cities_;
+    std::unique_ptr<Market> global_market_;
 
 
 

@@ -61,7 +61,7 @@ double randnorm(double average, double std){
 
 }
 
-Consumer * random_consumer(string country, Market * market, Bank * bank, Clock * clock) {
+Consumer * random_consumer(string country, Market * market, Market * global_market, Bank * bank, Clock * clock) {
     
     /* 
      * Default values for consumers
@@ -101,7 +101,7 @@ Consumer * random_consumer(string country, Market * market, Bank * bank, Clock *
     //normalize(borrow);
 
     //cout << "I functions rand cons, borrow: " << borrow << endl;
-    return new Consumer(mot,sk,cap,spe, save, borrow, country, market, bank, clock);
+    return new Consumer(mot,sk,cap,spe, save, borrow, country, market, global_market, bank, clock);
 }
 
 

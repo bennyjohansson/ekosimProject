@@ -41,11 +41,10 @@ int main()
 		initiateCityDB("Bennyland");
 		bennyworld.initiate_city("Bennyland");
 
-		/*
+	/*
 	* Adding another city
 	*/
-		bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
-
+	bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
 
 		/*
 	* Printing world database

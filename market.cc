@@ -20,6 +20,17 @@ Market::Market() :
   excess_demand_items_(0)
 {}
 
+Market::Market(string name) : 
+  name_(name),  
+  items_(10),
+  marginal_(0.05),
+  capital_(200000),
+  price_in_(5),
+  price_out_(5),
+  div_ratio_(0.5), 
+  excess_demand_items_(0)
+{}
+
 void Market::info() {
   cout << name_ << endl << "-------------------------------------------------"
        << endl << "Items: " << items_ << endl << "Value of items: " << items_*price_out_<< endl << "Capital: " << capital_ << endl << "Total assets: " << capital_ + price_out_*items_ << endl << "Price in: " << price_in_ << endl

@@ -40,6 +40,6 @@ double item_efficiency_increase(double, double, double);
 
 double item_cost(double, double);
 
-Consumer * random_consumer(string, Market *, Bank *, Clock *);
+Consumer * random_consumer(string, Market *, Market *, Bank *, Clock *);
 
 #endif

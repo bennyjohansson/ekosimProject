@@ -21,6 +21,7 @@ class Consumer {
 
       Consumer(double, double, double, double);
       Consumer(double, double, double, double, double, double, string, Market *, Bank *, Clock *);
+      Consumer(double, double, double, double, double, double, string, Market *, Market *, Bank *, Clock *);
   
       /*
        *Functions to get info regarding the consumer
@@ -140,6 +141,7 @@ class Consumer {
       Bank * bank_;
       Clock * clock_;
       Market * market_; 
+      Market * global_market_;  // Pointer to global market (owned by World) 
       
       //Company * employer_;
       //Employee_list employee_info_;

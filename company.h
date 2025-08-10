@@ -23,6 +23,7 @@ public:
     Company(string name);
     Company(string, Market*, Clock*);
     Company(string, string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
+    Company(string, string, double, double, double, double, double, double, double, Market*, Market*, Bank *, Clock*);  //Local market firtst then global market
     // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
     
     /*
@@ -176,6 +177,7 @@ private:
     
     Consumer_list * employees_;
     Market *market_;
+    Market *global_market_;  // Pointer to global market (owned by World)
     Bank *bank_;
     Clock * clock_;
     
