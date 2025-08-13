@@ -18,7 +18,7 @@ using namespace std;
 City::City() : name_("bennyland"),
                consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
                company_list_(std::make_unique<Company_list>("COMPANIES")),
-               labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+               // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                market_(std::make_unique<Market>()),
                global_market_(nullptr),
                bank_(std::make_unique<Bank>("BENNYBANK", 0.02, 3)),
@@ -29,7 +29,7 @@ City::City() : name_("bennyland"),
 City::City(string name) : name_(name),
                           consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
                           company_list_(std::make_unique<Company_list>("COMPANIES")),
-                          labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                          // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                           capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
                           market_(std::make_unique<Market>()),
                           global_market_(nullptr),
@@ -50,7 +50,7 @@ City::City(string name) : name_(name),
 City::City(string name, Clock *clock) : name_(name),
                                         consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
                                         company_list_(std::make_unique<Company_list>("COMPANIES")),
-                                        labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                                        // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                                         capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
                                         market_(std::make_unique<Market>()),
                                         global_market_(nullptr),
@@ -72,7 +72,7 @@ City::City(string name, Clock *clock) : name_(name),
 City::City(string name, Clock *clock, Market *global_market) : name_(name),
                                         consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
                                         company_list_(std::make_unique<Company_list>("COMPANIES")),
-                                        labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                                        // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                                         capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
                                         market_(std::make_unique<Market>()),
                                         global_market_(global_market),
@@ -116,10 +116,10 @@ void City::capital_owners_info()
     capital_owners_->info();
 }
 
-void City::labour_info()
-{
-    labour_market_->info();
-}
+// void City::labour_info()
+// {
+//     labour_market_->info();
+// }
 
 void City::employee_info()
 {
@@ -156,10 +156,10 @@ void City::print_employees(string company)
     company_list_->print_employees(company);
 }
 
-void City::print_labour_market()
-{
-    labour_market_->print_list();
-}
+// void City::print_labour_market()
+// {
+//     labour_market_->print_list();
+// }
 
 void City::print_GDP()
 {

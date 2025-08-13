@@ -31,10 +31,10 @@ class City {
       void info();
       void print_consumer_list();
       void print_employees(string company);
-      void print_labour_market();
+      // void print_labour_market();
       void consumer_info();
       void capital_owners_info();
-      void labour_info();
+      // void labour_info();
       void print_company_info(string name);  //EJ GJORD
       void market_info();
       void bank_info();
@@ -197,7 +197,7 @@ class City {
       string name_;
 
       std::unique_ptr<Consumer_list> consumers_;
-      std::unique_ptr<Consumer_list> labour_market_;
+      // std::unique_ptr<Consumer_list> labour_market_;
       std::unique_ptr<Consumer_list> capital_owners_;
       std::unique_ptr<Company_list> company_list_;
       std::unique_ptr<Market> market_;
