@@ -75,6 +75,7 @@ class City {
       string get_name() const;
       int get_no_consumers() const;
       Market * get_active_market();
+      bool get_enable_intercity_trading() const;
       
       /*
        * Change-functions
@@ -98,6 +99,7 @@ class City {
       void set_budget_balance(double);
       void set_inflation_target(double);
       void set_market(Market *);
+      void set_enable_intercity_trading(bool);
 
 
       /*

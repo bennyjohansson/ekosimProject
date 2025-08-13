@@ -241,6 +241,10 @@ Market * Consumer::get_active_market() {
     }
 }
 
+bool Consumer::get_enable_intercity_trading() const {
+    return enable_intercity_trading_;
+}
+
 double Consumer::get_time() {
 
 	return clock_ -> get_time();
@@ -373,6 +377,10 @@ void Consumer::set_trustworthy(bool tw) {
 void Consumer::set_market(Market *newMarket) {
 
     market_ = newMarket;
+}
+
+void Consumer::set_enable_intercity_trading(bool enable) {
+    enable_intercity_trading_ = enable;
 }
 
 

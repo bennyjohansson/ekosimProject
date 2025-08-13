@@ -430,6 +430,11 @@ Market *Company::get_active_market()
     }
 }
 
+bool Company::get_enable_intercity_trading() const
+{
+    return enable_intercity_trading_;
+}
+
 /*
  * Set-functions
  */
@@ -499,6 +504,11 @@ void Company::set_market(Market *newMarket)
 {
 
     market_ = newMarket;
+}
+
+void Company::set_enable_intercity_trading(bool enable)
+{
+    enable_intercity_trading_ = enable;
 }
 
 /*

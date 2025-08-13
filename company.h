@@ -73,6 +73,7 @@ public:
     double get_expected_net_flow_to_bank();
 
     Market * get_active_market();
+    bool get_enable_intercity_trading() const;
     
     /*
      * Set functions
@@ -92,6 +93,7 @@ public:
     void set_pbr(double);
     void set_wage_change_limit(double);
     void set_market(Market * newMarket);
+    void set_enable_intercity_trading(bool);
     
     
     /*

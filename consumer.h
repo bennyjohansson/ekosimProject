@@ -54,6 +54,7 @@ class Consumer {
       double get_demand();
       bool get_employment_status() const;
       bool get_trustworthy() const;
+      bool get_enable_intercity_trading() const;
       string get_name() const;
       string get_employer() const;
       Market * get_active_market();
@@ -75,6 +76,7 @@ class Consumer {
       void set_name(string);
       void set_employer(string);
       void set_trustworthy(bool);
+      void set_enable_intercity_trading(bool);
       void set_market(Market *newMarket);
       /*
        *Functions to change consumer parameters

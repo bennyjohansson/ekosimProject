@@ -449,6 +449,11 @@ Market *City::get_active_market()
     }
 }
 
+bool City::get_enable_intercity_trading() const
+{
+    return enable_intercity_trading_;
+}
+
 /*
  * Change-functions
  */
@@ -527,6 +532,11 @@ void City::set_market(Market *market)
 
     //Changing market for all companies
     company_list_ -> set_market(market);
+}
+
+void City::set_enable_intercity_trading(bool enable)
+{
+    enable_intercity_trading_ = enable;
 }
 
 /*
