@@ -212,6 +212,7 @@ class City {
       double budget_balance_;
       double inflation_target_;
       double capital_;
+      bool enable_intercity_trading_;
       
     
     

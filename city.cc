@@ -22,7 +22,8 @@ City::City() : name_("bennyland"),
                market_(std::make_unique<Market>()),
                global_market_(nullptr),
                bank_(std::make_unique<Bank>("BENNYBANK", 0.02, 3)),
-               clock_(new Clock())
+               clock_(new Clock()),
+               enable_intercity_trading_(false)
 {
 }
 
@@ -42,12 +43,11 @@ City::City(string name) : name_(name),
                           capital_(0),
                           vat_(0.2),
                           income_tax_(0.3),
-                          capital_gains_tax_(0.3),
-                          time_to_steal_(7919)
+          capital_gains_tax_(0.3),
+          time_to_steal_(7919),
+          enable_intercity_trading_(false)
 {
-}
-
-City::City(string name, Clock *clock) : name_(name),
+}City::City(string name, Clock *clock) : name_(name),
                                         consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
                                         company_list_(std::make_unique<Company_list>("COMPANIES")),
                                         // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
@@ -65,7 +65,8 @@ City::City(string name, Clock *clock) : name_(name),
                                         income_tax_(0.3),
                                         capital_gains_tax_(0.3),
                                         budget_balance_(0.00),
-                                        time_to_steal_(7919)
+                                        time_to_steal_(7919),
+                                        enable_intercity_trading_(false)
 {
 }
 
@@ -87,7 +88,8 @@ City::City(string name, Clock *clock, Market *global_market) : name_(name),
                                         income_tax_(0.3),
                                         capital_gains_tax_(0.3),
                                         budget_balance_(0.00),
-                                        time_to_steal_(7919)
+                                        time_to_steal_(7919),
+                                        enable_intercity_trading_(false)
 {
 }
 

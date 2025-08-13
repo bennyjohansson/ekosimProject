@@ -22,7 +22,8 @@ capital_(0),
 spendwill_(0),
 employed_(false),
 name_(""),
-global_market_(nullptr)
+global_market_(nullptr),
+enable_intercity_trading_(false)
 //city_(0)
 {}
 
@@ -35,7 +36,8 @@ capital_(cap),
 income_(0),
 items_(0),
 name_(""),
-global_market_(nullptr)
+global_market_(nullptr),
+enable_intercity_trading_(false)
 {}
 
 Consumer::Consumer(double mot, double sk, double cap, double spe, double save, double borrow, string country, Market * m, Bank *b, Clock * c) :
@@ -59,6 +61,7 @@ bank_(b),
 clock_(c),
 market_(m),
 global_market_(nullptr),
+enable_intercity_trading_(false),
 employer_ ("")
 
 {}
@@ -84,6 +87,7 @@ bank_(b),
 clock_(c),
 market_(m),
 global_market_(global_m),
+enable_intercity_trading_(false),
 employer_ ("")
 
 {}

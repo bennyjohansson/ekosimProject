@@ -24,6 +24,7 @@ Company::Company() : name_(""),
                      wage_const_(0.4),
                      market_(0),
                      global_market_(nullptr),
+                     enable_intercity_trading_(false),
                      employees_(new Consumer_list("Employees")) {}
 
 Company::Company(string name, Market *market, Clock *clock) : name_(name),
@@ -39,6 +40,7 @@ Company::Company(string name, Market *market, Clock *clock) : name_(name),
                                                               global_market_(nullptr),
                                                               capacity_(3000),
                                                               clock_(clock),
+                                                              enable_intercity_trading_(false),
                                                               employees_(new Consumer_list("Employees"))
 {
 }
@@ -71,6 +73,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                         global_market_(nullptr),
                                                                                                                                                                                                                         bank_(bank),
                                                                                                                                                                                                                         clock_(clock),
+                                                                                                                                                                                                                        enable_intercity_trading_(false),
                                                                                                                                                                                                                         employees_(new Consumer_list("Employees"))
 {
 }
@@ -101,6 +104,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                                                global_market_(global_market),
                                                                                                                                                                                                                                                bank_(bank),
                                                                                                                                                                                                                                                clock_(clock),
+                                                                                                                                                                                                                                               enable_intercity_trading_(false),
                                                                                                                                                                                                                                                employees_(new Consumer_list("Employees"))
 {
 }

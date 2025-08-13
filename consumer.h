@@ -134,17 +134,16 @@ class Consumer {
     	double income_;
       double dividends_;
       double transfers_;
-    	bool employed_;
+      bool employed_;
       bool trustworthy_;
+      bool enable_intercity_trading_;
       string employer_;
       
        
       Bank * bank_;
       Clock * clock_;
       Market * market_; 
-      Market * global_market_;  // Raw pointer to shared global market (owned by World) 
-      
-      //Company * employer_;
+      Market * global_market_;  // Pointer to global market (owned by World)      //Company * employer_;
       //Employee_list employee_info_;
       
 
