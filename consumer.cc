@@ -794,6 +794,10 @@ void Consumer::repay_to_bank() {
     	
     	//Withdrawal to repay
     	withdrawal = bank_ -> customer_withdraw_money(repayment);
+        if(withdrawal != repayment) {
+            cout << "Warning: Withdrawal amount (" << withdrawal << ") does not match repayment amount (" << repayment << ") in Consumer::repay_to_bank()." << endl;
+        } 
+
     	change_loans(-withdrawal);
     	
     	//Repayment done
