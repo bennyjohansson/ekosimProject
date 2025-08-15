@@ -536,6 +536,15 @@ void Consumer_list::set_market(Market * newMarket) {
   }
 }
 
+void Consumer_list::set_intecity_trading(bool enable) {
+  Element_consumer *p;
+
+  for (p = list_.get(); p; p = p->next_.get())
+  {
+    p->get_consumer()->set_enable_intercity_trading(enable);
+  }
+}
+
 /*
  * Functions for adding and removing consumers
  */

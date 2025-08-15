@@ -227,14 +227,18 @@ string Consumer::get_employer() const {
 
 Market * Consumer::get_active_market() {
 
-    bool intercity_trading = false;
+    // bool intercity_trading = false;
 
     // if (clock_ -> get_time()>20) {
     //     intercity_trading = true;
     // }
 
-    if (intercity_trading) {
+    if (enable_intercity_trading_ && global_market_ != nullptr) {
         return global_market_;
+    }
+    else if (global_market_ == nullptr) {
+        cout << "Global market not set i Consumer get_active_maket()" << endl;
+        return market_;
     }
     else {
         return market_;

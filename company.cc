@@ -330,13 +330,13 @@ double Company::get_items_for_production()
 {
     double production = 0;
     double items = 0;
-    int size = 0;
+    // int size = 0;
     double mot_sum = 0;
     double skill_sum = 0;
 
     if (employees_)
     {
-        size = employees_->get_size();
+        // size = employees_->get_size();
         skill_sum = employees_->get_skill_sum();
         mot_sum = employees_->get_motivation_sum();
     }
@@ -414,15 +414,20 @@ double Company::get_expected_net_flow_to_bank()
 Market *Company::get_active_market()
 {
 
-    bool intercity_trading = false;
+    // bool intercity_trading = false;
 
     // if (clock_ -> get_time()>20) {
     //     intercity_trading = true;
     // }
 
-    if (intercity_trading)
+    if (enable_intercity_trading_ && global_market_ != nullptr)
     {
+        // cout << "Using global market in Company" << endl;
         return global_market_;
+    }
+     else if (global_market_ == nullptr) {
+        cout << "Global market not set i Company get_active_maket()" << endl;
+        return market_;
     }
     else
     {

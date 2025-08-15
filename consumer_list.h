@@ -63,6 +63,7 @@ class Consumer_list {
 
       void set_name(string name_string);
       void set_market(Market * newMarket);
+      void set_intecity_trading(bool);  
   
 
       /*

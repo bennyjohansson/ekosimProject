@@ -433,6 +433,14 @@ void Company_list::set_market(Market * newMarket) {
     }
 }
 
+void Company_list::set_intecity_trading(bool enable) {
+    Element_company * p;
+
+    for(p = list_.get(); p; p = p -> next_.get()) {
+        (p -> get_company()) -> set_enable_intercity_trading(enable);
+    }
+}
+
 void Company_list::remove_usless_employees() {
     
     Element_company * p;

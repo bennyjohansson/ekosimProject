@@ -174,9 +174,10 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
 			//Creating a shared market, need some additional work to function well though
-			// if(current_cycle == 20) {
+			if(current_cycle == 20) {
 
-			// 	City * Saraland = bennyworld.get_city("Saraland");
+				bennyworld.get_city("Saraland") -> set_enable_intercity_trading(true);
+				bennyworld.get_city("Bennyland") -> set_enable_intercity_trading(true);
 			// 	City * Bennyland = bennyworld.get_city("Bennyland");
 			// 	Market * BMarket = Bennyland -> get_market();
 			// 	Market * SMarket = Saraland -> get_market();
@@ -196,7 +197,7 @@ int main()
 			// 	cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << SMarket->get_capital() << endl;
 			// 	bennyworld.check_money_consistency(total_money_before);
 
-			// }
+			}
 
 			cout << endl
 				 << "TIME MEASUREMENTS" << endl;

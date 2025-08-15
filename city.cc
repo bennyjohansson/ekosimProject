@@ -433,13 +433,13 @@ int City::get_no_consumers() const
 
 Market *City::get_active_market()
 {
-    bool intercity_trading = false;
+    // bool intercity_trading = false;
 
     // if (clock_ -> get_time()>20) {
     //     intercity_trading = true;
     // }
 
-    if (intercity_trading)
+    if (enable_intercity_trading_)
     {
         return global_market_;
     }
@@ -537,6 +537,10 @@ void City::set_market(Market *market)
 void City::set_enable_intercity_trading(bool enable)
 {
     enable_intercity_trading_ = enable;
+
+    consumers_ -> set_intecity_trading(enable);
+
+    company_list_ -> set_intecity_trading(enable);
 }
 
 /*
