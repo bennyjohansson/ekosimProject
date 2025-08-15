@@ -18,6 +18,7 @@ class City_list {
   City_list();
   City_list(string name);
   City_list(string name, Clock * clock);
+  City_list(string name, Clock * clock, Market * global_market);
 
 
   /*

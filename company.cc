@@ -15,19 +15,39 @@
 
 using namespace std;
 
-Company::Company() : name_(""),
-                     capital_(0),
-                     stock_(0),
-                     invest_(0.6),
-                     prod_const_skill_(60),
-                     prod_const_motivation_(40),
-                     wage_const_(0.4),
-                     market_(0),
-                     global_market_(nullptr),
-                     enable_intercity_trading_(false),
-                     employees_(new Consumer_list("Employees")) {}
+// COMMENTED OUT: Old constructor without global_market parameter
+// Company::Company() : name_(""),
+//                      capital_(0),
+//                      stock_(0),
+//                      invest_(0.6),
+//                      prod_const_skill_(60),
+//                      prod_const_motivation_(40),
+//                      wage_const_(0.4),
+//                      market_(0),
+//                      global_market_(nullptr),
+//                      enable_intercity_trading_(false),
+//                      employees_(new Consumer_list("Employees")) {}
 
-Company::Company(string name, Market *market, Clock *clock) : name_(name),
+// COMMENTED OUT: Old constructor without global_market parameter
+// Company::Company(string name, Market *market, Clock *clock) : name_(name),
+//                                                               capital_(10000),
+//                                                               stock_(0),
+//                                                               invest_(0.6),
+//                                                               production_function_(1),
+//                                                               prod_const_skill_(60),
+//                                                               prod_const_motivation_(40),
+//                                                               wage_const_(0.1),
+//                                                               wage_change_limit_(0.1),
+//                                                               market_(market),
+//                                                               global_market_(nullptr),
+//                                                               capacity_(3000),
+//                                                               clock_(clock),
+//                                                               enable_intercity_trading_(false),
+//                                                               employees_(new Consumer_list("Employees"))
+// {
+// }
+
+Company::Company(string name, Market *market, Market *global_market, Clock *clock) : name_(name),
                                                               capital_(10000),
                                                               stock_(0),
                                                               invest_(0.6),
@@ -37,7 +57,7 @@ Company::Company(string name, Market *market, Clock *clock) : name_(name),
                                                               wage_const_(0.1),
                                                               wage_change_limit_(0.1),
                                                               market_(market),
-                                                              global_market_(nullptr),
+                                                              global_market_(global_market),
                                                               capacity_(3000),
                                                               clock_(clock),
                                                               enable_intercity_trading_(false),
@@ -47,36 +67,37 @@ Company::Company(string name, Market *market, Clock *clock) : name_(name),
 
 // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
 
-Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Bank *bank, Clock *clock) : name_(name),
-                                                                                                                                                                                                                        city_name_(city_name),
-                                                                                                                                                                                                                        capital_(capital),
-                                                                                                                                                                                                                        stock_(stock),
-                                                                                                                                                                                                                        debts_(0),
-                                                                                                                                                                                                                        environmental_impact_(0),
-                                                                                                                                                                                                                        invest_(0),
-                                                                                                                                                                                                                        production_function_(1),
-                                                                                                                                                                                                                        current_production_items_(0),
-                                                                                                                                                                                                                        production_parameter_(0.001),
-                                                                                                                                                                                                                        investment_capacity_vs_efficiency_split_(0.5),
-                                                                                                                                                                                                                        investment_item_vs_factor_split_(0.5),
-                                                                                                                                                                                                                        prod_const_skill_(p_c_skill),
-                                                                                                                                                                                                                        prod_const_motivation_(p_c_mot),
-                                                                                                                                                                                                                        item_efficiency_(0.2),
-                                                                                                                                                                                                                        wage_const_(wage_const),
-                                                                                                                                                                                                                        wage_change_limit_(0.8),
-                                                                                                                                                                                                                        capacity_(capacity),
-                                                                                                                                                                                                                        capacity_0_(capacity),
-                                                                                                                                                                                                                        pbr_(plow_back_ratio),
-                                                                                                                                                                                                                        decay_(0.001),
-                                                                                                                                                                                                                        max_leverage_(1),
-                                                                                                                                                                                                                        market_(market),
-                                                                                                                                                                                                                        global_market_(nullptr),
-                                                                                                                                                                                                                        bank_(bank),
-                                                                                                                                                                                                                        clock_(clock),
-                                                                                                                                                                                                                        enable_intercity_trading_(false),
-                                                                                                                                                                                                                        employees_(new Consumer_list("Employees"))
-{
-}
+// COMMENTED OUT: Old constructor without global_market parameter - this was causing null pointer issues
+// Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Bank *bank, Clock *clock) : name_(name),
+//                                                                                                                                                                                                                         city_name_(city_name),
+//                                                                                                                                                                                                                         capital_(capital),
+//                                                                                                                                                                                                                         stock_(stock),
+//                                                                                                                                                                                                                         debts_(0),
+//                                                                                                                                                                                                                         environmental_impact_(0),
+//                                                                                                                                                                                                                         invest_(0),
+//                                                                                                                                                                                                                         production_function_(1),
+//                                                                                                                                                                                                                         current_production_items_(0),
+//                                                                                                                                                                                                                         production_parameter_(0.001),
+//                                                                                                                                                                                                                         investment_capacity_vs_efficiency_split_(0.5),
+//                                                                                                                                                                                                                         investment_item_vs_factor_split_(0.5),
+//                                                                                                                                                                                                                         prod_const_skill_(p_c_skill),
+//                                                                                                                                                                                                                         prod_const_motivation_(p_c_mot),
+//                                                                                                                                                                                                                         item_efficiency_(0.2),
+//                                                                                                                                                                                                                         wage_const_(wage_const),
+//                                                                                                                                                                                                                         wage_change_limit_(0.8),
+//                                                                                                                                                                                                                         capacity_(capacity),
+//                                                                                                                                                                                                                         capacity_0_(capacity),
+//                                                                                                                                                                                                                         pbr_(plow_back_ratio),
+//                                                                                                                                                                                                                         decay_(0.001),
+//                                                                                                                                                                                                                         max_leverage_(1),
+//                                                                                                                                                                                                                         market_(market),
+//                                                                                                                                                                                                                         global_market_(nullptr),
+//                                                                                                                                                                                                                         bank_(bank),
+//                                                                                                                                                                                                                         clock_(clock),
+//                                                                                                                                                                                                                         enable_intercity_trading_(false),
+//                                                                                                                                                                                                                         employees_(new Consumer_list("Employees"))
+// {
+// }
 
 Company::Company(string name, string city_name, double capital, double stock, double capacity, double p_c_skill, double p_c_mot, double wage_const, double plow_back_ratio, Market *market, Market *global_market, Bank *bank, Clock *clock) : name_(name),
                                                                                                                                                                                                                                                city_name_(city_name),
@@ -420,14 +441,15 @@ Market *Company::get_active_market()
     //     intercity_trading = true;
     // }
 
-    if (enable_intercity_trading_ && global_market_ != nullptr)
+    if (enable_intercity_trading_)
     {
-        // cout << "Using global market in Company" << endl;
-        return global_market_;
-    }
-     else if (global_market_ == nullptr) {
-        cout << "Global market not set i Company get_active_maket()" << endl;
-        return market_;
+        if (global_market_ != nullptr) {
+            return global_market_;
+        } else {
+            // This should never happen in normal operation since global_market_ is initialized
+            cout << "ERROR: Global market is null in company but intercity trading is enabled!" << endl;
+            return market_;
+        }
     }
     else
     {

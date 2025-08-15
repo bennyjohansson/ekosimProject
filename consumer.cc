@@ -227,18 +227,14 @@ string Consumer::get_employer() const {
 
 Market * Consumer::get_active_market() {
 
-    // bool intercity_trading = false;
-
-    // if (clock_ -> get_time()>20) {
-    //     intercity_trading = true;
-    // }
-
-    if (enable_intercity_trading_ && global_market_ != nullptr) {
-        return global_market_;
-    }
-    else if (global_market_ == nullptr) {
-        cout << "Global market not set i Consumer get_active_maket()" << endl;
-        return market_;
+    if (enable_intercity_trading_) {
+        if (global_market_ != nullptr) {
+            return global_market_;
+        } else {
+            // This should never happen in normal operation since global_market_ is initialized
+            cout << "ERROR: Global market is null in consumer but intercity trading is enabled!" << endl;
+            return market_;
+        }
     }
     else {
         return market_;

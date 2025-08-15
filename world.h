@@ -66,8 +66,8 @@ class World {
 
     string name_;
     Clock * clock_;
-    std::unique_ptr<City_list> cities_;
     Market * global_market_;
+    std::unique_ptr<City_list> cities_;
 
 
 

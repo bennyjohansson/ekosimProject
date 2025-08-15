@@ -11,8 +11,8 @@ using namespace std;
 World::World(string name) : 
 	name_(name),
 	clock_(new Clock()),
-    cities_(std::make_unique<City_list>("CITIES", clock_)),
-    global_market_(new Market("Global Market"))
+    global_market_(new Market("Global Market")),
+    cities_(std::make_unique<City_list>("CITIES", clock_, global_market_))
 {}
 
 World::~World() {

@@ -19,11 +19,13 @@ using namespace std;
 class Company {
 public:
     
-    Company();
-    Company(string name);
-    Company(string, Market*, Clock*);
-    Company(string, string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
-    Company(string, string, double, double, double, double, double, double, double, Market*, Market*, Bank *, Clock*);  //Local market firtst then global market
+    // COMMENTED OUT: Old constructors without global_market parameter - these were causing null pointer issues
+    // Company();
+    // Company(string name);
+    // Company(string, Market*, Clock*);
+    Company(string, Market*, Market*, Clock*);  // name, local market, global market, clock
+    // Company(string, string, double, double, double, double, double, double, double, Market*, Bank *, Clock*);
+    Company(string, string, double, double, double, double, double, double, double, Market*, Market*, Bank *, Clock*);  //Local market first then global market
     // NAME CAPITAL STOCK CAPACITY PROD_CONST_SKILL PROD_CONST_MOT WAGE_CONST
     
     /*

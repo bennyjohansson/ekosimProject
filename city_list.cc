@@ -10,14 +10,20 @@
 
 using namespace std;
 
-City_list::City_list(string name) :
-list_(std::make_unique<Element_city>(nullptr, new City("Bennyland"))),
-size_(1), 
-name_(name)
-{}
+// City_list::City_list(string name) :
+// list_(std::make_unique<Element_city>(nullptr, new City("Bennyland"))),
+// size_(1), 
+// name_(name)
+// {}
 
-City_list::City_list(string name, Clock * clock) :
-list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock))),
+// City_list::City_list(string name, Clock * clock) :
+// list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock))),
+// size_(1), 
+// name_(name)
+// {}
+
+City_list::City_list(string name, Clock * clock, Market * global_market) :
+list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock, global_market))),
 size_(1), 
 name_(name)
 {}

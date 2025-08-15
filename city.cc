@@ -615,7 +615,7 @@ void City::add_company(Company *company)
 
 void City::add_company(string name)
 {
-    Company *company = new Company(name, market_.get(), clock_);
+    Company *company = new Company(name, market_.get(), global_market_, clock_);
     company_list_->add_company(company);
 }
 
@@ -732,7 +732,7 @@ void City::load_company(string nameactual)
     //pbr = 0.3;
     wage_const = 0.7;
     cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
-    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), bank_.get(), clock_));
+    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_));
 }
 
 void City::load_launder_parameters()
