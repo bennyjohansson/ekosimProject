@@ -380,7 +380,7 @@ double Bank::customer_repay_loans(double loans, double max_customer_amount, bool
     repayment = loans/(payback_time_*12);
 	max_bank_amount = get_max_customer_borrow();
 	
-    sum = fmax(fmin(repayment, max_customer_amount), -max_bank_amount); 
+    sum = fmax(fmax(fmin(repayment, max_customer_amount), -max_bank_amount),0); 
 
 
 	if(pay && sum != 0){

@@ -671,15 +671,52 @@ void Consumer_list::bank_business()
   double payed_interest_sum = 0;
   double received_interest_sum = 0;
   //double repayments = 0;
+  double capital_before = 0;
+  double temp_capital = 0;
+
+  capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
 
   for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
+    
+    //Receiving interest
     received_interest_sum += consumer->get_interest(); //Check, some error
+    // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+
+    // //Checking for money leakage
+    // if(std::abs(temp_capital - capital_before) > 0.01 ) {
+    //   cout << "Money leakage in receiving interest" << endl;
+    //   capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    // }
+
+    //Paying interest
     payed_interest_sum += consumer->pay_interest();    //Check
+    // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    //Checking for money leakage
+    // if(std::abs(temp_capital - capital_before) > 0.01 ) {
+    //   cout << "Money leakage in paying interest" << endl;
+    //   // capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    // }
+    
+    //Repaying loan
     consumer->repay_to_bank();                         //Check
     //consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
+    temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    //Checking for money leakage
+    if(std::abs(temp_capital - capital_before) > 0.01 ) {
+      cout << "Money leakage in repaying loan, leaked " << abs(temp_capital - capital_before) << endl;
+      capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    }
+
+    //Deposit and borrow from bank
     consumer->deposit_and_borrow_from_bank(); //Check
+    // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    //Checking for money leakage
+    // if(std::abs(temp_capital - capital_before) > 0.01 ) {
+    //   cout << "Money leakage in deposit and borrow from bank" << endl;
+    //   // capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    // }
   }
   cout << "I cons. list, payed interest: " << payed_interest_sum << endl;
   cout << "I cons. list, rece. interest: " << received_interest_sum << endl;

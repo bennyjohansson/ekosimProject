@@ -75,6 +75,7 @@ class City {
       string get_name() const;
       int get_no_consumers() const;
       Market * get_active_market();
+      Market * get_global_market();
       bool get_enable_intercity_trading() const;
       
       /*

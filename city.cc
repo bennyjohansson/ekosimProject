@@ -449,6 +449,11 @@ Market *City::get_active_market()
     }
 }
 
+Market * City::get_global_market() {
+
+    return global_market_;
+}
+
 bool City::get_enable_intercity_trading() const
 {
     return enable_intercity_trading_;

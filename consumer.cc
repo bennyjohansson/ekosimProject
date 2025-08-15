@@ -241,6 +241,10 @@ Market * Consumer::get_active_market() {
     }
 }
 
+Bank * Consumer::get_bank() {
+    return bank_;
+}
+
 bool Consumer::get_enable_intercity_trading() const {
     return enable_intercity_trading_;
 }
@@ -770,9 +774,13 @@ void Consumer::repay_to_bank() {
     double max_amount = 0;
     double withdrawal = 0;
 	
-	max_amount = fmax(capital_ + loans_, 0);
+	max_amount = fmax(capital_,0) + fmax(loans_, 0);
     
-    repayment = bank_ -> customer_repay_loans(debts_, max_amount, 1);
+    repayment = bank_ -> customer_repay_loans(fmax(debts_,0), max_amount, 1);
+
+    if(repayment < 0) {
+        cout << "Repayment: " << repayment << " is negative in consumer.cc repay to bank, this should not happen!" << endl;
+    }
     
     //If repayment is max amount most likely the consumer ca't pay the full amount
     if(repayment == max_amount && debts_ > 0) {
@@ -781,7 +789,7 @@ void Consumer::repay_to_bank() {
     else {
     	set_trustworthy(true);
     }
-    
+    //If the customer has enough money on the account to repay debts, doing so
     if(repayment <= loans_ && repayment != 0) {
     	
     	//Withdrawal to repay
@@ -795,7 +803,8 @@ void Consumer::repay_to_bank() {
     else if (repayment != 0) {
     
     	//Withdraw all deposits to repay, the rest in from cash
-    	withdrawal = bank_ -> customer_withdraw_money(loans_);
+
+        withdrawal = bank_ -> customer_withdraw_money(loans_);        
         change_loans(-withdrawal);
         
         //Withdraw rest from cash
@@ -803,7 +812,7 @@ void Consumer::repay_to_bank() {
         
         //Repayment done
         change_debts(-repayment);
-        //cout << "I cons pay interest, need both cash and deposits to repay interest: " << interest << " withdrawal: " << withdrawal << -withdrawal - (interest - withdrawal) << endl;
+        cout << "I cons pay interest, need both cash and deposits to repay loans: " << loans_ << " withdrawal: " << withdrawal << " repayment: " << repayment << endl;
 
     }
     

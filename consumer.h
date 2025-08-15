@@ -58,6 +58,7 @@ class Consumer {
       string get_name() const;
       string get_employer() const;
       Market * get_active_market();
+      Bank * get_bank();
       /*
        *Functions to set consumer parameters
        */
