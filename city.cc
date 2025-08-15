@@ -814,9 +814,9 @@ void City::update_supply_and_demand() {
     list<double>::iterator invest; // = NULL;//list::end();
 
     invest = investments_.begin();
-    marginal = market_->get_marginal();
+    marginal = get_active_market() ->get_marginal();
     size = consumers_->get_size();
-    price_out = market_->get_price_out();
+    price_out = get_active_market()->get_price_out();
     price_old = price_out;
     
 
@@ -824,12 +824,12 @@ void City::update_supply_and_demand() {
     consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
     investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
-    market_excess_demand = (market_->get_excess_demand_items()) * price_out;
+    market_excess_demand = (get_active_market()->get_excess_demand_items()) * price_out;
 
     //Getting avilable items;
     company_items = company_list_->get_item_sum();
     company_planned_production = company_list_->get_planned_production_sum();
-    market_items = market_->get_items();
+    market_items = get_active_market()->get_items();
 
     demand = consumer_demand + production_demand + investment_demand + market_excess_demand;
 
@@ -840,13 +840,13 @@ void City::update_supply_and_demand() {
 
     //Printing market aggregate supply and demand
     cout << "I City " << name_ << " update supply and demand"
-         << " Tot dmd: " << market_ -> get_aggregate_demand() << "$BJ, items " << market_ -> get_aggregate_supply() << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
+         << " Tot dmd: " << get_active_market() -> get_aggregate_demand() << "$BJ, items " << get_active_market() -> get_aggregate_supply() << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
 
-    market_-> change_aggregate_demand(demand);
-    market_ -> change_aggregate_supply(items);
+    get_active_market()-> change_aggregate_demand(demand);
+    get_active_market() -> change_aggregate_supply(items);
 
-    aggregate_demand = market_ -> get_aggregate_demand();
-    aggregate_supply = market_ -> get_aggregate_supply();
+    aggregate_demand = get_active_market() -> get_aggregate_demand();
+    aggregate_supply = get_active_market() -> get_aggregate_supply();
 
     cout << "I City " << name_ << " update supply and demand"
          << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl
@@ -884,8 +884,8 @@ void City::update_market_price() {
 }
 
 void City::reset_supply_and_demand() {
-    market_->reset_excess_demand_items();
-    market_->reset_aggregate_demand_and_supply();
+    get_active_market()->reset_excess_demand_items();
+    get_active_market()->reset_aggregate_demand_and_supply();
 }
 
 
@@ -1464,7 +1464,7 @@ void City::produce()
     double production_items = 0;
     double price = 0;
 
-    price = market_->get_price_out();
+    price = get_active_market()->get_price_out();
 
     production_items = company_list_->produce(name_);
 
@@ -1482,7 +1482,7 @@ void City::consumers_buy()
     double demand_money = 0;
     double price = 0;
 
-    price = market_->get_price_out();
+    price = get_active_market()->get_price_out();
 
     demand_money = consumers_->consumers_buy();
 
@@ -1498,7 +1498,7 @@ void City::invest(bool invest)
          << "Companies investing" << endl
          << endl;
 
-    price = market_->get_price_out();
+    price = get_active_market()->get_price_out();
 
     if (invest)
     {

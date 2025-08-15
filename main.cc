@@ -51,23 +51,15 @@ int main()
 	*/
 		bennyworld.printWorldDB();
 
-		/*
-		* Merging markets - should be revised
-		*/
-
-		// City * Saraland = bennyworld.get_city("Saraland");
-		// City * Bennyland = bennyworld.get_city("Bennyland");
-		// Market * BMarket = Bennyland -> get_market();
-		// Market * SMarket = Saraland -> get_market();	
-		// Saraland->set_market(BMarket);
-
+		
 		
 		/*
    	* A check so that no money is lost during the exec.
    	*/
 		double sum_before_BL = bennyworld.get_city("Bennyland")->get_capital_sum();
 		double sum_before_SL = bennyworld.get_city("Saraland")->get_capital_sum();
-		double total_money_before = sum_before_BL + sum_before_SL;
+		double global_market_capital = bennyworld.get_global_market() -> get_capital();
+		double total_money_before = sum_before_BL + sum_before_SL + global_market_capital;
 		/*
 	* Setting parameters
 	*/

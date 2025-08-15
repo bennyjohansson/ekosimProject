@@ -319,10 +319,12 @@ bool World::check_money_consistency(double sum_before) {
 
 	double total_added_money = 0;
 	double total_money = 0;
+	double global_market_capital = 0;
 	
 	bool consistent = true;
-	
-	total_money = cities_ -> get_capital_sum();
+	global_market_capital = global_market_ -> get_capital();
+
+	total_money = cities_ -> get_capital_sum() + global_market_capital;
 	total_added_money = cities_ -> get_added_capital_sum();
 
 	//Checking that sum before + total_added_money is equal to total_money
