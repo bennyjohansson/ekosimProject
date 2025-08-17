@@ -1101,13 +1101,13 @@ double Company::invest()
 
     // cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
     // cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
-    cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
+    // cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
     change_prod_const_skill(factor_change);
     change_prod_const_motivation(factor_change);
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    cout << "New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
     cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
     cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
 

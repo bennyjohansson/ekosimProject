@@ -17,7 +17,8 @@ Market::Market() :
   price_in_(5),
   price_out_(5),
   div_ratio_(0.5), 
-  excess_demand_items_(0)
+  excess_demand_items_(0),
+  number_of_participants_(0)
 {}
 
 Market::Market(string name) : 
@@ -28,7 +29,8 @@ Market::Market(string name) :
   price_in_(5),
   price_out_(5),
   div_ratio_(0.5), 
-  excess_demand_items_(0)
+  excess_demand_items_(0),
+  number_of_participants_(0)
 {}
 
 void Market::info() {
@@ -70,6 +72,10 @@ double Market::get_aggregate_demand() {
   return aggregate_demand_;
 }
 
+int Market::get_number_of_participants() {
+  return number_of_participants_;
+}
+
 void Market::set_items(double items) {
   items_ = items;
 }
@@ -103,6 +109,10 @@ void Market::set_price_out(double price) {
   }
 }
 
+void Market::set_number_of_participants(int participants) {
+  number_of_participants_ = participants;
+}
+
 void Market::change_aggregate_demand(double ch) {
   aggregate_demand_ += ch;
 }
@@ -114,11 +124,20 @@ void Market::change_aggregate_supply(double ch) {
 void Market::reset_aggregate_demand_and_supply() {
   aggregate_demand_ = 0;
   aggregate_supply_ = 0;
+  // number_of_participants_ = 0;
+}
+
+void Market::reset_numnber_of_participants() {
+  number_of_participants_ = 0;
 }
 
 void Market::reset_excess_demand_items() {
 	excess_demand_items_ = 0;
 
+}
+
+void Market::change_number_of_participants(int ch) {
+  number_of_participants_ += ch;
 }
 
 bool Market::change_items(double ch) {

@@ -59,6 +59,7 @@ class World {
       bool save_high_score();
       bool save_consumers();
       bool check_money_consistency(double);
+      bool reset_number_of_market_participants();
 
  
 

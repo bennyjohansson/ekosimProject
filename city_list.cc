@@ -203,6 +203,20 @@ bool City_list::reset_market_calculations() {
     
 }
 
+bool City_list::reset_number_of_market_participants() {
+    Element_city * p;
+    if(list_) {
+        for(p = list_.get(); p; p = p -> next_.get()) {
+            p -> get_city() -> get_active_market() -> reset_numnber_of_participants();
+        }
+    }
+    else {
+        cout << "No countries to reset market participants" << endl;
+        return false;
+    }
+    return true;
+}
+
 bool City_list::run_production_cycle() {
 
     Element_city * p;
@@ -259,41 +273,41 @@ bool City_list::run_sales_cycle() {
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
             
-            temp_money = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
+            // temp_money = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
     
             p -> get_city() -> update_companies();
-            temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
+            // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
-            if(std::abs(temp_money - temp_money2) > 0.01) {
-                cout << "Leakage in update_companies!" << endl; 
-                temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();}
+            // if(std::abs(temp_money - temp_money2) > 0.01) {
+            //     cout << "Leakage in update_companies!" << endl; 
+            //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();}
             p -> get_city() -> save_data();
 
             p -> get_city() -> sell_to_market();
-            temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
+            // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
             
-            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
-                cout << "Leakage in sell_to_market!" << endl; 
-                temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
-            }
+            // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
+            //     cout << "Leakage in sell_to_market!" << endl; 
+            //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
+            // }
 
             
             p -> get_city() -> consumers_buy();
-            temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
+            // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
-            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
-                cout << "Leakage in consumers_buy!" << endl;
-                temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
-            }
+            // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
+            //     cout << "Leakage in consumers_buy!" << endl;
+            //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
+            // }
             p -> get_city() -> pay_company_employees();
-            temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
+            // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
-            if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
-                cout << "Leakage in pay_employees!" << endl;
-                temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
-            }
+            // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
+            //     cout << "Leakage in pay_employees!" << endl;
+            //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
+            // }
         }
     }
     else {
@@ -352,7 +366,7 @@ bool City_list::run_banking_cycle() {
     
 }
 
-bool City_list::run_dividend_cycle() {
+bool City_list::run_dividend_cycle(double share_of_global_market_dividends) {
 
     	//bennyland.company_pay_dividends();
     	//bennyland.pay_transfers();
@@ -361,7 +375,16 @@ bool City_list::run_dividend_cycle() {
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            
+            //Compnies paying dividend
             p -> get_city() -> company_pay_dividends();
+            
+            //Distributing global market dividends directly to city
+            if(p->city_->get_enable_intercity_trading()) {
+                cout << "Paying dividends to city from global market" << endl;
+                p -> get_city() -> change_capital(share_of_global_market_dividends);
+            }
+            //Paying transfers
             p -> get_city() -> pay_transfers();
         }
     }

@@ -704,10 +704,10 @@ void Consumer_list::bank_business()
     //consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
     temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
     //Checking for money leakage
-    if(std::abs(temp_capital - capital_before) > 0.01 ) {
-      cout << "Money leakage in repaying loan, leaked " << abs(temp_capital - capital_before) << endl;
-      capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
-    }
+    // if(std::abs(temp_capital - capital_before) > 0.01 ) {
+    //   cout << "Money leakage in repaying loan, leaked " << abs(temp_capital - capital_before) << endl;
+    //   capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    // }
 
     //Deposit and borrow from bank
     consumer->deposit_and_borrow_from_bank(); //Check

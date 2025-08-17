@@ -213,8 +213,30 @@ bool World::run_dividend_cycle() {
 		//Running the following lines
     	//bennyland.company_pay_dividends();
     	//bennyland.pay_transfers();
+		double city_dividends = 0;
+		double global_market_dividends = 0;
+		double share_of_global_market_dividends = 0;
+		int number_of_market_participants = 0;
 
-    return cities_ -> run_dividend_cycle();
+		number_of_market_participants = global_market_ -> get_number_of_participants();
+
+		//World pays each city its share of global market profit
+		
+		if(number_of_market_participants != 0) {
+			global_market_dividends = get_global_market()->pay_dividends();
+			share_of_global_market_dividends = global_market_dividends / number_of_market_participants;
+		}
+		else {
+			share_of_global_market_dividends = 0;
+		}
+
+		cout << "Global market dividends of: " << global_market_dividends << " shared between " << number_of_market_participants << endl;
+
+		//Cities pay dividends for local markets and gets their share of the global_market_dividends
+		city_dividends = cities_ -> run_dividend_cycle(share_of_global_market_dividends);
+
+
+    return true;
     
 }
 
@@ -339,6 +361,13 @@ bool World::check_money_consistency(double sum_before) {
 		cout << "Money consistency check passed." << endl;
 	}
 	return consistent;
+}
+
+bool World::reset_number_of_market_participants() {
+	global_market_ -> reset_numnber_of_participants();
+	cities_ -> reset_number_of_market_participants();
+
+	return true;
 }
 
 // End of World class implementation

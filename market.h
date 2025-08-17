@@ -27,12 +27,14 @@ class Market {
   double get_capital();
   long double get_price_in();
   long double get_price_out();
+  int get_number_of_participants();
   
   void set_items(double);
   void set_marginal(double);
   void set_capital(double);
   void set_price_in(double);
   void set_price_out(double);
+  void set_number_of_participants(int);
 
 
   bool change_items(double);
@@ -42,9 +44,11 @@ class Market {
   void change_price_out(double);
   void change_aggregate_demand(double);
   void change_aggregate_supply(double);
+  void change_number_of_participants(int);
   
   void reset_aggregate_demand_and_supply();
   void reset_excess_demand_items();
+  void reset_numnber_of_participants();
 
   void negotiate_price(double);
   double pay_dividends();
@@ -64,6 +68,7 @@ class Market {
   double price_out_;
   double div_ratio_;
   double turnover_;
+  int number_of_participants_;
 
 };
 #endif

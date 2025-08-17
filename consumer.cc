@@ -774,7 +774,7 @@ void Consumer::repay_to_bank() {
     double max_amount = 0;
     double withdrawal = 0;
 	
-	max_amount = fmax(capital_,0) + fmax(loans_, 0);
+	max_amount = fmin(fmax(capital_,0) + fmax(loans_, 0), bank_ -> get_max_customer_borrow());
     
     repayment = bank_ -> customer_repay_loans(fmax(debts_,0), max_amount, 1);
 
@@ -816,7 +816,7 @@ void Consumer::repay_to_bank() {
         
         //Repayment done
         change_debts(-repayment);
-        cout << "I cons pay interest, need both cash and deposits to repay loans: " << loans_ << " withdrawal: " << withdrawal << " repayment: " << repayment << endl;
+        // cout << "I cons pay interest, need both cash and deposits to repay loans: " << loans_ << " withdrawal: " << withdrawal << " repayment: " << repayment << endl;
 
     }
     

@@ -815,6 +815,7 @@ void City::update_supply_and_demand() {
     double price_in = 0;
     double price_old = 0;
     int size = 0;
+    int number_of_market_participants = 0;
     //int i = 0;
     list<double>::iterator invest; // = NULL;//list::end();
 
@@ -823,13 +824,14 @@ void City::update_supply_and_demand() {
     size = consumers_->get_size();
     price_out = get_active_market()->get_price_out();
     price_old = price_out;
+    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(),1);
     
 
     //Getting demand from participants
     consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
     investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
-    market_excess_demand = (get_active_market()->get_excess_demand_items()) * price_out;
+    market_excess_demand = (get_active_market()->get_excess_demand_items()/number_of_market_participants) * price_out;
 
     //Getting avilable items;
     company_items = company_list_->get_item_sum();
@@ -849,6 +851,7 @@ void City::update_supply_and_demand() {
 
     get_active_market()-> change_aggregate_demand(demand);
     get_active_market() -> change_aggregate_supply(items);
+    get_active_market() -> change_number_of_participants(1); //Adding one market participant, the city
 
     aggregate_demand = get_active_market() -> get_aggregate_demand();
     aggregate_supply = get_active_market() -> get_aggregate_supply();
@@ -870,9 +873,9 @@ void City::update_market_price() {
 
     //Getting aggregate supply and demand from market
 
-    aggregate_demand = market_ ->get_aggregate_demand();
-    aggregate_supply = market_ ->get_aggregate_supply();
-    market_excess_demand = market_ -> get_excess_demand_items();
+    aggregate_demand = get_active_market() ->get_aggregate_demand();
+    aggregate_supply = get_active_market() ->get_aggregate_supply();
+    market_excess_demand = get_active_market() -> get_excess_demand_items();
 
     price_out = aggregate_demand / aggregate_supply;
     //price_in = price_out / (1 + marginal);
@@ -880,7 +883,7 @@ void City::update_market_price() {
     cout << "I City update price"
          << " Tot dmd: " << aggregate_demand << "$BJ, items " << aggregate_supply << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << endl;
 
-    market_->set_price_out(price_out);
+    get_active_market() ->set_price_out(price_out);
 
     //cout << "I city neg market price, price: " << price_out << endl;
     
@@ -1063,7 +1066,7 @@ void City::update_interest_rate()
     initial_flows_to_bank = sum_flows_to_bank;
     prev_flows_to_bank = sum_flows_to_bank;
 
-    cout << "In city upd. flows to bank ir: " << -1 << " ir: " << interest << "  cons sum " << setw(6) << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl;
+    cout << "In city upd. flows to bank ir: " << interest << "  cons sum " << setw(6) << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl;
 
     //If we are outside tolerance (diff_limit), do something, else do nothing
     if (abs(sum_flows_to_bank) > abs(diff_limit))
@@ -1222,7 +1225,7 @@ void City::update_employees()
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
     //Employees looking for new jobs every 10(?) years
-    if ((clock_->get_time()) % 5 == 0)
+    if ((clock_->get_time()) % 1 == 0)
     {
         Element_consumer *p;
 
@@ -1270,7 +1273,7 @@ void City::save_data()
 
     demand = consumers_->get_spendwill_sum() * consumers_->get_capital_sum();
     item = company_list_->get_item_sum();
-    price_out = market_->get_price_out();
+    price_out = get_active_market()->get_price_out();
     interest_rate = bank_->get_interest();
     liquidity_reserve_ratio = bank_->get_liquidity_reserve_ratio();
     capital_reserve_ratio = bank_->get_capital_reserve_ratio();
@@ -1378,7 +1381,7 @@ void City::save_money_data()
     bank_loans = bank_->get_loans();
     bank_deposits = bank_->get_deposits();
 
-    market_capital = market_->get_capital();
+    market_capital = get_active_market()->get_capital();
 
     total_capital = get_capital_sum(); //    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum()
     time = clock_->get_time();
@@ -1444,7 +1447,7 @@ void City::save_flash(int time)
         consumer_capital = consumers_->get_capital_sum();
         company_capital = company_list_->get_capital_sum();
         bank_capital = bank_->get_capital();
-        market_capital = market_->get_capital();
+        market_capital = get_active_market()->get_capital();
         total_capital = get_capital_sum();
 
         if (write_to_file)
@@ -1755,15 +1758,23 @@ void City::company_pay_dividends()
     double company_tax = 0;
     double market_tax = 0;
     double bank_tax = 0;
+    int number_of_market_participants = 1;
 
     int number_of_capital_owners = 0;
 
     number_of_capital_owners = capital_owners_->get_size();
+    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(),1);
 
     //Companies paying tax to city
     total_profit_c = company_list_->pay_dividends();
     total_profit_b = bank_->pay_dividends();
-    total_profit_m = market_->pay_dividends();
+
+    if(!enable_intercity_trading_) {
+        total_profit_m = get_active_market()->pay_dividends();
+    }
+    else {
+        total_profit_m = 0;
+    }
 
     //Calculating capital gains tax
     company_tax = total_profit_c*capital_gains_tax_;
@@ -1779,7 +1790,7 @@ void City::company_pay_dividends()
     cout << endl
          << "Company dividends: " << total_profit_c - company_tax << " $BJ" << endl
          << "Bank dividends: " << total_profit_b - bank_tax << " $BJ" << endl
-         << "Market dividends: " << total_profit_m - market_tax << " $BJ" << endl;
+         << "Market dividends: " << total_profit_m - market_tax << " $BJ" << " and # market participants: " << number_of_market_participants << endl;
 }
 
 void City::company_pay_dividends(string theCompanyString, string theConsumerString, double amount)
@@ -1901,14 +1912,14 @@ double City::launder_money(string theThiefString, string theFraudCompanyString)
 
     for (int j = 1; j <= no_years_laundry_; j++)
     {
-        market_->change_capital(money_to_launder / no_years_laundry_);
+        get_active_market()->change_capital(money_to_launder / no_years_laundry_);
         theThief->change_capital(-money_to_launder / no_years_laundry_);
         log_transaction_full(theThiefString, "Market", money_to_launder / no_years_laundry_, "Purchase", get_time(), 1);
     }
 
     Company *theFraudCompany = company_list_->get_company(theFraudCompanyString);
 
-    market_->change_capital(-money_to_launder);
+    get_active_market()->change_capital(-money_to_launder);
     theFraudCompany->change_capital(money_to_launder);
     log_transaction_full("Market", theFraudCompanyString, money_to_launder, "Inventory", get_time(), 1);
 

@@ -342,7 +342,9 @@ double Bank::customer_withdraw_money(double ch) {
 	}
 	if(ch < 0) {
 		cout << "I bank customer withdraw money, withdrawal < 0: " << ch << endl;
-	
+	}
+    if(sum != ch ){
+		cout << "I bank customer withdraw money, withdrawal != the requested amount: " << ch << " != " << sum << endl;
 	}
 	
 	return sum;

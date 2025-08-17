@@ -52,12 +52,13 @@ class City_list {
   bool run_supply_demand_cycle();
 	bool update_market_price();
   bool reset_market_calculations();
+  bool reset_number_of_market_participants();
   bool run_production_cycle();
   bool run_employee_pricing_and_production_cycle();
   bool run_sales_cycle();
   bool run_investment_cycle();
   bool run_banking_cycle();
-  bool run_dividend_cycle();
+  bool run_dividend_cycle(double);
   bool run_save_cycle();
   bool run_adjust_money_and_consumer_cycle();
   bool update_companies_from_database();
