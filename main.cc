@@ -45,6 +45,7 @@ int main()
 	* Adding another city
 	*/
 	bennyworld.add_city("Saraland", "eriksson.sara83@gmail.com");
+	bennyworld.add_city("Wernerland", "werner.johansson@icloud.com");
 
 		/*
 	* Printing world database
@@ -58,8 +59,9 @@ int main()
    	*/
 		double sum_before_BL = bennyworld.get_city("Bennyland")->get_capital_sum();
 		double sum_before_SL = bennyworld.get_city("Saraland")->get_capital_sum();
+		double sum_before_WL = bennyworld.get_city("Wernerland")->get_capital_sum();
 		double global_market_capital = bennyworld.get_global_market() -> get_capital();
-		double total_money_before = sum_before_BL + sum_before_SL + global_market_capital;
+		double total_money_before = sum_before_BL + sum_before_SL + sum_before_WL + global_market_capital;
 		/*
 	* Setting parameters
 	*/
@@ -167,10 +169,11 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
 			//Creating a shared market, need some additional work to function well though
-			if(current_cycle == 11) {
+			if(current_cycle == 200) {
 
 				bennyworld.get_city("Saraland") -> set_enable_intercity_trading(true);
 				bennyworld.get_city("Bennyland") -> set_enable_intercity_trading(true);
+				bennyworld.get_city("Wernerland") -> set_enable_intercity_trading(true);
 
 			}
 
