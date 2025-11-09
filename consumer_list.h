@@ -73,8 +73,10 @@ class Consumer_list {
       void add_first(Consumer * cons);
       void add_last(Consumer * cons);
       void add_group_last(Element_consumer * workers);
+      void add_multiple_last(Element_consumer * list);
 
       void remove_consumer(Consumer *, double);
+      void remove_shareholder(Consumer *);
 
       /*
        * Functions to update and operate on the list

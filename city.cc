@@ -318,6 +318,29 @@ Consumer *City::get_random_consumer()
     return consumers_->get_random_consumer();
 }
 
+Element_consumer * City::get_random_consumers(int number_of_consumers) {
+
+    Element_consumer * head = nullptr;
+    Element_consumer * tail = nullptr;
+
+    for (int i=0; i<number_of_consumers; i++) {
+        Consumer * cons = consumers_ -> get_random_consumer();
+
+        Element_consumer * new_element = new Element_consumer(nullptr, cons);
+
+        if (head==nullptr) {
+            head = new_element;
+            tail = new_element;
+        }
+        else {
+            tail -> next_ = std::make_unique<Element_consumer>(nullptr, cons);
+            tail = tail -> next_.get();
+        }
+    }
+
+    return head;
+}   
+
 double City::get_capital_sum()
 {
     double csum = 0;
@@ -612,6 +635,25 @@ void City::add_capital_owners(double share_of_population)
 
     cout << "I city add cap owners, added: " << capital_owners_->get_size() << " capital owners" << endl;
 }
+
+void City::add_random_shareholders(int number_of_shareholders)
+{
+
+    // looping over all the companies and adding random shareholders
+    //Using the function get company_by_index to get all companies
+    // the number of companies is get_no_companies(), looping from 0 to number of companies -1
+    int numbe_of_companies = get_no_companies();
+    for (int i = 0; i < numbe_of_companies; i++)
+    {
+        Company * company = company_list_ -> get_company_by_index(i);
+
+        Element_consumer * new_shareholders = get_random_consumers(number_of_shareholders);
+
+        company->add_multiple_shareholders(new_shareholders);
+
+        cout << "I city add random shareholders, added: " << number_of_shareholders << " shareholders to company " << company->get_name() << endl;
+    }
+   }
 
 void City::add_company(Company *company)
 {

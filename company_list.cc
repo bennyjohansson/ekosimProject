@@ -93,6 +93,18 @@ Element_company * Company_list::get_random_company() {
     return p;
 }
 
+Company * Company_list::get_company_by_index(int index) const {
+    if (index < 0 || index >= size_) {
+        throw out_of_range("Index out of range");
+    }
+
+    Element_company *p = list_.get();
+    for (int i = 0; i < index; i++) {
+        p = p->next_.get();
+    }
+    return p->get_company();
+}
+
 //Returns the company with highest average wage lower than "limit". 
 Company * Company_list::get_next_best_salary_company(double limit) {
 

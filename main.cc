@@ -52,9 +52,13 @@ int main()
 	*/
 		bennyworld.printWorldDB();
 
+	/*
+	* Adding random shareholders to bennyland
+	*/
+	bennyworld.get_city("Bennyland") -> add_random_shareholders(50);
+	bennyworld.get_city("Bennyland") -> get_random_company() -> print_shareholders();
 		
-		
-		/*
+	/*
    	* A check so that no money is lost during the exec.
    	*/
 		double sum_before_BL = bennyworld.get_city("Bennyland")->get_capital_sum();

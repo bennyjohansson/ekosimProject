@@ -60,6 +60,8 @@ class City {
       double get_loans_to_bank();
       Company * get_company(const string& name);
       Consumer * get_random_consumer();
+      Element_consumer * get_random_consumers(int number_of_consumers);
+
       Company * get_random_company();
       Consumer * get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
       double get_shareToSteal() const;
@@ -111,6 +113,7 @@ class City {
       void add_random_consumers(int);
       void add_random_consumers(int, double);
       void add_capital_owners(double);
+      void add_random_shareholders(int);
       void add_company(Company * company);
       void add_company(string name);
       void load_company(string); 

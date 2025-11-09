@@ -47,6 +47,7 @@ public:
   double get_items_for_production_sum() const;
   double get_planned_production_sum() const;
   Company *get_company(string name) const;
+  Company *get_company_by_index(int index) const;
   Element_company *get_random_company();
   Company *get_next_best_salary_company(double);
 

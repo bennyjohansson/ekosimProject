@@ -35,6 +35,7 @@ public:
     void info();
     void employee_info();  
     void print_employees();
+    void print_shareholders();
     void save(string);
     Company * load(string, Market*, Bank*, Clock*);
     
@@ -120,8 +121,12 @@ public:
      * Functions to add or remove employees 
      */
     
-    void add_employee(Consumer * consumer);
+    void add_employee(Consumer *);
     void remove_employee(Consumer *);
+
+    void add_shareholder(Consumer *);
+    void add_multiple_shareholders(Element_consumer *);
+    void remove_shareholder(Consumer *);
     
     void update_company();
     bool update_employees(Consumer *);
@@ -183,6 +188,7 @@ private:
     bool enable_intercity_trading_;
     
     Consumer_list * employees_;
+    Consumer_list * shareholders_;
     Market *market_;
     Market *global_market_;  // Pointer to global market (owned by World)
     Bank *bank_;

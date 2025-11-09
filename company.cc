@@ -61,7 +61,8 @@ Company::Company(string name, Market *market, Market *global_market, Clock *cloc
                                                               capacity_(3000),
                                                               clock_(clock),
                                                               enable_intercity_trading_(false),
-                                                              employees_(new Consumer_list("Employees"))
+                                                              employees_(new Consumer_list("Employees")), 
+                                                            shareholders_(new Consumer_list("Shareholders") )
 {
 }
 
@@ -126,7 +127,8 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                                                bank_(bank),
                                                                                                                                                                                                                                                clock_(clock),
                                                                                                                                                                                                                                                enable_intercity_trading_(false),
-                                                                                                                                                                                                                                               employees_(new Consumer_list("Employees"))
+                                                                                                                                                                                                                                               employees_(new Consumer_list("Employees")),
+                                                                                                                                                                                                                                               shareholders_(new Consumer_list("Shareholders") )
 {
 }
 
@@ -144,6 +146,7 @@ void Company::info()
          << "Prod const sk: " << prod_const_skill_ << endl
          << "Prod const mot: " << prod_const_motivation_ << endl
          << "Employees: " << employees_->get_size() << endl
+         << "Shareholders: " << shareholders_->get_size() << endl
          << endl;
 }
 
@@ -157,6 +160,11 @@ void Company::employee_info()
 void Company::print_employees()
 {
     employees_->print_list();
+}
+
+void Company::print_shareholders()
+{
+    shareholders_->print_list();
 }
 
 void Company::save(string project)
@@ -621,7 +629,7 @@ void Company::change_wage_change_limit(double ch)
 }
 
 /*
- * Functions for adding and removing employees.
+ * Functions for adding and removing employees and shareholders.
  */
 
 void Company::add_employee(Consumer *consumer)
@@ -639,6 +647,11 @@ void Company::add_employee(Consumer *consumer)
     }
 }
 
+void Company::add_shareholder(Consumer *consumer)
+{
+        shareholders_->add_first(consumer);
+}
+
 void Company::remove_employee(Consumer *consumer)
 {
 
@@ -646,6 +659,17 @@ void Company::remove_employee(Consumer *consumer)
     consumer->set_employment_status(false);
     consumer->set_employer("");
     employees_->remove_consumer(consumer, capacity_);
+}
+
+void Company::add_multiple_shareholders(Element_consumer * new_shareholders) {
+
+    shareholders_->add_multiple_last(new_shareholders);
+}
+
+void Company::remove_shareholder(Consumer *consumer)
+{
+
+    shareholders_->remove_consumer(consumer, capacity_);
 }
 
 void Company::update_company()

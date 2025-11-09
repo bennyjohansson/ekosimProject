@@ -582,6 +582,34 @@ void Consumer_list::add_last(Consumer *cons)
   }
 }
 
+void Consumer_list::add_multiple_last(Element_consumer * list)
+{
+  int list_length = 0;
+  Element_consumer *temp = list;
+  while (temp != nullptr)
+  {
+    list_length++;
+    temp = temp->next_.get();
+  }
+  size_ += list_length;
+
+  Element_consumer *p;
+  
+  if (list_)
+  {
+    for (p = list_.get(); p->next_; p = p->next_.get())
+    {
+    }
+    // Convert raw pointer to unique_ptr and attach to the chain
+    p->next_ = std::unique_ptr<Element_consumer>(list);
+  }
+  else
+  {
+    // Convert raw pointer to unique_ptr and make it the head of the list
+    list_ = std::unique_ptr<Element_consumer>(list);
+  }
+}
+
 void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
 {
 
@@ -623,6 +651,40 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
   {
     consumer->set_employment_status(true);
     cout << "The bitch is not employed here, error in remove_consumer in consumer_list" << endl;
+  }
+}
+
+void Consumer_list::remove_shareholder(Consumer *consumer)
+{
+  Element_consumer *p = list_.get();
+  Element_consumer *q = list_.get();
+
+  // Check that the list is not empty and if the first consumer is the one to remove
+  if (list_ && list_->get_consumer() == consumer)
+  {
+    list_ = std::move(p->next_);
+    size_--;
+  }
+
+  // If list not empty and not the first consumer
+  else if (list_)
+  {
+    q = list_.get();
+    for (p = list_->next_.get(); p; p = p->next_.get())
+    {
+      // Is it the consumer we are pointing at?
+      if (p->get_consumer() == consumer)
+      {
+        size_--;
+        q->next_ = std::move(p->next_);
+        break; // Exit loop after removal
+      }
+      q = p; // Move q to current p for next iteration
+    }
+  }
+  else
+  {
+    cout << "The consumer is not a shareholder here, error in remove_shareholder in consumer_list" << endl;
   }
 }
 
