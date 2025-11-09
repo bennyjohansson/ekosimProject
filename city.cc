@@ -651,6 +651,9 @@ void City::add_random_shareholders(int number_of_shareholders)
 
         company->add_multiple_shareholders(new_shareholders);
 
+        company -> print_shareholders();
+
+
         cout << "I city add random shareholders, added: " << number_of_shareholders << " shareholders to company " << company->get_name() << endl;
     }
    }
@@ -1267,7 +1270,7 @@ void City::update_employees()
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
     //Employees looking for new jobs every 10(?) years
-    if ((clock_->get_time()) % 5 == 0)
+    if ((clock_->get_time()) % 10 == 0)
     {
         Element_consumer *p;
 
@@ -1582,7 +1585,7 @@ void City::adjust_money()
      *
      */
 
-    int function_select = 3;
+    int function_select = 3; //3
     int payment_function_select = 1;
 
     int i = 0;
@@ -1630,7 +1633,7 @@ void City::adjust_money()
     Price_out = price_out_.begin();
 
     sum = 0;
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < 5; i++)
     {
         sum += *Price_out;
         Price_out++;
@@ -1638,10 +1641,8 @@ void City::adjust_money()
 
     average_price = sum / i;
 
-    //Function 3
 
-    
-    
+    //Function 3
     //OLD CODE - REMOVE!
     wages_a = *Wages;
     Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
@@ -1808,7 +1809,9 @@ void City::company_pay_dividends()
     number_of_market_participants = fmax(get_active_market()->get_number_of_participants(),1);
 
     //Companies paying tax to city
-    total_profit_c = company_list_->pay_dividends();
+    total_profit_c = company_list_->pay_dividends_directly(capital_gains_tax_);
+
+    //Bank paying dividends
     total_profit_b = bank_->pay_dividends();
 
     if(!enable_intercity_trading_) {
@@ -1824,8 +1827,10 @@ void City::company_pay_dividends()
     bank_tax = total_profit_b*capital_gains_tax_;
 
     //Paying dividends after tax to capital owners
-    capital_owners_->pay_all_dividends_log((total_profit_c - company_tax) / number_of_capital_owners, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
-
+    //capital_owners_->pay_all_dividends_log((total_profit_c - company_tax) / number_of_capital_owners, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
+    
+    capital_owners_->pay_all_dividends_log(0, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
+    
     //Increasing city capital with collected tax
     change_capital(company_tax + bank_tax + market_tax);
 

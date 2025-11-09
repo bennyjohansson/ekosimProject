@@ -1563,6 +1563,46 @@ double Company::pay_dividends()
     employees_no_.push_front(employees_->get_size());
 }
 
+//Zeors out capital and returns the paid dividend amount
+double Company::pay_dividends_directly(double capital_gains_tax)
+{
+    double dividends = 0;
+    int number_of_shareholders = 0;
+    double dividend_per_shareholder = 0;
+    double tax = 0;
+
+    number_of_shareholders = shareholders_ -> get_size();
+
+    
+
+    if (number_of_shareholders > 0)
+    {
+        
+        if(capital_ > 0) {
+            dividends = capital_;
+            tax = dividends * capital_gains_tax;
+            dividend_per_shareholder = (dividends - tax) / number_of_shareholders;
+            cout << "I company pay dividends directly, dividends: " << dividends << " tax: " << tax << " number of shareholders: " << number_of_shareholders << " for company: " << name_ << endl;
+            shareholders_ -> pay_all_dividends_log(dividend_per_shareholder, 0, 0);
+            capital_ = 0;
+        }
+        else {
+            dividends = 0;
+            cout << "I company pay dividends directly, dividends < 0 for company: " << name_ << endl;
+        }
+    }
+    else {
+        cout << "I company pay dividends directly, no shareholders for company: " << name_ << endl;
+    }
+
+    log_transaction(name_, -dividends, "Dividend", clock_->get_time());
+
+    return dividends;
+
+    profit_.push_front(capital_);
+    employees_no_.push_front(employees_->get_size());
+}
+
 void Company::buy_items_for_production()
 {
     int desired_items = 0;

@@ -144,6 +144,7 @@ public:
     void pay_interest();
     void repay_to_bank();
     double pay_dividends();
+    double pay_dividends_directly(double);
     void buy_items_for_production();
     double invest();
     

@@ -82,6 +82,7 @@ public:
   void sell_to_market();
   double pay_employees(double);
   double pay_dividends();
+  double pay_dividends_directly(double);
   void pay_interest();
   void repay_to_bank();
   double invest();

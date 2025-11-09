@@ -300,6 +300,8 @@ static int insertParameterData(const char *s)
 
     int exit = sqlite3_open(s, &DB);
 
+    // productionParameter = 0.002
+
     string sql("INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('InterestRateMethod', 2);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('TargetInterestRate', 0.04);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapitalReserveRatio', 0.4);"

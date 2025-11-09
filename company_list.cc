@@ -562,6 +562,19 @@ double Company_list::pay_dividends() {
     return total_profit;
 }
 
+double Company_list::pay_dividends_directly(double capital_gains_tax) {
+
+    Element_company * p;
+    double total_profit = 0;
+    
+    for(p = list_.get(); p; p = p -> next_.get()) {
+        total_profit += (p -> get_company()) -> pay_dividends_directly(capital_gains_tax);
+    }
+
+    return total_profit;
+}
+
+
 void Company_list::pay_interest() {
     Element_company * p;
     
