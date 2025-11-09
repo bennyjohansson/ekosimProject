@@ -2339,5 +2339,60 @@ void City::save_consumers()
     {
 
         consumers_->save_consumers();
+        
+        // Export CONSUMER_TABLE to CSV file
+        // export_consumers_to_csv();
+    }
+}
+
+void City::export_consumers_to_csv()
+{
+    try {
+        // Create SQL query to select all data from CONSUMER_TABLE for this city
+        string sql_query = "SELECT ID, NAME, EMPLOYER, ITEMS, CAPITAL, DEPOSITS, DEBTS, SKILL, MOT, SPENDWILL, SAVEWILL, BORROWWILL, INCOME, DIVIDENDS, TRANSFERS FROM CONSUMER_TABLE";
+        
+        // Execute the query and get results
+        Records consumer_records = select_stmt(sql_query, get_city_sql_string(name_).c_str());
+        
+        // Create filename with city name and timestamp
+        string filename = "consumers_" + name_ + "_cycle_" + std::to_string(get_time()) + ".csv";
+        
+        // Open file for writing
+        std::ofstream csv_file(filename);
+        if (!csv_file.is_open()) {
+            std::cerr << "Error: Could not open file " << filename << " for writing" << std::endl;
+            return;
+        }
+        
+        // Write CSV header
+        csv_file << "ID,NAME,EMPLOYER,ITEMS,CAPITAL,DEPOSITS,DEBTS,SKILL,MOT,SPENDWILL,SAVEWILL,BORROWWILL,INCOME,DIVIDENDS,TRANSFERS" << std::endl;
+        
+        // Write data rows
+        for (const auto& record : consumer_records) {
+            for (size_t i = 0; i < record.size(); ++i) {
+                if (i > 0) csv_file << ",";
+                
+                // Escape any commas or quotes in the data
+                string field = record[i];
+                if (field.find(',') != std::string::npos || field.find('"') != std::string::npos) {
+                    // Replace quotes with double quotes and wrap in quotes
+                    size_t pos = 0;
+                    while ((pos = field.find('"', pos)) != std::string::npos) {
+                        field.replace(pos, 1, "\"\"");
+                        pos += 2;
+                    }
+                    field = "\"" + field + "\"";
+                }
+                csv_file << field;
+            }
+            csv_file << std::endl;
+        }
+        
+        csv_file.close();
+        
+        std::cout << "Consumer data exported to CSV file: " << filename << " (" << consumer_records.size() << " records)" << std::endl;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error exporting consumers to CSV: " << e.what() << std::endl;
     }
 }

@@ -169,6 +169,7 @@ class City {
       void write_time_data_to_company_database();
       void save_high_score();
       void save_consumers();
+      void export_consumers_to_csv();
       double calculate_CAGR(int);
       double calculate_Palma_ratio();
       

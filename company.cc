@@ -1514,6 +1514,8 @@ void Company::repay_to_bank()
     log_transaction_full(name_, "Bank", repayment, "Amortization", clock_->get_time());
 }
 
+
+//Zeors out capital and returns the paid dividend amount
 double Company::pay_dividends()
 {
     double capital = 0;

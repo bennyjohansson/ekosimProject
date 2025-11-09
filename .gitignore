@@ -36,3 +36,6 @@ main
 #Ignore octave files
 octave-workspace
 octave-core
+
+#Ignore CSV export files
+*.csv
