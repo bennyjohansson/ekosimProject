@@ -1081,7 +1081,7 @@ double Company::invest()
     actual_items = get_active_market()->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
 
-    cout << "I cmp inv, des it: " << desired_items << " Act. ite: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
+    cout << name_ << endl << "I cmp inv, desired items: " << desired_items << " Act. ite: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
 
     if (actual_amount < available_capital)
     {

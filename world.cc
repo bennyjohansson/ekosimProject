@@ -32,7 +32,7 @@ void World::add_city(string city_name, string email) {
 	int size = 0;
 	size = myCity -> get_no_consumers();
 	double share_capital_owners = 0.3;
-	int number_of_shareholders = 50;
+	int number_of_shareholders = 250;
 	//string email = "myEmail@gmail.com";
 	//Initiating database
 	initiateCityDB(city_name);

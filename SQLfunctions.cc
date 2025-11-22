@@ -308,11 +308,11 @@ static int insertParameterData(const char *s)
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('LiquidityReserveRatio', 0.5);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('AverageSpendwill', 0.8);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('AverageBorrowwill', 0.05);"
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);"
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);" //0.05
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapIncreaseParam_1', 15000);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapIncreaseRate_1', 0.001);"
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.000005);"
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);"
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.0005);" //0.000005
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);" //0.002
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('IncomeTax', 0.3);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapitalGainsTax', 0.3);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('BudgetBalance', 0.00);"

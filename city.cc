@@ -2388,7 +2388,7 @@ void City::save_consumers()
         consumers_->save_consumers();
         
         // Export CONSUMER_TABLE to CSV file
-        // export_consumers_to_csv();
+        export_consumers_to_csv();
     }
 }
 
