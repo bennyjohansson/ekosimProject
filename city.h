@@ -79,6 +79,7 @@ class City {
       Market * get_active_market();
       Market * get_global_market();
       bool get_enable_intercity_trading() const;
+      double get_average_excess_demand_items(int average_time) const;
       
       /*
        * Change-functions

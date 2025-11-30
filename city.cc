@@ -487,6 +487,38 @@ bool City::get_enable_intercity_trading() const
     return enable_intercity_trading_;
 }
 
+double City::get_average_excess_demand_items(int average_time) const
+{
+    list<double>::const_iterator Excess_demand_items;
+    Excess_demand_items = excess_demand_items_.begin();
+
+    double sum = 0;
+    int count = 0;
+
+    for (Excess_demand_items; Excess_demand_items != excess_demand_items_.end(); Excess_demand_items++)
+    {
+        if (count < average_time)
+        {
+            sum += *Excess_demand_items;
+            count++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (count == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        cout << "I City " << name_ << " get average excess demand items over " << count << " periods, sum: " << sum << ", avg: " << sum / count << endl;
+        return sum / count;
+    }
+}
+
 /*
  * Change-functions
  */
@@ -881,14 +913,14 @@ void City::update_supply_and_demand() {
     consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
     investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
-    market_excess_demand = (get_active_market()->get_excess_demand_items()/number_of_market_participants) * price_out;
-
+    // market_excess_demand = (get_active_market()->get_excess_demand_items()/number_of_market_participants) * price_out;
+    market_excess_demand = (get_average_excess_demand_items(3)/number_of_market_participants) * price_out;
     //Getting avilable items;
     company_items = company_list_->get_item_sum();
     company_planned_production = company_list_->get_planned_production_sum();
     market_items = get_active_market()->get_items();
 
-    demand = consumer_demand + production_demand + investment_demand + market_excess_demand; //Dividing excess demand by two, seems to create destabilizing feedback otherwise
+    demand = consumer_demand + production_demand + investment_demand + market_excess_demand; 
 
     items = market_items + company_items + company_planned_production;
 
@@ -907,10 +939,11 @@ void City::update_supply_and_demand() {
     aggregate_supply = get_active_market() -> get_aggregate_supply();
 
     cout << "I City " << name_ << " update supply and demand"
-         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl
+         << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << " market items: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl
          << "Aggregate demand: " << aggregate_demand << ", Aggregate supply: " << aggregate_supply << endl;
 
-
+    // Save excess demand items to historical list
+    excess_demand_items_.push_front(get_active_market()->get_excess_demand_items());
 
 }
 
@@ -925,7 +958,8 @@ void City::update_market_price() {
 
     aggregate_demand = get_active_market() ->get_aggregate_demand();
     aggregate_supply = get_active_market() ->get_aggregate_supply();
-    market_excess_demand = get_active_market() -> get_excess_demand_items();
+    // market_excess_demand = get_active_market() -> get_excess_demand_items();
+    market_excess_demand = get_average_excess_demand_items(3);
 
     price_out = aggregate_demand / aggregate_supply;
 
@@ -1380,7 +1414,6 @@ void City::save_data()
     growth_.push_front(growth);
     demand_.push_front(demand);
     price_out_.push_front(price_out);
-    excess_demand_items_.push_front(excess_demand_items);
     employed_.push_front(employed);
     time_.push_front(clock_->get_time());
     interest_rate_.push_front(interest_rate);
