@@ -174,6 +174,7 @@ void City::print_GDP()
     list<double>::iterator Investments;
     list<double>::iterator Demand;
     list<double>::iterator Price_out;
+    list<double>::iterator Excess_demand_items;
     list<double>::iterator Employed;
     list<double>::iterator Wages;
     list<double>::iterator Time;
@@ -192,6 +193,7 @@ void City::print_GDP()
     Demand = demand_.begin();
     Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
     Price_out = price_out_.begin();
+    Excess_demand_items = excess_demand_items_.begin();
     Employed = employed_.begin();
     Consumer_capital = consumer_capital_.begin();
     Company_capital = company_capital_.begin();
@@ -225,6 +227,7 @@ void City::print_GDP()
         Growth++;
         Wages++;
         Price_out++;
+        Excess_demand_items++;
         Employed++;
         Consumer_capital++;
         Company_capital++;
@@ -245,6 +248,7 @@ void City::print_GDP()
         Demand = demand_.begin();
         Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
         Price_out = price_out_.begin();
+        Excess_demand_items = excess_demand_items_.begin();
         Employed = employed_.begin();
         Interest_rate = interest_rate_.begin();
         Market_capital = market_capital_.begin();
@@ -264,6 +268,7 @@ void City::print_GDP()
             Growth++;
             Wages++;
             Price_out++;
+            Excess_demand_items++;
             Employed++;
             Consumer_capital++;
             Company_capital++;
@@ -883,7 +888,7 @@ void City::update_supply_and_demand() {
     company_planned_production = company_list_->get_planned_production_sum();
     market_items = get_active_market()->get_items();
 
-    demand = consumer_demand + production_demand + investment_demand + market_excess_demand;
+    demand = consumer_demand + production_demand + investment_demand + market_excess_demand; //Dividing excess demand by two, seems to create destabilizing feedback otherwise
 
     items = market_items + company_items + company_planned_production;
 
@@ -923,7 +928,6 @@ void City::update_market_price() {
     market_excess_demand = get_active_market() -> get_excess_demand_items();
 
     price_out = aggregate_demand / aggregate_supply;
-    //price_in = price_out / (1 + marginal);
 
     cout << "I City update price"
          << " Tot dmd: " << aggregate_demand << "$BJ, items " << aggregate_supply << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << endl;
@@ -966,9 +970,9 @@ void City::negotiate_market_price()
 
     invest = investments_.begin();
     //demand = demand_.begin();
-    marginal = market_->get_marginal();
+    marginal = get_active_market()->get_marginal();
     size = consumers_->get_size();
-    price_out = market_->get_price_out();
+    price_out = get_active_market()->get_price_out();
     price_old = price_out;
     //for (int i = 0; i < 4; i++) {
 
@@ -983,7 +987,7 @@ void City::negotiate_market_price()
     consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
     investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
-    market_excess_demand = (market_->get_excess_demand_items()) * price_out;
+    market_excess_demand = (get_active_market()->get_excess_demand_items()) * price_out;
 
     //Getting avilable items;
     company_items = company_list_->get_item_sum();
@@ -1312,6 +1316,7 @@ void City::save_data()
     double size = 0;
     double wages = 0;
     double investments = 0;
+    double excess_demand_items = 0;
     list<double>::iterator GDP;
     list<double>::iterator Time;
     std::vector<double> time_data;
@@ -1319,6 +1324,7 @@ void City::save_data()
     demand = consumers_->get_spendwill_sum() * consumers_->get_capital_sum();
     item = company_list_->get_item_sum();
     price_out = get_active_market()->get_price_out();
+    excess_demand_items = get_active_market()->get_excess_demand_items();
     interest_rate = bank_->get_interest();
     liquidity_reserve_ratio = bank_->get_liquidity_reserve_ratio();
     capital_reserve_ratio = bank_->get_capital_reserve_ratio();
@@ -1374,6 +1380,7 @@ void City::save_data()
     growth_.push_front(growth);
     demand_.push_front(demand);
     price_out_.push_front(price_out);
+    excess_demand_items_.push_front(excess_demand_items);
     employed_.push_front(employed);
     time_.push_front(clock_->get_time());
     interest_rate_.push_front(interest_rate);

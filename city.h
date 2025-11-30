@@ -186,6 +186,7 @@ class City {
       list<double> company_consumption_;
       list<double> demand_;
       list<double> price_out_;
+      list<double> excess_demand_items_;
       list<double> employed_;
       list<double> time_;
 

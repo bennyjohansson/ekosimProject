@@ -167,6 +167,8 @@ int Market::customer_buy_items(double money) {
 	
 	if(items_available < items_wanted) {
 	
+    cout << "I Market customer buy items, not enough items in market, wanted items: " << items_wanted << " available items: " << items_available << " excess demand: " << (items_wanted - items_available) << " total excess demand: " << excess_demand_items_ << endl;
+
 		excess_demand_items_ += (items_wanted - items_available);
 	
 	}
