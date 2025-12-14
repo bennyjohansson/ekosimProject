@@ -1,0 +1,56 @@
+# Makefile for investment behavior testing
+# Separate from main ekosim build
+
+CXX = clang++
+CXXFLAGS = -g -Wall -std=c++17 -W
+LIBS = -lsqlite3 -lstdc++
+
+# Source files needed for the test (excluding main.cc)
+TEST_SOURCES = test_investment_behavior.cc company.cc market.cc bank.cc clock.cc \
+               consumer_list.cc consumer.cc functions.cc SQLfunctions.cc \
+               element_consumer.cc element_company.cc
+
+TEST_OBJECTS = $(TEST_SOURCES:.cc=.o)
+TEST_TARGET = test_investment
+
+# Main ekosim build (unchanged)
+MAIN_SOURCES = $(filter-out test_investment_behavior.cc, $(wildcard *.cc))
+MAIN_OBJECTS = $(MAIN_SOURCES:.cc=.o)
+MAIN_TARGET = main
+
+.PHONY: all test clean main
+
+all: main
+
+test: $(TEST_TARGET)
+
+main: $(MAIN_TARGET)
+
+$(TEST_TARGET): $(TEST_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+$(MAIN_TARGET): $(MAIN_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f *.o $(TEST_TARGET) $(MAIN_TARGET)
+
+clean-test:
+	rm -f test_investment_behavior.o $(TEST_TARGET) investment_analysis.csv
+
+run-test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  all        - Build main ekosim program (default)"
+	@echo "  main       - Build main ekosim program"
+	@echo "  test       - Build investment behavior test program"
+	@echo "  run-test   - Build and run investment test"
+	@echo "  clean      - Clean all build files"
+	@echo "  clean-test - Clean only test-related files"
+	@echo "  help       - Show this help message"
