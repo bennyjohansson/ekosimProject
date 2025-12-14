@@ -5,10 +5,11 @@ CXX = clang++
 CXXFLAGS = -g -Wall -std=c++17 -W
 LIBS = -lsqlite3 -lstdc++
 
-# Source files needed for the test (excluding main.cc)
+# Source files needed for the test (excluding main.cc) - now includes full simulation
 TEST_SOURCES = test_investment_behavior.cc company.cc market.cc bank.cc clock.cc \
                consumer_list.cc consumer.cc functions.cc SQLfunctions.cc \
-               element_consumer.cc element_company.cc
+               element_consumer.cc element_company.cc element_city.cc world.cc city.cc \
+               company_list.cc employee_list.cc city_list.cc
 
 TEST_OBJECTS = $(TEST_SOURCES:.cc=.o)
 TEST_TARGET = test_investment
