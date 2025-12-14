@@ -114,7 +114,7 @@ int main() {
         testworld.printWorldDB();
         
         // Test capacities to examine
-        vector<double> test_capacities = {1000, 2000, 5000, 10000, 20000, 50000, 100000};
+        vector<double> test_capacities = {1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000};
         
         // Create enhanced CSV output file  
         ofstream csv_file("investment_analysis.csv");
