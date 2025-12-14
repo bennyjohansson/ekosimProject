@@ -140,7 +140,7 @@ bool City_list::update_employees() {
         for(p = list_.get(); p; p = p -> next_.get()) {
             
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> update_employees();
+            p -> get_city() -> update_employees2();
         }
     }
     else {

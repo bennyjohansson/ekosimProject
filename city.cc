@@ -1325,6 +1325,65 @@ void City::update_employees()
     }
 }
 
+void City::update_employees2()
+{
+
+    string name = "";
+    double skill = 0;
+    double mot = 0;
+    int prod_fcn = 1;
+    double prod_param = 0.001;
+    int no_consumers_hired = 0;
+    int job_change_frequency = 10; //Years between job changes
+    Consumer *opt = 0;
+
+    /*
+     * Starting by removing all the employees that are not profitable to keep
+     */
+
+    company_list_->remove_usless_employees();
+    cout << "I City update emplyees" << endl;
+
+    
+    //Employees looking for new jobs - distributed approach (1/10 per year instead of all every 10 years)
+    int total_consumers = consumers_->get_size();
+    if (total_consumers > 0)
+    {
+        int current_year = clock_->get_time();
+        int year_position = current_year % job_change_frequency;
+        int consumers_per_year = total_consumers / job_change_frequency;
+        int start_position = year_position * consumers_per_year;
+        int end_position = start_position + consumers_per_year;
+        
+        // Handle remainder for last year of cycle
+        if (year_position == job_change_frequency - 1)
+        {
+            end_position = total_consumers;
+        }
+
+        Element_consumer *p = consumers_->get_first_consumer();
+        int current_position = 0;
+
+        // Navigate to start position
+        while (p && current_position < start_position)
+        {
+            p = p->next_.get();
+            current_position++;
+        }
+
+        // Process consumers in this year's range
+        while (p && current_position < end_position)
+        {
+            company_list_->update_employees2(p->get_consumer());
+            p = p->next_.get();
+            current_position++;
+        }
+        
+        cout << "I City update employees2, processed consumers " << start_position << " to " << (end_position-1) 
+             << " (year " << year_position << " of " << job_change_frequency << " cycle)" << endl;
+    }
+}
+
 void City::tick()
 {
     clock_->tick();

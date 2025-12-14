@@ -379,6 +379,8 @@ double Company::get_items_for_production()
         cout << "I company get items for  production, item efficiency < 0: " << item_efficiency_ << endl;
     }
 
+    // cout << name_ << " in company get items for production, production: " << production << " item efficiency: " << item_efficiency_ << " items needed: " << items << endl;
+
     return items;
 }
 
@@ -574,6 +576,7 @@ void Company::change_prod_const_motivation(double ch)
 void Company::change_item_efficiency(double ch)
 {
     double item_efficiency_temp = 0;
+    double item_efficiency_min = 0.01;
     item_efficiency_temp = item_efficiency_ + ch;
 
     if ((item_efficiency_temp > 0) && (item_efficiency_temp < 1))
@@ -583,12 +586,12 @@ void Company::change_item_efficiency(double ch)
     else if (item_efficiency_temp > 1)
     {
         item_efficiency_ = 1;
-        cout << "Item investment > 1" << endl;
+        cout << "Item investment > 1, sett to 1" << endl;
     }
     else
     {
-        item_efficiency_ = 0;
-        cout << "Reached min of item investment = 0" << endl;
+        item_efficiency_ = item_efficiency_min;
+        cout << "Reached min of item investment = 0, setting to  min: " << item_efficiency_min << endl;
     }
 }
 
@@ -693,9 +696,14 @@ bool Company::update_employees(Consumer *opt)
         if (contribution_adding(opt) > 0.01)
         {
             try
-            {
-                // cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << endl;
-                add_employee(opt);
+            {   if(get_average_wage() <= 0 and clock_ -> get_time() > 10 ) {
+                    cout << "Company " << name_ << " tried to hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:"<< get_average_wage() << endl;
+                }
+                else {
+                    // cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:"<< get_average_wage() << endl;
+                    add_employee(opt);
+                }
+                
             }
             catch (std::exception a)
             {
@@ -713,7 +721,7 @@ bool Company::update_employees(Consumer *opt)
     else
     {
         // cout << opt->get_name() << " already employed by " << name_ << endl;
-        return true;
+        return false;
     }
 }
 
@@ -972,14 +980,24 @@ double Company::produce(string city_name)
 {
 
     double production = 0;
+    double items_needed = 0;
+    double price_out = 0;
+    double price_in = 0;
+    double total_wages = 0;
 
-    buy_items_for_production();
+
+    price_out = get_active_market()->get_price_out();
+    price_in = get_active_market()->get_price_in();
+    total_wages = get_total_wages();
+    
+    items_needed =  buy_items_for_production();
     production = get_production();
     current_production_items_ = production;
     stock_ += production;
     // insertCompanyDatapoint("PRODUCTION", production, clock_ -> get_time(), city_name, name_);
-
-    cout << "I Company produce, share of full capacity: " << production / (capacity_ * 3.1415 / 2) << " capacity: " << capacity_ << " employees: " << employees_->get_size() << " for " << name_ << endl;
+    cout << name_ << " i company produce, production: " << production << " items needed: " << items_needed << " price out: " << price_out << " price in: " << price_in << endl;
+    cout << name_ << " i Company produce, share of full capacity: " << production / (capacity_ * 3.1415 / 2) << " capacity: " << capacity_ << " employees: " << employees_->get_size() << " for " << name_ << endl;
+    cout << name_ << " i company produce " << "total wages: " << total_wages << " cost of items: " << items_needed * price_out << " estimated revenue: " << production * price_in << " estimated profit: " << production * price_in - total_wages - items_needed * price_out << endl;
 
     return production;
 }
@@ -1004,7 +1022,7 @@ void Company::sell_to_market()
         cout << "I comp sell to mkt, no items sold, price: " << price << " stock: " << stock_ << endl;
     }
 
-    cout << "I comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
+    cout << name_  << " i comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
 
     change_capital(actual_cost);
     change_stock(-actual_items);
@@ -1081,7 +1099,7 @@ double Company::invest()
     actual_items = get_active_market()->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
 
-    cout << name_ << endl << "I cmp inv, desired items: " << desired_items << " Act. ite: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
+    // cout << name_ << " i cmp inv, desired items: " << desired_items << " Act. ites bought: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
 
     if (actual_amount < available_capital)
     {
@@ -1131,9 +1149,9 @@ double Company::invest()
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << "New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
-    cout << "I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
-    cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
+    cout << name_ << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
+    cout << name_ << " I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
+    cout << name_ << " Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
 
     investments_.push_front(actual_amount);
 
@@ -1147,6 +1165,7 @@ int Company::get_desired_investment()
     int invested_items_capacity = 0;
     int invested_items_efficiency_factor = 0;
     int invested_items_efficiency_items = 0;
+    int max_items_in_market = 0;
 
     double item_increase = 0;
     double price_out = 0;
@@ -1176,8 +1195,11 @@ int Company::get_desired_investment()
     invested_items_tot = 4;
 
     price_out = get_active_market()->get_price_out();
+    max_items_in_market = get_active_market()->get_items();
 
-    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
+    // cout << name_ << " capacity vs eff eplit: " << investment_capacity_vs_efficiency_split_ << " item vs factor split: " << investment_item_vs_factor_split_ << endl;
+
+    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_ )
     {
         // First split of invested items between capacity and efficiency
         invested_items_capacity = invested_items_tot * investment_capacity_vs_efficiency_split_;
@@ -1198,15 +1220,46 @@ int Company::get_desired_investment()
         }
 
         // calculating NPV of investment
+        //Printing all the input into the function for debugging
+        // if(name_ == "bempa_AB"){
+        //     cout << "Calculating NPV for: " << name_ << endl;
+        //     cout << " -invested_items_capacity: " << invested_items_capacity << endl;
+        //     cout << " -invested_items_efficiency_items: " << invested_items_efficiency_items << endl;
+        //     cout << " -invested_items_efficiency_factor: " << invested_items_efficiency_factor << endl;
+        //     cout << " -borrow: " << borrow << endl;
+        //     cout << " -FacIncreaseRate_1: " << FacIncreaseRate_1 << endl;
+        //     cout << " -CapIncreaseParam_1: " << CapIncreaseParam_1 << endl;
+        //     cout << " -CapIncreaseRate_1: " << CapIncreaseRate_1 << endl;
+        //     cout << " -ItemEfficiencyRate: " << ItemEfficiencyRate << endl;
+        //     cout << " -Prod const skill and motivation" << prod_const_skill_ << "  " << prod_const_motivation_ << endl;
+        //     cout << " -Capacity: " << capacity_ << endl;
+        //     cout << " -investment_item_vs_factor_split_: " << investment_item_vs_factor_split_ << endl;
+        //     cout << " -investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split_ << endl;
+        // }
         discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); // items NET PRESENT VALUE OF FUTURE CASHFLOWS
 
         NPV_old = NPV;
         NPV = discounted_cashflows - cost_of_investment;
 
-        // cout << "I comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
+        // cout << name_ << " i comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
         invested_items_tot += item_increase;
+
+    //Checking which condition that breaks the while loop
+    if(NPV < 0){
+        cout << name_ << " i comp des inv breaking loop NPV < 0 :" << NPV << " at items " << invested_items_tot << endl;
     }
+    if(NPV < NPV_old){
+        cout << name_ << " i comp des inv breaking loop NPV < NPV_old " << NPV << " NPV_old: " << NPV_old << " at items " << invested_items_tot << endl;
+    }
+    if((debts_ + borrow) / capital_ - 1 >= max_leverage_){
+        cout << name_ << " i comp des inv breaking loop max leverage reached " << (debts_ + borrow) / capital_ - 1 << " max " << max_leverage_ << " at items " << invested_items_tot << endl;
+    }
+    if(invested_items_tot >= max_items_in_market){
+        cout << name_ << " i comp des inv not enough items in market " << invested_items_tot << " max items in market " << max_items_in_market << " at items " << invested_items_tot << endl;
+    }
+    }
+     
 
     // Adjusting for two extra loops
     invested_items_tot = invested_items_tot - 2 * item_increase;
@@ -1377,11 +1430,13 @@ double Company::get_total_wages()
 
     size = employees_->get_size();
 
+    price = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
+
     if (size)
     {
         production = get_production();
-        price = get_active_market()->get_price_in();
-        price_out = get_active_market()->get_price_out();
+        
     }
 
     list<double>::iterator theIterator;
@@ -1392,7 +1447,7 @@ double Company::get_total_wages()
     {
 
         wages = 0;
-        cout << "I company get_total wages, wagess < 0" << wages << endl;
+        cout << "I company get_total wages, wages < 0" << wages << endl;
     }
 
     /*
@@ -1466,7 +1521,7 @@ double Company::pay_employees_individual(double income_tax)
         // log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
 
-    // cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;
+    cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;
     wages_.push_front(wage);
     employees_no_.push_front(size);
 
@@ -1603,7 +1658,7 @@ double Company::pay_dividends_directly(double capital_gains_tax)
     employees_no_.push_front(employees_->get_size());
 }
 
-void Company::buy_items_for_production()
+int Company::buy_items_for_production()
 {
     int desired_items = 0;
     int actual_items = 0;
@@ -1624,8 +1679,11 @@ void Company::buy_items_for_production()
     change_environmental_impact(actual_items);
     // get_active_market() -> change_capital(amount);
     // get_active_market() -> change_items(-items);
+    
 
     log_transaction_full(name_, "Market", actual_amount, "Inventory", clock_->get_time());
+
+    return actual_items;
 }
 
 // void Company::invest() {

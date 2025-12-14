@@ -135,6 +135,7 @@ class City {
       void update_interest_rate2();
       void update_companies();
       void update_employees();
+      void update_employees2();
       string steal_money();
       string steal_money(string);
       double launder_money(string, string);

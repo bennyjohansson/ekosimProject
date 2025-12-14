@@ -148,9 +148,16 @@ double Bank::get_sum_to_borrow() {
 double Bank::get_max_customer_borrow() {
     double safety_amount = 0;
     double sum = 0;
+     double buffer = 0.3; //0.2
+
+    
+    //Safety amount
+    // safety_amount = loans_*capital_reserve_ratio_*(1+buffer);
     
     //cout << "I bank get_sum_to_borrow, unchecked changes" << endl;
     safety_amount = loans_*capital_reserve_ratio_;
+
+    //  dividends = fmax(0, fmin(liquidity_ - safety_amount, capital_ - safety_amount));
         
     if(capital_ > safety_amount && capital_ > 0) {
         sum = capital_ - safety_amount;
@@ -318,6 +325,7 @@ double Bank::customer_withdraw_money(double ch) {
 
 	double sum = 0; 
 	double max_amount = 0;
+    const double EPSILON = 1e-6;
 	
 
 	// if(deposits_ > ch) {
@@ -343,9 +351,9 @@ double Bank::customer_withdraw_money(double ch) {
 	if(ch < 0) {
 		cout << "I bank customer withdraw money, withdrawal < 0: " << ch << endl;
 	}
-    if(sum != ch ){
-		cout << "I bank customer withdraw money, withdrawal != the requested amount: " << ch << " != " << sum << endl;
-	}
+    if(abs(sum - ch) > EPSILON) {
+        cout << "I bank customer withdraw money, withdrawal != the requested amount: " << ch << " != " << sum << endl;
+    }
 	
 	return sum;
 }

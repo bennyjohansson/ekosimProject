@@ -424,7 +424,7 @@ bool Company_list::update_employees2(Consumer * opt) {
 
         //If hired, return true and get new optimal consumer
         if(hired) {
-            //cout << "Company i c-list " << p -> get_name() << " hired" << endl;
+            // cout << "Company i c-list " << p -> get_name() << " hired" << opt->get_name()<< endl;
             return hired;
         }
         else {
@@ -507,12 +507,24 @@ void Company_list::write_time_data_to_database(string city_name) {
 
 double Company_list::produce(string city_name) {
     
-    Element_company * p;
+    Element_company * p = 0;
+    Element_company * r = 0;
+    Element_company * q = 0;
     double sum = 0;
-    cout << "I company list, items needed for production: (items): " << get_items_for_production_sum() << endl;
+    // cout << "I company list, items needed for production: (items): " << get_items_for_production_sum() << endl;
     
-    for(p = list_.get(); p; p = p -> next_.get()) {
+    // Get random starting point
+    p = get_random_company();
+    r = p;
+    
+    // Produce from random starting point to end of list
+    for(p; p; p = p -> next_.get()) {
         sum += (p -> get_company()) -> produce(city_name);
+    }
+    
+    // Wrap around: produce from beginning to random starting point
+    for(q = list_.get(); q != r; q = q -> next_.get()) {
+        sum += (q -> get_company()) -> produce(city_name);
     }
     
     //cout << "I company list, actual production (items): " << sum << endl;
