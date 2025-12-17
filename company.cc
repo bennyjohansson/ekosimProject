@@ -1149,9 +1149,9 @@ double Company::invest()
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << name_ << " New capacity: " << capacity_ << ", own capital invested: " << own_capital_to_invest << "  Loans: " << loans << "   total capital: " << cost << " available capital: " << available_capital << endl;
-    cout << name_ << " I comp inv items: " << invested_items_tot << " Cost: " << actual_amount << " Capa ch: " << capacity_change << " Factor ch: " << factor_change << " Desired loans: " << loans << " Max items " << max_items << " Name: " << name_ << endl;
-    cout << name_ << " Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
+    cout << left << setw(25) << name_ << " | New capacity: " << setw(12) << capacity_ << " | Own capital: " << setw(10) << own_capital_to_invest << " | Loans: " << setw(10) << loans << " | Total cost: " << setw(10) << cost << " | Available: " << setw(10) << available_capital << endl;
+    cout << left << setw(25) << name_ << " | Inv items: " << setw(8) << invested_items_tot << " | Cost: " << setw(10) << actual_amount << " | Cap change: " << setw(10) << capacity_change << " | Factor: " << setw(10) << factor_change << " | Max items: " << setw(8) << max_items << endl;
+    cout << left << setw(25) << name_ << " | Item efficiency: " << setw(10) << item_efficiency_ << " | Change: " << setw(10) << item_efficiency_change << endl;
 
     investments_.push_front(actual_amount);
 
@@ -1243,26 +1243,28 @@ int Company::get_desired_investment()
 
         // cout << name_ << " i comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
-        invested_items_tot += item_increase;
+        
 
     //Checking which condition that breaks the while loop
     if(NPV < 0){
-        cout << name_ << " i comp des inv breaking loop NPV < 0 :" << NPV << " at items " << invested_items_tot << endl;
+        cout << left << setw(25) << name_ << " | BREAK: NPV < 0       | NPV: " << setw(12) << NPV << " | Items: " << setw(8) << invested_items_tot << endl;
     }
-    if(NPV < NPV_old){
-        cout << name_ << " i comp des inv breaking loop NPV < NPV_old " << NPV << " NPV_old: " << NPV_old << " at items " << invested_items_tot << endl;
+    else if(NPV < NPV_old){
+        cout << left << setw(25) << name_ << " | BREAK: NPV declined  | NPV: " << setw(12) << NPV << " | Old: " << setw(12) << NPV_old << " | Items: " << setw(8) << invested_items_tot << endl;
     }
     if((debts_ + borrow) / capital_ - 1 >= max_leverage_){
-        cout << name_ << " i comp des inv breaking loop max leverage reached " << (debts_ + borrow) / capital_ - 1 << " max " << max_leverage_ << " at items " << invested_items_tot << endl;
+        cout << left << setw(25) << name_ << " | BREAK: Max leverage  | Ratio: " << setw(10) << (debts_ + borrow) / capital_ - 1 << " | Max: " << setw(10) << max_leverage_ << " | Items: " << setw(8) << invested_items_tot << endl;
     }
-    if(invested_items_tot >= max_items_in_market){
-        cout << name_ << " i comp des inv not enough items in market " << invested_items_tot << " max items in market " << max_items_in_market << " at items " << invested_items_tot << endl;
-    }
+
+    invested_items_tot += item_increase;
+    // if(invested_items_tot >= max_items_in_market){
+    //     cout << left << setw(25) << name_ << " | BREAK: Market limit  | Want: " << setw(8) << invested_items_tot << " | Available: " << setw(8) << max_items_in_market << endl;
+    // }
     }
      
 
-    // Adjusting for two extra loops
-    invested_items_tot = invested_items_tot - 2 * item_increase;
+    // Adjusting for one extra loop increment after the last valid NPV calculation
+    invested_items_tot = max(0.0, invested_items_tot - item_increase);
 
     return invested_items_tot;
 }

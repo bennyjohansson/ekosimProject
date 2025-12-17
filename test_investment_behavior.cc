@@ -36,13 +36,15 @@ void test_company_investment_behavior(World* world, const string& city_name, con
     // Store original capacity to restore later
     double original_capacity = company->get_capacity();
     double original_capital = company->get_capital();
+    double price_out = city->get_active_market()->get_price_out();
+    double cost_of_investment = 0.0;
     
     for (double test_capacity : test_capacities) {
         cout << "\n--- Testing " << company_name << " at capacity: " << test_capacity << " ---" << endl;
         
         // Set test capacity
         company->set_capacity(test_capacity);
-        
+        company->set_capital(5000000);
         try {
             // Test investment functions with real company in real environment
             int desired_investment = company->get_desired_investment();
@@ -51,20 +53,22 @@ void test_company_investment_behavior(World* world, const string& city_name, con
             double capacity_investment = desired_investment * 0.5;
             double efficiency_items = desired_investment * 0.25;
             double efficiency_factor = desired_investment * 0.25;
-            double estimated_loans = max(0.0, desired_investment * 50.0 - original_capital * 0.6);
+            double estimated_loans = 0;//max(0.0, desired_investment * 50.0 - original_capital * 0.6);
             
             double expected_cashflow = company->get_investment_cashflow(
                 capacity_investment,
                 efficiency_items,
                 efficiency_factor,
                 estimated_loans,
-                0.002,  // FacIncreaseRate_1 (from database or default)
-                8000,   // CapIncreaseParam_1
+                0.05,  // FacIncreaseRate_1 (from database or default)
+                15000,   // CapIncreaseParam_1
                 0.0001, // CapIncreaseRate_1  
-                0.001   // ItemEfficiencyRate
+                0.0005   // ItemEfficiencyRate
             );
+
+            cost_of_investment = price_out * desired_investment;
             
-            double npv_estimate = expected_cashflow - (desired_investment * 50.0);
+            double npv_estimate = expected_cashflow - cost_of_investment;
             
             // Output results
             cout << "Company: " << company_name << endl;
@@ -104,14 +108,53 @@ int main() {
         cout << "Creating world with full database setup..." << endl;
         World testworld("TestWorld");
         initiateWorldDB("TestWorld");
+
+        initiateCityDB("Bennyland");
+		testworld.initiate_city("Bennyland");
         
-        // Add test city (this handles database initialization internally)
-        cout << "Adding TestCity to world..." << endl;
-        testworld.add_city("TestCity", "test@example.com");
         
         // Print initial world state
         cout << "Initial world setup:" << endl;
         testworld.printWorldDB();
+        
+        // Run a mini-simulation to establish functioning market conditions
+        cout << "\n=== Running Mini-Simulation to Establish Market Conditions ===" << endl;
+        int warmup_cycles = 10; // Run 10 cycles to get realistic market conditions
+        
+        for (int cycle = 0; cycle < warmup_cycles; cycle++) {
+            cout << "\nWarmup Cycle: " << (cycle + 1) << "/" << warmup_cycles << endl;
+            
+            // Run basic economic cycles (using actual World methods)
+            //Printing eanch year in. the logs
+            cout << "Year: " << testworld.get_time() << endl;
+
+            testworld.run_employee_cycle();
+            testworld.run_pricing_cycle();
+            testworld.run_production_cycle();
+            testworld.run_sales_cycle();
+            testworld.run_investment_cycle();
+            testworld.run_banking_cycle();
+            testworld.run_dividend_cycle();
+            testworld.run_adjust_money_and_consumer_cycle();
+            testworld.reset_number_of_market_participants();
+            testworld.run_save_cycle();
+            testworld.update_companies_from_database();
+			testworld.write_time_data_to_company_database();
+			testworld.update_country_from_database();
+            
+            // Update time (tick advances the clock)
+            testworld.tick();
+            
+            // Print some basic stats
+            City* city = testworld.get_city("Bennyland");
+            if (city && cycle % 3 == 0) { // Print every 3rd cycle
+                cout << "  Market items: " << city->get_market()->get_items();
+                cout << ", Price in: " << city->get_market()->get_price_in();
+                cout << ", Price out: " << city->get_market()->get_price_out() << endl;
+            }
+        }
+        
+        cout << "\nWarmup complete! Market should now have realistic conditions." << endl;
         
         // Test capacities to examine
         vector<double> test_capacities = {1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000};
@@ -120,29 +163,35 @@ int main() {
         ofstream csv_file("investment_analysis.csv");
         csv_file << "Company,City,Capacity,Capital,Employees,Desired_Investment,Expected_Cashflow,NPV_Estimate" << endl;
         
-        // Get the test city - debug the city name issue
-        cout << "Attempting to get city 'TestCity'..." << endl;
-        City* test_city = testworld.get_city("TestCity");
+        // Get the test city after warmup
+        City* test_city = testworld.get_city("Bennyland");
         if (!test_city) {
-            cout << "Error: Could not get TestCity! Trying 'Bennyland' instead..." << endl;
-            test_city = testworld.get_city("Bennyland");
-            if (!test_city) {
-                cout << "Error: Could not get any city! Check city initialization." << endl;
-                return 1;
-            } else {
-                cout << "Successfully found 'Bennyland' city." << endl;
-            }
-        } else {
-            cout << "Successfully found 'TestCity'." << endl;
+            cout << "Error: Could not get Bennyland after warmup!" << endl;
+            return 1;
         }
         
-        cout << "\nCity initialized with:" << endl;
-        cout << "- Total capital: " << test_city->get_capital_sum() << endl;
-        cout << "- Number of companies: " << test_city->get_no_companies() << endl;
-        cout << "- Number of consumers: " << test_city->get_no_consumers() << endl;
+        cout << "\n=== Post-Warmup City Status ===" << endl;
+        cout << "City: " << test_city->get_name() << endl;
+        cout << "Time: " << testworld.get_time() << endl;
+        cout << "Total capital: " << test_city->get_capital_sum() << endl;
+        cout << "Number of companies: " << test_city->get_no_companies() << endl;
+        cout << "Number of consumers: " << test_city->get_no_consumers() << endl;
+        cout << "Market items: " << test_city->get_market()->get_items() << endl;
+        cout << "Market price in: " << test_city->get_market()->get_price_in() << endl;
+        cout << "Market price out: " << test_city->get_market()->get_price_out() << endl;
+        
+        // Show company employment status
+        cout << "\nCompany employment after warmup:" << endl;
+        for (const string& company_name : {"johansson_och_johansson", "bempa_AB", "benny_enterprises"}) {
+            Company* comp = test_city->get_company(company_name);
+            if (comp) {
+                cout << "- " << company_name << ": " << comp->get_no_employees() << " employees, " 
+                     << comp->get_capital() << " capital" << endl;
+            }
+        }
         
         // Test all companies in the city
-        cout << "\n=== Testing All Companies in TestCity ===" << endl;
+        cout << "\n=== Testing All Companies in Bennyland ===" << endl;
         
         // Get all company names from the database initialization
         vector<string> company_names = {"johansson_och_johansson", "limpan_AB", "bempa_AB", "bempa_CO", "benny_enterprises", "benny_inc"};
@@ -155,13 +204,11 @@ int main() {
             test_company_investment_behavior(&testworld, found_city_name, company_name, test_capacities, csv_file);
         }
         
-        // Also test with a second city if we want to compare
-        cout << "\n=== Adding Second City for Comparison ===" << endl;
-        testworld.add_city("ComparisonCity", "test@test.com");
         
-        for (const string& company_name : company_names) {
-            test_company_investment_behavior(&testworld, "ComparisonCity", company_name, test_capacities, csv_file);
-        }
+        
+        // for (const string& company_name : company_names) {
+        //     test_company_investment_behavior(&testworld, "'Bennyland'", company_name, test_capacities, csv_file);
+        // }
         
         csv_file.close();
         
@@ -177,10 +224,15 @@ int main() {
         cout << "- Python: pandas.read_csv('investment_analysis.csv')" << endl;
         cout << "- R: data <- read.csv('investment_analysis.csv')" << endl;
         
+        cout << "\n=== Cleaning up simulation ===" << endl;
+        
         return 0;
         
     } catch (const exception& e) {
         cout << "Error during simulation setup: " << e.what() << endl;
+        return 1;
+    } catch (...) {
+        cout << "Unknown error during simulation" << endl;
         return 1;
     }
 }

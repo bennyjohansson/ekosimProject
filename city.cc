@@ -961,7 +961,7 @@ void City::update_market_price() {
     // market_excess_demand = get_active_market() -> get_excess_demand_items();
     market_excess_demand = get_average_excess_demand_items(3);
 
-    price_out = aggregate_demand / aggregate_supply;
+    price_out = (aggregate_demand + market_excess_demand) / aggregate_supply;
 
     cout << "I City update price"
          << " Tot dmd: " << aggregate_demand << "$BJ, items " << aggregate_supply << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << endl;
