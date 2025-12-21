@@ -60,6 +60,7 @@ class World {
       bool save_consumers();
       bool check_money_consistency(double);
       bool reset_number_of_market_participants();
+      void validate_city_list_integrity();
 
  
 

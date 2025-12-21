@@ -688,7 +688,7 @@ void City::add_random_shareholders(int number_of_shareholders)
 
         company->add_multiple_shareholders(new_shareholders);
 
-        company -> print_shareholders();
+        // company -> print_shareholders();
 
 
         cout << "I city add random shareholders, added: " << number_of_shareholders << " shareholders to company " << company->get_name() << endl;

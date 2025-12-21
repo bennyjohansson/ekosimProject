@@ -147,12 +147,21 @@ bool World::run_employee_cycle() {
 
 bool World::run_pricing_cycle() {
 
+	if (cities_ == nullptr) {
+		cout << "ERROR: Cities list is null in run_pricing_cycle!" << endl;
+		return false;
+	}
+	
+	cout << "=== Validating city list before pricing cycle ===" << endl;
+	cities_->validate_list_integrity();
+
 	cities_ -> run_supply_demand_cycle();
 
 	cities_ -> update_market_price();
 	
 	cities_ -> reset_market_calculations();
-
+	
+	return true;
 }
 
 //Production cycle
@@ -373,6 +382,20 @@ bool World::reset_number_of_market_participants() {
 	cities_ -> reset_number_of_market_participants();
 
 	return true;
+}
+
+void World::validate_city_list_integrity() {
+	cout << "=== WORLD VALIDATION ===" << endl;
+	if (cities_ == nullptr) {
+		cout << "ERROR: World cities_ pointer is null!" << endl;
+		return;
+	}
+	if (global_market_ == nullptr) {
+		cout << "WARNING: Global market pointer is null!" << endl;
+	}
+	
+	cities_->validate_list_integrity();
+	cout << "========================" << endl;
 }
 
 // End of World class implementation

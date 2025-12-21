@@ -1,22 +1,53 @@
-docker commands
-sudo docker build -t myapp .
-docker run -it --mount src=/var/app/current/myDB/,target=/home/ecosim/myDB/,type=bind myapp
-docker run -it --mount src=/var/app/current/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
-docker run -it --mount src=/Users/bennyjohansson/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
+Container commands (Docker/Podman)
+
+# Build image
+podman build -t ekosim-app .
+# or with Docker:
+# docker build -t ekosim-app .
+
+# Run with database mount (normal)
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app
+
+# Run with debugging and shell access
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app /bin/bash
+
+# Run the debug script manually
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app ./debug_run.sh
+
+# Run with GDB for debugging segfaults
+podman run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app gdb ./main
+
+# Run with valgrind (memory debugging)
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app valgrind --tool=memcheck --leak-check=full ./main
+
+# Check containers
+podman ps
+podman ps -a
+
+# Stop/remove containers 
+podman stop $(podman ps -aq)
+podman rm $(podman ps -aq)
+
+# Remove all images
+podman rmi $(podman images -q)
+
+# Original Docker commands (for reference)
+docker build -t myapp .
+docker run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
 docker ps
 docker kill "container id"
 
-Start service
+# Start service
 sudo service docker start
 
-shell
+# Shell
 docker run -it myapp sh
 
-Stop all running containers
+# Stop all running containers
 docker stop $(docker ps -aq)
 
-Remove all containers
+# Remove all containers
 docker rm $(docker ps -aq)
 
-Remove all images
+# Remove all images
 docker rmi $(docker images -q)

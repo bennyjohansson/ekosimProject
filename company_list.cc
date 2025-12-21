@@ -579,7 +579,16 @@ double Company_list::pay_dividends_directly(double capital_gains_tax) {
     Element_company * p;
     double total_profit = 0;
     
+    if(list_ == nullptr) {
+        cout << "Warning: Company list is null, skipping dividend payments" << endl;
+        return 0;
+    }
+    
     for(p = list_.get(); p; p = p -> next_.get()) {
+        if(p->get_company() == nullptr) {
+            cout << "Warning: Found null company pointer, skipping dividend payment..." << endl;
+            continue;
+        }
         total_profit += (p -> get_company()) -> pay_dividends_directly(capital_gains_tax);
     }
 

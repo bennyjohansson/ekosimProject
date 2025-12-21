@@ -1149,9 +1149,9 @@ double Company::invest()
     change_capacity(capacity_change);
     change_item_efficiency(-item_efficiency_change);
 
-    cout << left << setw(25) << name_ << " | New capacity: " << setw(12) << capacity_ << " | Own capital: " << setw(10) << own_capital_to_invest << " | Loans: " << setw(10) << loans << " | Total cost: " << setw(10) << cost << " | Available: " << setw(10) << available_capital << endl;
-    cout << left << setw(25) << name_ << " | Inv items: " << setw(8) << invested_items_tot << " | Cost: " << setw(10) << actual_amount << " | Cap change: " << setw(10) << capacity_change << " | Factor: " << setw(10) << factor_change << " | Max items: " << setw(8) << max_items << endl;
-    cout << left << setw(25) << name_ << " | Item efficiency: " << setw(10) << item_efficiency_ << " | Change: " << setw(10) << item_efficiency_change << endl;
+    cout << left << setw(25) << name_ << " | New capacity: " << setw(12) << capacity_ << " | Own capital: " << setw(10) << own_capital_to_invest << " | Loans: " << setw(10) << loans << " | Total cost: " << setw(10) << cost << " | Available capital: " << setw(10) << available_capital << endl;
+    cout << left << setw(25) << name_ << " | Inv items: " << setw(8) << actual_items << " | Cost: " << setw(10) << actual_amount << " | Cap change: " << setw(10) << capacity_change << " | Factor: " << setw(10) << factor_change << " | Max items: " << setw(8) << max_items << endl;
+    // cout << left << setw(25) << name_ << " | Item efficiency: " << setw(10) << item_efficiency_ << " | Change: " << setw(10) << item_efficiency_change << endl;
 
     investments_.push_front(actual_amount);
 
@@ -1620,7 +1620,6 @@ double Company::pay_dividends()
     employees_no_.push_front(employees_->get_size());
 }
 
-//Zeors out capital and returns the paid dividend amount
 double Company::pay_dividends_directly(double capital_gains_tax)
 {
     double dividends = 0;
@@ -1628,9 +1627,22 @@ double Company::pay_dividends_directly(double capital_gains_tax)
     double dividend_per_shareholder = 0;
     double tax = 0;
 
-    number_of_shareholders = shareholders_ -> get_size();
+    cout << "DEBUG: Starting pay_dividends_directly for company: " << name_ << endl;
 
+    if(shareholders_ == nullptr) {
+        cout << "Warning: Shareholders list is null for company " << name_ << ", skipping dividend payment" << endl;
+        return 0;
+    }
+
+    cout << "DEBUG: Shareholders list is not null, getting size..." << endl;
     
+    try {
+        number_of_shareholders = shareholders_ -> get_size();
+        cout << "DEBUG: Number of shareholders: " << number_of_shareholders << endl;
+    } catch (const std::exception& e) {
+        cout << "Error getting shareholders size for company " << name_ << ": " << e.what() << endl;
+        return 0;
+    }
 
     if (number_of_shareholders > 0)
     {
@@ -1640,7 +1652,22 @@ double Company::pay_dividends_directly(double capital_gains_tax)
             tax = dividends * capital_gains_tax;
             dividend_per_shareholder = (dividends - tax) / number_of_shareholders;
             cout << "I company pay dividends directly, dividends: " << dividends << " tax: " << tax << " number of shareholders: " << number_of_shareholders << " for company: " << name_ << endl;
-            shareholders_ -> pay_all_dividends_log(dividend_per_shareholder, 0, 0);
+            
+            cout << "DEBUG: About to call pay_all_dividends_log with dividend_per_shareholder: " << dividend_per_shareholder << endl;
+            
+            // Additional safety check before calling pay_all_dividends_log
+            try {
+                cout << "DEBUG: Calling shareholders_->pay_all_dividends_log..." << endl;
+                shareholders_ -> pay_all_dividends_log(dividend_per_shareholder, 0, 0);
+                cout << "DEBUG: Successfully completed pay_all_dividends_log" << endl;
+            } catch (const std::exception& e) {
+                cout << "Error paying dividends to shareholders for company " << name_ << ": " << e.what() << endl;
+                return 0;
+            } catch (...) {
+                cout << "Unknown error paying dividends to shareholders for company " << name_ << endl;
+                return 0;
+            }
+            
             capital_ = 0;
         }
         else {
@@ -1652,7 +1679,9 @@ double Company::pay_dividends_directly(double capital_gains_tax)
         cout << "I company pay dividends directly, no shareholders for company: " << name_ << endl;
     }
 
+    cout << "DEBUG: About to log transaction..." << endl;
     log_transaction(name_, -dividends, "Dividend", clock_->get_time());
+    cout << "DEBUG: Completed pay_dividends_directly for company: " << name_ << endl;
 
     return dividends;
 

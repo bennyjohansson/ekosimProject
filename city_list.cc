@@ -109,6 +109,42 @@ void City_list::info() {
     cout << "Number of cities: " << size_ << endl << endl;
 }
 
+void City_list::validate_list_integrity() {
+    cout << "=== VALIDATING CITY LIST INTEGRITY ===" << endl;
+    if(!list_) {
+        cout << "ERROR: City list is null!" << endl;
+        return;
+    }
+    
+    int count = 0;
+    Element_city *p = list_.get();
+    
+    while(p) {
+        count++;
+        cout << "Element " << count << ": ";
+        
+        if(p->city_ == nullptr) {
+            cout << "ERROR - NULL CITY POINTER!" << endl;
+        } else {
+            cout << "OK - City: " << p->city_->get_name();
+            if(p->city_->get_active_market() == nullptr) {
+                cout << " (WARNING: NULL MARKET)";
+            }
+            cout << endl;
+        }
+        
+        p = p->next_.get();
+        
+        if(count > 100) {  // Prevent infinite loop
+            cout << "ERROR: Potential circular reference detected!" << endl;
+            break;
+        }
+    }
+    
+    cout << "Total elements checked: " << count << " (expected: " << size_ << ")" << endl;
+    cout << "========================================" << endl;
+}
+
 
 void City_list::print_list() {
     
@@ -156,6 +192,10 @@ bool City_list::run_supply_demand_cycle() {
     Element_city * p;
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
+            if (p->get_city() == nullptr) {
+                cout << "Warning: Found null city pointer, skipping supply demand cycle..." << endl;
+                continue;
+            }
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             cout << "Running supply demand cycle" << endl;
             p -> get_city() -> update_supply_and_demand();
@@ -172,6 +212,10 @@ bool City_list::update_market_price() {
     Element_city * p;
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
+            if (p->get_city() == nullptr) {
+                cout << "Warning: Found null city pointer, skipping market price update..." << endl;
+                continue;
+            }
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             cout << "Updating market price" << endl;
             p -> get_city() -> update_market_price();
@@ -190,6 +234,10 @@ bool City_list::reset_market_calculations() {
     Element_city * p;
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
+            if (p->get_city() == nullptr) {
+                cout << "Warning: Found null city pointer, skipping..." << endl;
+                continue;
+            }
             cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
             cout << "Resetting market calculations" << endl;
             p -> get_city() -> reset_supply_and_demand();
@@ -207,6 +255,14 @@ bool City_list::reset_number_of_market_participants() {
     Element_city * p;
     if(list_) {
         for(p = list_.get(); p; p = p -> next_.get()) {
+            if (p->get_city() == nullptr) {
+                cout << "Warning: Found null city pointer, skipping market participants reset..." << endl;
+                continue;
+            }
+            if (p -> get_city() -> get_active_market() == nullptr) {
+                cout << "Warning: Found null market pointer for city " << p->get_city()->get_name() << ", skipping..." << endl;
+                continue;
+            }
             p -> get_city() -> get_active_market() -> reset_numnber_of_participants();
         }
     }

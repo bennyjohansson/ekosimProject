@@ -903,9 +903,23 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
 
   Element_consumer *p;
 
+  if(list_ == nullptr) {
+    cout << "Warning: Consumer list is null, skipping dividend payments" << endl;
+    return;
+  }
+
   for (p = list_.get(); p; p = p->next_.get())
   {
+    if(p == nullptr) {
+      cout << "Warning: Found null element in consumer list, skipping..." << endl;
+      continue;
+    }
+    
     Consumer *consumer = p->get_consumer();
+    if(consumer == nullptr) {
+      cout << "Warning: Found null consumer pointer, skipping dividend payment..." << endl;
+      continue;
+    }
     //consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
@@ -917,9 +931,23 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
 
   Element_consumer *p;
 
+  if(list_ == nullptr) {
+    cout << "Warning: Consumer list is null, skipping transfer payments" << endl;
+    return;
+  }
+
   for (p = list_.get(); p; p = p->next_.get())
   {
+    if(p == nullptr) {
+      cout << "Warning: Found null element in consumer list, skipping..." << endl;
+      continue;
+    }
+    
     Consumer *consumer = p->get_consumer();
+    if(consumer == nullptr) {
+      cout << "Warning: Found null consumer pointer, skipping transfer payment..." << endl;
+      continue;
+    }
     //consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
@@ -935,31 +963,63 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
   string name;
   int pay_dividends_in_cash = 0;
 
+  if(list_ == nullptr) {
+    cout << "Warning: Consumer list is null, skipping dividend payments" << endl;
+    return 0;
+  }
+
   for (p = list_.get(); p; p = p->next_.get())
   {
-    Consumer *consumer = p->get_consumer();
-
-    name = consumer->get_name();
-    time = consumer->get_time();
-
-    if (pay_dividends_in_cash == 0)
-    {
-      consumer->accept_deposit(amount_company);
-      consumer->accept_deposit(amount_market);
-      consumer->accept_deposit(amount_bank);
-    }
-    else
-    {
-      consumer->change_capital(amount_company);
-      consumer->change_capital(amount_market);
-      consumer->change_capital(amount_bank);
+    if(p == nullptr) {
+      cout << "Warning: Found null element in consumer list, skipping..." << endl;
+      continue;
     }
     
-    log_transaction_full("Company", name, amount_company, "Dividends", time);
-    log_transaction_full("Market", name, amount_market, "Dividends", time);
-    log_transaction_full("Bank", name, amount_bank, "Dividends", time);
-    consumer->set_dividends(amount_company + amount_market + amount_bank);
+    Consumer *consumer = p->get_consumer();
+    if(consumer == nullptr) {
+      cout << "Warning: Found null consumer pointer, skipping dividend payment..." << endl;
+      continue;
+    }
+
+    try {
+      name = consumer->get_name();
+      time = consumer->get_time();
+    } catch (const std::exception& e) {
+      cout << "Error getting consumer info: " << e.what() << endl;
+      continue;
+    } catch (...) {
+      cout << "Unknown error getting consumer info" << endl;
+      continue;
+    }
+
+    try {
+      if (pay_dividends_in_cash == 0)
+      {
+        consumer->accept_deposit(amount_company);
+        consumer->accept_deposit(amount_market);
+        consumer->accept_deposit(amount_bank);
+      }
+      else
+      {
+        consumer->change_capital(amount_company);
+        consumer->change_capital(amount_market);
+        consumer->change_capital(amount_bank);
+      }
+      
+      log_transaction_full("Company", name, amount_company, "Dividends", time);
+      log_transaction_full("Market", name, amount_market, "Dividends", time);
+      log_transaction_full("Bank", name, amount_bank, "Dividends", time);
+      consumer->set_dividends(amount_company + amount_market + amount_bank);
+    } catch (const std::exception& e) {
+      cout << "Error processing dividend payments for consumer " << name << ": " << e.what() << endl;
+      continue;
+    } catch (...) {
+      cout << "Unknown error processing dividend payments for consumer " << name << endl;
+      continue;
+    }
   }
+  
+  return 0;
 }
 
 void Consumer_list::save_consumers()

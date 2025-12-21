@@ -95,6 +95,9 @@ int main()
 
 			bennyworld.run_employee_cycle();
 			
+			cout << "=== Validating city list before pricing cycle ===" << endl;
+			bennyworld.validate_city_list_integrity();
+			
 			bennyworld.run_pricing_cycle();
 
 			bennyworld.run_production_cycle();
@@ -140,6 +143,9 @@ int main()
 				 << "DIVIDENDS & TRANSFERS" << endl;
 			cout << "---------" << endl;
 
+			cout << "=== Validating city list before dividend cycle ===" << endl;
+			bennyworld.validate_city_list_integrity();
+			
 			bennyworld.run_dividend_cycle();
 			bennyworld.run_adjust_money_and_consumer_cycle();
 			bennyworld.check_money_consistency(total_money_before);
@@ -175,11 +181,11 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
 			//Creating a shared market, need some additional work to function well though
-			if(current_cycle == 600) {
-
+			if(current_cycle == 501) {
+				double current_price_in = bennyworld.get_city("Bennyland") -> get_active_market() -> get_price_in();
 				bennyworld.get_city("Saraland") -> set_enable_intercity_trading(true);
 				bennyworld.get_city("Bennyland") -> set_enable_intercity_trading(true);
-				// bennyworld.get_city("Wernerland") -> set_enable_intercity_trading(true);
+				bennyworld.get_city("Bennyland") -> get_active_market() -> set_price_in(current_price_in);
 
 			}
 

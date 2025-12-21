@@ -27,9 +27,12 @@ Element_city::Element_city(std::unique_ptr<Element_city> n, City *c) :
  */
 
 string Element_city::get_name() const {
-  return city_ -> get_name();
+    if (city_ == nullptr) {
+        return "NULL_CITY";
+    }
+    return city_ -> get_name();
 }
 
 City* Element_city::get_city() const {
-  return city_;
+    return city_;
 }

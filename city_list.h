@@ -28,6 +28,7 @@ class City_list {
     void info();
     void print_list();
     void print_GDP();
+    void validate_list_integrity();
 
 
   /*
