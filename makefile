@@ -1,11 +1,11 @@
 # Modern C++ compiler settings
 CCC = clang++
-CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2
-LDFLAGS = -lsqlite3
+CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2 -I/usr/local/include/postgresql@14
+LDFLAGS = -lsqlite3 -L/usr/local/lib/postgresql@14 -lpq
 
 # Debug build flags (uncomment for debugging)
 # CXXFLAGS = -std=c++20 -Wall -Wextra -g -O0 -DDEBUG
-OBJECTS_O = world.o city.o consumer.o city_list.o consumer_list.o functions.o company.o company_list.o element_city.o element_company.o element_consumer.o market.o clock.o bank.o SQLfunctions.o #init_company.o 
+OBJECTS_O = world.o city.o consumer.o city_list.o consumer_list.o functions.o company.o company_list.o element_city.o element_company.o element_consumer.o market.o clock.o bank.o SQLfunctions.o PostgreSQLManager.o #init_company.o 
 #OBJECTS_CC = city.o consumer.o consumer_list.o functions.o company.o company_list.o element_company.o element_consumer.o market.o clock.o bank.o init_company.o SQLfunctions.o
 
 main : main.cc $(OBJECTS_O)
@@ -58,7 +58,8 @@ bank.o : bank.cc
 	
 SQLfunctions.o : SQLfunctions.cc
 	$(CCC) $(CXXFLAGS) -c SQLfunctions.cc
-
+PostgreSQLManager.o : PostgreSQLManager.cc
+	$(CCC) $(CXXFLAGS) -c PostgreSQLManager.cc
 # St�da arbetsmappen 
 clean : 
 	@ \rm -f *.o

@@ -41,9 +41,15 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
 int insertCompanyTimeData(std::vector<double> timeData, string city_name, string company_name);
 int insertCompanyDatapoint(string parameter, int value, int timestamp, string city_name, string company_name);
 int insertHighScore(std::vector<double> myData, string city_name, string world_name, string timenow);
+int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow);
 int insertConsumerData(std::vector<double> myData, string, string, string);
 
 double getDatabaseParameter(string, string);
+
+// PostgreSQL functions
+int testPostgreSQLConnection();
+int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow);
+vector<vector<string>> getHighScoresPG(string country_filter, int limit);
 
 static int updateData(const char* s);
 static int updateParameter(const char* s, string, double);

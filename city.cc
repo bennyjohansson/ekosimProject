@@ -2345,7 +2345,23 @@ void City::save_high_score()
     score.push_back(palma_index);
     score.push_back(environmental_impact_per_year);
 
+    // Write to SQLite (existing functionality)
     insertHighScore(score, name_, world_name, timenow);
+    
+    // Also write to PostgreSQL for centralized high scores
+    // This enables cross-country leaderboards while maintaining backward compatibility
+    try {
+        cout << "Saving high score to PostgreSQL..." << endl;
+        int pg_result = insertHighScorePG(score, name_, "", timenow);
+        if (pg_result == 0) {
+            cout << "High score successfully saved to PostgreSQL centralized database" << endl;
+        } else {
+            cout << "Warning: Failed to save high score to PostgreSQL, but SQLite save was successful" << endl;
+        }
+    } catch (const exception& e) {
+        cout << "Warning: PostgreSQL high score save failed with exception: " << e.what() << endl;
+        cout << "SQLite high score save was successful" << endl;
+    }
 }
 
 double City::calculate_CAGR(int end_time)

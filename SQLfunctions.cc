@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include "SQLfunctions.h"
+#include "PostgreSQLManager.h"
 
 
 //Amazon linux
@@ -717,6 +718,94 @@ int insertHighScore(std::vector<double> myData, string city_name, string world_n
     return 0;
 }
 
+// PostgreSQL version of insertHighScore for centralized high scores
+int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow) {
+    PostgreSQLManager pgManager;
+    
+    if (!pgManager.connect()) {
+        cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+    
+    // Since user_id and simulation_id are UUIDs with foreign key constraints,
+    // we'll insert with NULL for now (anonymous user)
+    string sql = "INSERT INTO high_scores (country, growth_rate, palma_ratio, environmental_impact, achieved_at) "
+                 "VALUES ($1, $2, $3, $4, $5)";
+    
+    if (!pgManager.prepareStatement("insert_high_score", sql)) {
+        cerr << "Failed to prepare high score statement" << endl;
+        return -1;
+    }
+    
+    vector<string> params = {
+        city_name,
+        to_string(myData[0]), // growth
+        to_string(myData[1]), // palma
+        to_string(myData[2]), // environmental impact
+        timenow.empty() ? "NOW()" : timenow
+    };
+    
+    PGresult* result = pgManager.executePrepared("insert_high_score", params);
+    
+    if (!result) {
+        cerr << "High score insert failed" << endl;
+        return -1;
+    }
+    
+    cout << "High score inserted successfully for " << city_name << endl;
+    cout << "Growth: " << myData[0] << ", Palma: " << myData[1] << ", Environmental: " << myData[2] << endl;
+    PQclear(result);
+    return 0;
+}
+
+// Get high scores from PostgreSQL
+vector<vector<string>> getHighScoresPG(string country_filter = "", int limit = 10) {
+    vector<vector<string>> results;
+    PostgreSQLManager pgManager;
+    
+    if (!pgManager.connect()) {
+        cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
+        return results;
+    }
+    
+    string sql = "SELECT country, growth_rate, palma_ratio, environmental_impact, achieved_at "
+                 "FROM high_scores ";
+    
+    if (!country_filter.empty()) {
+        sql += "WHERE country = $1 ";
+    }
+    
+    sql += "ORDER BY growth_rate DESC, environmental_impact ASC LIMIT " + to_string(limit);
+    
+    PGresult* result;
+    if (!country_filter.empty()) {
+        if (!pgManager.prepareStatement("get_high_scores", sql)) {
+            cerr << "Failed to prepare high scores query" << endl;
+            return results;
+        }
+        vector<string> params = {country_filter};
+        result = pgManager.executePrepared("get_high_scores", params);
+    } else {
+        result = pgManager.executeQuery(sql);
+    }
+    
+    if (result) {
+        int rows = PQntuples(result);
+        cout << "Found " << rows << " high score records" << endl;
+        
+        for (int i = 0; i < rows; i++) {
+            vector<string> row;
+            for (int j = 0; j < PQnfields(result); j++) {
+                row.push_back(string(PQgetvalue(result, i, j)));
+            }
+            results.push_back(row);
+        }
+        PQclear(result);
+    }
+    
+    return results;
+}
+
 int insertConsumerData(std::vector<double> myData, string country, string name, string employer)
 { //std::vector<int> money
 
@@ -800,6 +889,36 @@ double getDatabaseParameter(string parameter, string city_name)
 
     //cout << "i SQLF getdatabaseparam4" << endl;
     return myParameterValue;
+}
+
+// Test PostgreSQL connection
+int testPostgreSQLConnection() {
+    cout << "Testing PostgreSQL connection..." << endl;
+    
+    PostgreSQLManager pgManager;
+    
+    if (!pgManager.connect()) {
+        cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+    
+    cout << "Successfully connected to PostgreSQL!" << endl;
+    
+    // Test a simple query
+    PGresult* result = pgManager.executeQuery("SELECT version()");
+    
+    if (result) {
+        int rows = PQntuples(result);
+        if (rows > 0) {
+            cout << "PostgreSQL version: " << PQgetvalue(result, 0, 0) << endl;
+        }
+        PQclear(result);
+        cout << "Connection test successful!" << endl;
+        return 0;
+    } else {
+        cerr << "Failed to execute test query" << endl;
+        return -1;
+    }
 }
 
 static int deleteTheData(const char *s)
