@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <vector>
 
-
 using namespace std;
 using Record = std::vector<std::string>;
 using Records = std::vector<Record>;
@@ -15,27 +14,26 @@ int initiateDB();
 int initiateCityDB(string city_name);
 int initiateWorldDB(string world_name);
 
-static int createDB(const char* s);
-static int createParameterTable(const char* s);
-static int createDataTable(const char* s);
-static int createMoneyTable(const char* s);
-static int createCompanyTable(const char* s);
-static int createHighScoreTable(const char* s);
+static int createDB(const char *s);
+static int createParameterTable(const char *s);
+static int createDataTable(const char *s);
+static int createMoneyTable(const char *s);
+static int createCompanyTable(const char *s);
+static int createHighScoreTable(const char *s);
 static int createConsumerTable(const char *s);
-static int createWorldTable(const char* s);
-static int insertParameterData(const char* s);
-static int initiateCompanyTable(const char* s);
+static int createWorldTable(const char *s);
+static int insertParameterData(const char *s);
+static int initiateCompanyTable(const char *s);
 
 static int createSQLParameterTable(string);
-static int createSQLDataTable(const char* s);
-static int createSQLMoneyTable(const char* s);
-static int createSQLCompanyTable(const char* s);
-static int createSQLHighScoreTable(const char* s);
+static int createSQLDataTable(const char *s);
+static int createSQLMoneyTable(const char *s);
+static int createSQLCompanyTable(const char *s);
+static int createSQLHighScoreTable(const char *s);
 static int createSQLConsumerTable(const char *s);
-static int createSQLWorldTable(const char* s);
+static int createSQLWorldTable(const char *s);
 
-
-int insertMoneyData(std::vector<int> money, string); //
+int insertMoneyData(std::vector<int> money, string);      //
 int insertTimeData(std::vector<double> timeData, string); //
 int insertWorldData(string world_name, string city_name, int consumers, string email, int created);
 int insertCompanyTimeData(std::vector<double> timeData, string city_name, string company_name);
@@ -50,20 +48,21 @@ double getDatabaseParameter(string, string);
 int testPostgreSQLConnection();
 int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow);
 vector<vector<string>> getHighScoresPG(string country_filter, int limit);
+int insertWorldDataPG(string world_name, string city_name, int consumers, string email, int created);
+Records getWorldTablePG(string world_name);
 
-static int updateData(const char* s);
-static int updateParameter(const char* s, string, double);
-static int deleteTheData(const char* s);
-static int deleteWorldData(const char* s);
+static int updateData(const char *s);
+static int updateParameter(const char *s, string, double);
+static int deleteTheData(const char *s);
+static int deleteWorldData(const char *s);
 
-static int selectData(const char* s);
-static int callback(void* NotUsed, int argc, char** argv, char** azColName);
+static int selectData(const char *s);
+static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 
 int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names);
-Records select_stmt(string stmt, const char* s); //const char*
+Records select_stmt(string stmt, const char *s); // const char*
 
-const char* get_sql_string();
+const char *get_sql_string();
 string get_city_sql_string(string city_name);
-
 
 #endif

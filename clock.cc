@@ -9,18 +9,21 @@
 
 using namespace std;
 
-Clock::Clock() :
-  time_(0) //
-{}
+Clock::Clock() : time_(1) //
+{
+}
 
-int Clock::get_time() const {
+int Clock::get_time() const
+{
   return time_;
 }
 
-void Clock::set_time(int time) {
+void Clock::set_time(int time)
+{
   time_ = time;
 }
 
-void Clock::tick() {
-  time_ ++;
+void Clock::tick()
+{
+  time_++;
 }

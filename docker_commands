@@ -6,19 +6,19 @@ podman build -t ekosim-app .
 # docker build -t ekosim-app .
 
 # Run with database mount (normal)
-podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app
 
 # Run with debugging and shell access
-podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app /bin/bash
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app /bin/bash
 
 # Run the debug script manually
-podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app ./debug_run.sh
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app ./debug_run.sh
 
 # Run with GDB for debugging segfaults
-podman run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app gdb ./main
+podman run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app gdb ./main
 
 # Run with valgrind (memory debugging)
-podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app valgrind --tool=memcheck --leak-check=full ./main
+podman run -it --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind ekosim-app valgrind --tool=memcheck --leak-check=full ./main
 
 # Check containers
 podman ps
@@ -33,7 +33,7 @@ podman rmi $(podman images -q)
 
 # Original Docker commands (for reference)
 docker build -t myapp .
-docker run -it --mount src=/Users/bennyjohansson/Documents/Projects/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
+docker run -it --mount src=/Users/bennyjohansson/Documents/Projects/EkoSim-project/ekosim/myDB/,target=/home/ec2-user/ekosimProject/myDB/,type=bind myapp
 docker ps
 docker kill "container id"
 

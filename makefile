@@ -1,7 +1,8 @@
 # Modern C++ compiler settings
 CCC = clang++
-CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2 -I/usr/local/include/postgresql@14
-LDFLAGS = -lsqlite3 -L/usr/local/lib/postgresql@14 -lpq
+# Support both macOS (postgresql@14) and Linux (standard locations)
+CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2 -I/usr/local/include/postgresql@14 -I/usr/include/postgresql
+LDFLAGS = -lsqlite3 -L/usr/local/lib/postgresql@14 -L/usr/lib -lpq
 
 # Debug build flags (uncomment for debugging)
 # CXXFLAGS = -std=c++20 -Wall -Wextra -g -O0 -DDEBUG

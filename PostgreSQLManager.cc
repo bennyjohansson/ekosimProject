@@ -10,7 +10,7 @@ PostgreSQLManager::~PostgreSQLManager() {
 
 void PostgreSQLManager::configureFromEnvironment() {
     const char* host = getenv("POSTGRES_HOST");
-    if (!host) host = "ekosim-postgres";
+    if (!host) host = "localhost";
     
     const char* port = getenv("POSTGRES_PORT");
     if (!port) port = "5432";
@@ -19,9 +19,10 @@ void PostgreSQLManager::configureFromEnvironment() {
     if (!dbname) dbname = "ekosim";
     
     const char* user = getenv("POSTGRES_USER");
-    if (!user) user = "ecosim_user";
+    if (!user) user = "ekosim";
     
     const char* password = getenv("POSTGRES_PASSWORD");
+    if (!password) password = "secure_dev_password_2025!";
     
     connection_string = "host=" + std::string(host) + 
                        " port=" + std::string(port) +

@@ -1,0 +1,24 @@
+# Exclude database files from Docker build context
+myDB/*.db
+myDB/*.db-journal
+myDB/*.db-shm
+myDB/*.db-wal
+
+# Exclude build artifacts
+*.o
+main
+*.out
+
+# Exclude git
+.git
+.gitignore
+
+# Exclude editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Exclude macOS files
+.DS_Store

@@ -8,13 +8,11 @@
 #include "SQLfunctions.h"
 #include "PostgreSQLManager.h"
 
+// Amazon linux
+// #include "/usr/include/mysql/mysql.h"
 
-//Amazon linux
-//#include "/usr/include/mysql/mysql.h"
-
-//Mac OSX
-//#include "/usr/local/Cellar/mysql/8.0.23_1/include/mysql/mysql.h"
-
+// Mac OSX
+// #include "/usr/local/Cellar/mysql/8.0.23_1/include/mysql/mysql.h"
 
 using namespace std;
 // namespace fs = std::filesystem;
@@ -69,16 +67,16 @@ int initiateCityDB(string city_name)
     const char *dir = full_path.c_str();
 
     cout << "I SQL Functions initiate city db, using database path: " << dir << endl;
-    //string dir = get_sql_string();
-    //sqlite3* DB;
+    // string dir = get_sql_string();
+    // sqlite3* DB;
 
     cout << "INITIATING CITY DATABASE" << endl;
     cout << "-------------------" << endl;
 
-    //Creating the database
+    // Creating the database
     createDB(dir);
 
-    //Creating tables
+    // Creating tables
     createParameterTable(dir);
     createDataTable(dir);
     createMoneyTable(dir);
@@ -90,20 +88,20 @@ int initiateCityDB(string city_name)
 
     cout << endl;
 
-    //Deleting old data
+    // Deleting old data
     deleteTheData(dir);
 
     cout << endl;
 
-    //Setting initial parameters
+    // Setting initial parameters
     insertParameterData(dir);
     initiateCompanyTable(dir);
 
     cout << "I SQL functions initiate city db" << endl;
 
-    //selectData(dir);
+    // selectData(dir);
 
-    //sqlite3_close(DB);
+    // sqlite3_close(DB);
     return 0;
 };
 
@@ -114,29 +112,29 @@ int initiateWorldDB(string world_name)
     const char *dir = full_path.c_str();
 
     cout << "I SQL Functions initiate World db, using database path: " << dir << endl;
-    //string dir = get_sql_string();
-    //sqlite3* DB;
+    // string dir = get_sql_string();
+    // sqlite3* DB;
 
     cout << "INITIATING WORLD DATABASE" << endl;
     cout << "-------------------" << endl;
 
-    //Creating the database
+    // Creating the database
     createDB(dir);
 
-    //Creating tables
+    // Creating tables
     createWorldTable(dir);
     createHighScoreTable(dir);
 
     cout << endl;
 
-    //Deleting old data
+    // Deleting old data
     deleteWorldData(dir);
 
     cout << endl;
 
-    //selectData(dir);
+    // selectData(dir);
 
-    //sqlite3_close(DB);
+    // sqlite3_close(DB);
     return 0;
 };
 
@@ -145,14 +143,14 @@ static int selectData(const char *s)
 
     sqlite3 *DB;
 
-    //int exit = sqlite3_open(s, &DB);
+    // int exit = sqlite3_open(s, &DB);
     double myData = 0;
 
     string sql = "SELECT * FROM MONEY_DATA";
 
-    //string name = "'InterestRateMethod'";
-    //sql.append(name);
-    //cout <<  sql << endl;
+    // string name = "'InterestRateMethod'";
+    // sql.append(name);
+    // cout <<  sql << endl;
     sqlite3_exec(DB, sql.c_str(), callback, &myData, NULL);
     sqlite3_close(DB);
     return 0;
@@ -173,7 +171,7 @@ int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_
     return 0;
 }
 
-Records select_stmt(string stmt, const char *s) //const char*
+Records select_stmt(string stmt, const char *s) // const char*
 {
     Records records;
     char *errmsg = new char[250]; //
@@ -186,7 +184,7 @@ Records select_stmt(string stmt, const char *s) //const char*
 
         char *messaggeError = new char[150];
         exit = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
-        //int ret = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
+        // int ret = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
         if (exit != SQLITE_OK)
         {
             std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]" << endl;
@@ -194,7 +192,7 @@ Records select_stmt(string stmt, const char *s) //const char*
         }
         else
         {
-            //cout << "Parameter-table created successfully" << endl;
+            // cout << "Parameter-table created successfully" << endl;
         }
         sqlite3_close(DB);
     }
@@ -238,9 +236,9 @@ static int updateData(const char *s)
     sql.append(sInterestRate);
     sql.append(endStatement);
 
-    //cout << sql << " " << dInterstRate << endl;
+    // cout << sql << " " << dInterstRate << endl;
 
-    //string sql("UPDATE PARAMETERS SET VALUE = 2 WHERE PARAMETER = 'InterestRateMethod'");
+    // string sql("UPDATE PARAMETERS SET VALUE = 2 WHERE PARAMETER = 'InterestRateMethod'");
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
@@ -276,7 +274,7 @@ static int updateParameter(const char *s, string parameter, double dValue)
 
     cout << sql << " " << dValue << endl;
 
-    //string sql("UPDATE PARAMETERS SET VALUE = 2 WHERE PARAMETER = 'InterestRateMethod'");
+    // string sql("UPDATE PARAMETERS SET VALUE = 2 WHERE PARAMETER = 'InterestRateMethod'");
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
@@ -309,11 +307,11 @@ static int insertParameterData(const char *s)
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('LiquidityReserveRatio', 0.5);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('AverageSpendwill', 0.8);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('AverageBorrowwill', 0.05);"
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);" //0.05
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);" // 0.05
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapIncreaseParam_1', 15000);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapIncreaseRate_1', 0.001);"
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.0005);" //0.000005
-               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);" //0.002
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.0005);" // 0.000005
+               "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);" // 0.002
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('IncomeTax', 0.3);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('CapitalGainsTax', 0.3);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('BudgetBalance', 0.00);"
@@ -322,7 +320,7 @@ static int insertParameterData(const char *s)
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('BankDividendRatio', 0.1);");
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
-    //cout << "I SQL Fcn insterparam data, sql: " << sql << endl;
+    // cout << "I SQL Fcn insterparam data, sql: " << sql << endl;
     if (exit != SQLITE_OK)
     {
         cerr << "Error insert" << endl;
@@ -334,35 +332,32 @@ static int insertParameterData(const char *s)
     }
     sqlite3_close(DB);
 
-
     /*
-    *TESTING NEW mySQL
-    */
-   string city = "Bennyland";
+     *TESTING NEW mySQL
+     */
+    string city = "Bennyland";
 
     string sql2("INSERT INTO PARAMETERS_" + city + "(PARAMETER, VALUE) VALUES('InterestRateMethod', 2);");
-            //     "INSERT INTO PARAMETERS_" + city + "(PARAMETER, VALUE) VALUES('TargetInterestRate', 0.04);"
-            //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('CapitalReserveRatio', 0.4);");
-            //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('LiquidityReserveRatio', 0.5);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageSpendwill', 0.8);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageBorrowwill', 0.05);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseParam_1', 15000);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseRate_1', 0.001);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.000005);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('IncomeTax', 0.3);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapitalGainsTax', 0.3);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BudgetBalance', 0.00);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('InflationTarget', 0.01);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('PayWageInCash', 0);"
-            //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BankDividendRatio', 0.1);");
-
-
+    //     "INSERT INTO PARAMETERS_" + city + "(PARAMETER, VALUE) VALUES('TargetInterestRate', 0.04);"
+    //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('CapitalReserveRatio', 0.4);");
+    //    "INSERT INTO PARAMETERS_" + city + " (PARAMETER, VALUE) VALUES('LiquidityReserveRatio', 0.5);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageSpendwill', 0.8);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('AverageBorrowwill', 0.05);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('FacIncreaseRate_1', 0.05);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseParam_1', 15000);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapIncreaseRate_1', 0.001);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ItemEfficiencyRate', 0.000005);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('ProductionParameter', 0.002);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('IncomeTax', 0.3);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('CapitalGainsTax', 0.3);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BudgetBalance', 0.00);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('InflationTarget', 0.01);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('PayWageInCash', 0);"
+    //    "INSERT INTO PARAMETERS_" + city + "  (PARAMETER, VALUE) VALUES('BankDividendRatio', 0.1);");
 
     /*
-    *TESTING NEW mySQL
-    */
+     *TESTING NEW mySQL
+     */
 
     // MYSQL_RES *result;
     // MYSQL_ROW row;
@@ -382,7 +377,7 @@ static int insertParameterData(const char *s)
     // }
 
     // cout << sql2 << endl;
-    
+
     // mysql_query(connection, sql2.c_str());
 
     // state = mysql_query(connection, "SELECT * FROM PARAMETERS_Bennyland");
@@ -403,7 +398,6 @@ static int insertParameterData(const char *s)
     // mysql_close(connection);
 
     return 0;
-
 }
 
 static int initiateCompanyTable(const char *s)
@@ -437,7 +431,7 @@ static int initiateCompanyTable(const char *s)
 }
 
 int insertMoneyData(std::vector<int> money, string city_name)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str(); //"/var/app/current/myDB/ekosimDB.db";
@@ -463,7 +457,7 @@ int insertMoneyData(std::vector<int> money, string city_name)
     sql.append(std::to_string(money[11]) + ", ");
     sql.append(std::to_string(money[12]) + ");");
 
-    //cout << "I SQL insert money data: " << sql << endl;
+    // cout << "I SQL insert money data: " << sql << endl;
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
@@ -481,13 +475,13 @@ int insertMoneyData(std::vector<int> money, string city_name)
 }
 
 int insertTimeData(std::vector<double> myData, string city_name)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
@@ -522,14 +516,23 @@ int insertTimeData(std::vector<double> myData, string city_name)
 }
 
 int insertWorldData(string world_name, string city_name, int consumers, string email, int created)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
+    // Use PostgreSQL for world_table (centralized)
+    int pgResult = insertWorldDataPG(world_name, city_name, consumers, email, created);
+
+    if (pgResult != 0)
+    {
+        cerr << "Warning: Failed to insert world data to PostgreSQL" << endl;
+    }
+
+    // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(world_name);
-    //full_path += "Bennyworld.db";
+    // full_path += "Bennyworld.db";
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
@@ -540,24 +543,24 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
     sql.append("'" + email + "', ");
     sql.append("'" + std::to_string(created) + "');");
 
-    cout << "I insert world data, dir: " << dir << " and sql-string: " << sql << endl;
+    cout << "I insert world data (SQLite), dir: " << dir << " and sql-string: " << sql << endl;
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
     if (exit != SQLITE_OK)
     {
-        cerr << "Error in insert to world table" << endl;
+        cerr << "Error in insert to world table (SQLite)" << endl;
         sqlite3_free(messageerror);
     }
     else
     {
-        cout << "World table updated successfully" << endl;
+        cout << "World table updated successfully (SQLite)" << endl;
     }
     sqlite3_close(DB);
 
     /*
-    *TESTING NEW mySQL
-    */
+     *TESTING NEW mySQL
+     */
 
     // MYSQL_RES *result;
     // MYSQL_ROW row;
@@ -576,7 +579,6 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
     //     // return tables;
     // }
 
-    
     // mysql_query(connection, sql.c_str());
 
     // state = mysql_query(connection, "SELECT * FROM WORLD_TABLE");
@@ -600,47 +602,47 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
 }
 
 int insertCompanyTimeData(std::vector<double> myData, string city_name, string company_name)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
     string sql = "INSERT INTO COMPANY_TABLE (TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT, WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN, PRODUCTION, EMPLOYEES, ITEM_EFFICIENCY, CAP_VS_EFF_SPLIT) VALUES(";
 
-    sql.append(std::to_string((int)round(myData[0])) + ", ");  //time
-    sql.append("'" + company_name + "', ");                    //name
-    sql.append(std::to_string((int)round(myData[1])) + ", ");  //capital
-    sql.append(std::to_string((int)round(myData[2])) + ", ");  //stock
-    sql.append(std::to_string((int)round(myData[3])) + ", ");  //capacity
-    sql.append(std::to_string((int)round(myData[4])) + ", ");  //debts
-    sql.append(std::to_string(myData[5]) + ", ");              //PC_SKILL
-    sql.append(std::to_string(myData[6]) + ", ");              //pc_mot
-    sql.append(std::to_string(myData[7]) + ", ");              //wage_const
-    sql.append(std::to_string(myData[8]) + ", ");              //wage_ch
-    sql.append(std::to_string((int)round(myData[9])) + ", ");  //invest
-    sql.append(std::to_string(myData[10]) + ", ");             //pbr
-    sql.append(std::to_string(myData[11]) + ", ");             //decay
-    sql.append(std::to_string(myData[12]) + ", ");             //prod_param
-    sql.append(std::to_string((int)round(myData[13])) + ", "); //prod_fcn
-    sql.append(std::to_string((int)round(myData[14])) + ", "); //Production
-    sql.append(std::to_string((int)round(myData[15])) + ", "); //employees
-    sql.append(std::to_string(myData[16]) + ", ");             //item efficiency
-    sql.append(std::to_string(myData[17]) + ");");             //cap eff splie
+    sql.append(std::to_string((int)round(myData[0])) + ", ");  // time
+    sql.append("'" + company_name + "', ");                    // name
+    sql.append(std::to_string((int)round(myData[1])) + ", ");  // capital
+    sql.append(std::to_string((int)round(myData[2])) + ", ");  // stock
+    sql.append(std::to_string((int)round(myData[3])) + ", ");  // capacity
+    sql.append(std::to_string((int)round(myData[4])) + ", ");  // debts
+    sql.append(std::to_string(myData[5]) + ", ");              // PC_SKILL
+    sql.append(std::to_string(myData[6]) + ", ");              // pc_mot
+    sql.append(std::to_string(myData[7]) + ", ");              // wage_const
+    sql.append(std::to_string(myData[8]) + ", ");              // wage_ch
+    sql.append(std::to_string((int)round(myData[9])) + ", ");  // invest
+    sql.append(std::to_string(myData[10]) + ", ");             // pbr
+    sql.append(std::to_string(myData[11]) + ", ");             // decay
+    sql.append(std::to_string(myData[12]) + ", ");             // prod_param
+    sql.append(std::to_string((int)round(myData[13])) + ", "); // prod_fcn
+    sql.append(std::to_string((int)round(myData[14])) + ", "); // Production
+    sql.append(std::to_string((int)round(myData[15])) + ", "); // employees
+    sql.append(std::to_string(myData[16]) + ", ");             // item efficiency
+    sql.append(std::to_string(myData[17]) + ");");             // cap eff splie
 
-    //sql.append(std::to_string(myData[11])  + ");");
+    // sql.append(std::to_string(myData[11])  + ");");
 
-    //cout << sql << endl;
+    // cout << sql << endl;
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
     if (exit != SQLITE_OK)
     {
-        cerr << "Error insert company time data" << endl;
+        cerr << "Error insert company time data: " << messageerror << endl;
         sqlite3_free(messageerror);
     }
     else
@@ -652,13 +654,13 @@ int insertCompanyTimeData(std::vector<double> myData, string city_name, string c
 }
 
 int insertCompanyDatapoint(string parameter, int value, int timestamp, string city_name, string company_name)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
@@ -683,23 +685,23 @@ int insertCompanyDatapoint(string parameter, int value, int timestamp, string ci
 }
 
 int insertHighScore(std::vector<double> myData, string city_name, string world_name, string timenow)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(world_name);
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
     string sql = "INSERT INTO HIGH_SCORE (COUNTRY, GROWTH, PALMA, ENV_IMP, TIMENOW) VALUES(";
 
-    sql.append("'" + city_name + "', ");          //name
-    sql.append(std::to_string(myData[0]) + ", "); //GROWTH
-    sql.append(std::to_string(myData[1]) + ", "); //PALMA
-    sql.append(std::to_string(myData[2]) + ", "); //ENV_IMP
-    sql.append("'" + timenow + "');");            //ENV_IMP
+    sql.append("'" + city_name + "', ");          // name
+    sql.append(std::to_string(myData[0]) + ", "); // GROWTH
+    sql.append(std::to_string(myData[1]) + ", "); // PALMA
+    sql.append(std::to_string(myData[2]) + ", "); // ENV_IMP
+    sql.append("'" + timenow + "');");            // ENV_IMP
 
     cout << sql << endl;
 
@@ -719,39 +721,42 @@ int insertHighScore(std::vector<double> myData, string city_name, string world_n
 }
 
 // PostgreSQL version of insertHighScore for centralized high scores
-int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow) {
+int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow)
+{
     PostgreSQLManager pgManager;
-    
-    if (!pgManager.connect()) {
+
+    if (!pgManager.connect())
+    {
         cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
         return -1;
     }
-    
+
     // Since user_id and simulation_id are UUIDs with foreign key constraints,
     // we'll insert with NULL for now (anonymous user)
     string sql = "INSERT INTO high_scores (country, growth_rate, palma_ratio, environmental_impact, achieved_at) "
                  "VALUES ($1, $2, $3, $4, $5)";
-    
-    if (!pgManager.prepareStatement("insert_high_score", sql)) {
+
+    if (!pgManager.prepareStatement("insert_high_score", sql))
+    {
         cerr << "Failed to prepare high score statement" << endl;
         return -1;
     }
-    
+
     vector<string> params = {
         city_name,
         to_string(myData[0]), // growth
         to_string(myData[1]), // palma
         to_string(myData[2]), // environmental impact
-        timenow.empty() ? "NOW()" : timenow
-    };
-    
-    PGresult* result = pgManager.executePrepared("insert_high_score", params);
-    
-    if (!result) {
+        timenow.empty() ? "NOW()" : timenow};
+
+    PGresult *result = pgManager.executePrepared("insert_high_score", params);
+
+    if (!result)
+    {
         cerr << "High score insert failed" << endl;
         return -1;
     }
-    
+
     cout << "High score inserted successfully for " << city_name << endl;
     cout << "Growth: " << myData[0] << ", Palma: " << myData[1] << ", Environmental: " << myData[2] << endl;
     PQclear(result);
@@ -759,93 +764,189 @@ int insertHighScorePG(std::vector<double> myData, string city_name, string user_
 }
 
 // Get high scores from PostgreSQL
-vector<vector<string>> getHighScoresPG(string country_filter = "", int limit = 10) {
+vector<vector<string>> getHighScoresPG(string country_filter = "", int limit = 10)
+{
     vector<vector<string>> results;
     PostgreSQLManager pgManager;
-    
-    if (!pgManager.connect()) {
+
+    if (!pgManager.connect())
+    {
         cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
         return results;
     }
-    
+
     string sql = "SELECT country, growth_rate, palma_ratio, environmental_impact, achieved_at "
                  "FROM high_scores ";
-    
-    if (!country_filter.empty()) {
+
+    if (!country_filter.empty())
+    {
         sql += "WHERE country = $1 ";
     }
-    
+
     sql += "ORDER BY growth_rate DESC, environmental_impact ASC LIMIT " + to_string(limit);
-    
-    PGresult* result;
-    if (!country_filter.empty()) {
-        if (!pgManager.prepareStatement("get_high_scores", sql)) {
+
+    PGresult *result;
+    if (!country_filter.empty())
+    {
+        if (!pgManager.prepareStatement("get_high_scores", sql))
+        {
             cerr << "Failed to prepare high scores query" << endl;
             return results;
         }
         vector<string> params = {country_filter};
         result = pgManager.executePrepared("get_high_scores", params);
-    } else {
+    }
+    else
+    {
         result = pgManager.executeQuery(sql);
     }
-    
-    if (result) {
+
+    if (result)
+    {
         int rows = PQntuples(result);
         cout << "Found " << rows << " high score records" << endl;
-        
-        for (int i = 0; i < rows; i++) {
+
+        for (int i = 0; i < rows; i++)
+        {
             vector<string> row;
-            for (int j = 0; j < PQnfields(result); j++) {
+            for (int j = 0; j < PQnfields(result); j++)
+            {
                 row.push_back(string(PQgetvalue(result, i, j)));
             }
             results.push_back(row);
         }
         PQclear(result);
     }
-    
+
+    return results;
+}
+
+// PostgreSQL version of insertWorldData for centralized world table
+int insertWorldDataPG(string world_name, string city_name, int consumers, string email, int created)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+
+    string sql = "INSERT INTO world_table (city_name, no_consumers, email, created) "
+                 "VALUES ($1, $2, $3, $4) "
+                 "ON CONFLICT (city_name) DO UPDATE SET "
+                 "no_consumers = EXCLUDED.no_consumers, "
+                 "email = EXCLUDED.email, "
+                 "created = EXCLUDED.created";
+
+    if (!pgManager.prepareStatement("insert_world_data", sql))
+    {
+        cerr << "Failed to prepare world data insert statement" << endl;
+        return -1;
+    }
+
+    vector<string> params = {
+        city_name,
+        to_string(consumers),
+        email,
+        to_string(created)};
+
+    PGresult *result = pgManager.executePrepared("insert_world_data", params);
+
+    if (!result)
+    {
+        cerr << "Failed to insert world data: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+
+    cout << "I insert world data (PostgreSQL), city: " << city_name
+         << ", consumers: " << consumers << ", email: " << email << endl;
+
+    PQclear(result);
+    return 0;
+}
+
+// PostgreSQL version of getWorldTable - reads world_table data
+Records getWorldTablePG(string world_name)
+{
+    Records results;
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
+        return results;
+    }
+
+    // Query compatible with the view structure: id, city_name, no_consumers, email, created
+    string sql = "SELECT id, city_name, no_consumers, email, created "
+                 "FROM world_table "
+                 "ORDER BY id";
+
+    PGresult *result = pgManager.executeQuery(sql);
+
+    if (result)
+    {
+        int rows = PQntuples(result);
+        cout << "Found " << rows << " world table records (PostgreSQL)" << endl;
+
+        for (int i = 0; i < rows; i++)
+        {
+            vector<string> row;
+            // Add all 5 columns to match SQLite format
+            for (int j = 0; j < 5; j++)
+            {
+                row.push_back(string(PQgetvalue(result, i, j)));
+            }
+            results.push_back(row);
+        }
+        PQclear(result);
+    }
+
     return results;
 }
 
 int insertConsumerData(std::vector<double> myData, string country, string name, string employer)
-{ //std::vector<int> money
+{ // std::vector<int> money
 
     string full_path = get_city_sql_string(country);
     const char *dir = full_path.c_str();
 
     sqlite3 *DB;
-    char *messageerror;
+    char *messageerror = new char[150];
 
     int exit = sqlite3_open(dir, &DB);
 
     string sql = "INSERT INTO CONSUMER_TABLE (NAME, EMPLOYER, ITEMS, CAPITAL, DEPOSITS, DEBTS, SKILL, MOT, SPENDWILL, SAVEWILL, BORROWWILL, INCOME, DIVIDENDS, TRANSFERS) VALUES(";
 
-    sql.append("'" + name + "', ");                           //name
-    sql.append("'" + employer + "', ");                       //employer
-    sql.append(std::to_string((int)round(myData[0])) + ", "); //items  (int)round(myData[1]))
-    sql.append(std::to_string(myData[1]) + ", ");             //capital
-    sql.append(std::to_string(myData[2]) + ", ");             //loans
-    sql.append(std::to_string(myData[3]) + ", ");             //debts
-    sql.append(std::to_string(myData[4]) + ", ");             //skill
-    sql.append(std::to_string(myData[5]) + ", ");             //mot
-    sql.append(std::to_string(myData[6]) + ", ");             //spendwill
-    sql.append(std::to_string(myData[7]) + ", ");             //savewill
-    sql.append(std::to_string(myData[8]) + ", ");             //borrowwill
-    sql.append(std::to_string(myData[9]) + ", ");             //INCOME
-    sql.append(std::to_string(myData[10]) + ", ");            //dividends
-    sql.append(std::to_string(myData[11]) + ");");            //transfers
+    sql.append("'" + name + "', ");                           // name
+    sql.append("'" + employer + "', ");                       // employer
+    sql.append(std::to_string((int)round(myData[0])) + ", "); // items  (int)round(myData[1]))
+    sql.append(std::to_string(myData[1]) + ", ");             // capital
+    sql.append(std::to_string(myData[2]) + ", ");             // loans
+    sql.append(std::to_string(myData[3]) + ", ");             // debts
+    sql.append(std::to_string(myData[4]) + ", ");             // skill
+    sql.append(std::to_string(myData[5]) + ", ");             // mot
+    sql.append(std::to_string(myData[6]) + ", ");             // spendwill
+    sql.append(std::to_string(myData[7]) + ", ");             // savewill
+    sql.append(std::to_string(myData[8]) + ", ");             // borrowwill
+    sql.append(std::to_string(myData[9]) + ", ");             // INCOME
+    sql.append(std::to_string(myData[10]) + ", ");            // dividends
+    sql.append(std::to_string(myData[11]) + ");");            // transfers
 
-    //cout << sql << endl;
+    // cout << sql << endl;
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
     if (exit != SQLITE_OK)
     {
-        cerr << "Error insert CONSUMER_TABLE" << endl;
+        cerr << "Error insert CONSUMER_TABLE: " << messageerror << endl;
+        cerr << "SQL: " << sql << endl;
         sqlite3_free(messageerror);
     }
     else
     {
-        //cout << "CONSUMER_TABLE updated successfully" << endl;
+        // cout << "CONSUMER_TABLE updated successfully" << endl;
     }
     sqlite3_close(DB);
     return 0;
@@ -857,11 +958,11 @@ double getDatabaseParameter(string parameter, string city_name)
     using Record = vector<string>;
     using Records = vector<Record>;
 
-    //cout << "i SQLF getdatabaseparam1" << endl;
+    // cout << "i SQLF getdatabaseparam1" << endl;
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
-    //cout << "i SQLF getdatabaseparam2" << endl;
-    //cout << city_name << endl;
+    // cout << "i SQLF getdatabaseparam2" << endl;
+    // cout << city_name << endl;
 
     double myParameterValue = 0;
 
@@ -869,7 +970,7 @@ double getDatabaseParameter(string parameter, string city_name)
     stmt.append(parameter);
 
     Records records = select_stmt(stmt, dir);
-    //cout << "i SQLF getdatabaseparam3" << parameter << endl;
+    // cout << "i SQLF getdatabaseparam3" << parameter << endl;
     try
     {
         if (not(records.empty()))
@@ -887,35 +988,41 @@ double getDatabaseParameter(string parameter, string city_name)
         cerr << e.what();
     }
 
-    //cout << "i SQLF getdatabaseparam4" << endl;
+    // cout << "i SQLF getdatabaseparam4" << endl;
     return myParameterValue;
 }
 
 // Test PostgreSQL connection
-int testPostgreSQLConnection() {
+int testPostgreSQLConnection()
+{
     cout << "Testing PostgreSQL connection..." << endl;
-    
+
     PostgreSQLManager pgManager;
-    
-    if (!pgManager.connect()) {
+
+    if (!pgManager.connect())
+    {
         cerr << "Failed to connect to PostgreSQL: " << pgManager.getLastError() << endl;
         return -1;
     }
-    
+
     cout << "Successfully connected to PostgreSQL!" << endl;
-    
+
     // Test a simple query
-    PGresult* result = pgManager.executeQuery("SELECT version()");
-    
-    if (result) {
+    PGresult *result = pgManager.executeQuery("SELECT version()");
+
+    if (result)
+    {
         int rows = PQntuples(result);
-        if (rows > 0) {
+        if (rows > 0)
+        {
             cout << "PostgreSQL version: " << PQgetvalue(result, 0, 0) << endl;
         }
         PQclear(result);
         cout << "Connection test successful!" << endl;
         return 0;
-    } else {
+    }
+    else
+    {
         cerr << "Failed to execute test query" << endl;
         return -1;
     }
@@ -1020,9 +1127,9 @@ static int deleteWorldData(const char *s)
 
     sqlite3_close(DB);
 
-      /*
-    *TESTING NEW mySQL
-    */
+    /*
+     *TESTING NEW mySQL
+     */
 
     // MYSQL *connection, mysql;
 
@@ -1041,11 +1148,10 @@ static int deleteWorldData(const char *s)
 
     // mysql_close(connection);
 
-
     return 0;
 }
 
-//Creating a Database if not exist
+// Creating a Database if not exist
 static int createDB(const char *s)
 {
 
@@ -1075,9 +1181,7 @@ static int createDB(const char *s)
     return 0;
 }
 
-
-
-//Creating the table for parameters
+// Creating the table for parameters
 static int createParameterTable(const char *s)
 {
 
@@ -1117,16 +1221,15 @@ static int createParameterTable(const char *s)
     return 0;
 }
 
-//Creating the table for parameters
+// Creating the table for parameters
 static int createSQLParameterTable(string country)
 {
-
 
     string sql = "CREATE TABLE IF NOT EXISTS PARAMETERS_Bennyland("
                  "ID INT PRIMARY KEY AUTO_INCREMENT, "
                  "PARAMETER  TEXT    NOT NULL, "
                  "VALUE      DECIMAL     NOT NULL );";
-    cout << sql <<  endl;
+    cout << sql << endl;
 
     // MYSQL_RES *result;
     // MYSQL_ROW row;
@@ -1141,7 +1244,6 @@ static int createSQLParameterTable(string country)
     //     std::cout << mysql_error(&mysql) << std::endl;
     // }
 
-    
     // mysql_query(connection, sql.c_str());
 
     // cout << "Parameter table created" << endl;
@@ -1154,7 +1256,7 @@ static int createSQLParameterTable(string country)
     return 0;
 }
 
-//Creating the table for high-score
+// Creating the table for high-score
 static int createHighScoreTable(const char *s)
 {
 
@@ -1195,7 +1297,7 @@ static int createHighScoreTable(const char *s)
     return 0;
 }
 
-//Creating the table for the city-data
+// Creating the table for the city-data
 static int createDataTable(const char *s)
 {
 
@@ -1244,7 +1346,7 @@ static int createDataTable(const char *s)
     return 0;
 }
 
-//Creating the table for the city-data
+// Creating the table for the city-data
 static int createMoneyTable(const char *s)
 {
 
@@ -1294,7 +1396,7 @@ static int createMoneyTable(const char *s)
     return 0;
 }
 
-//Creating the table for companies
+// Creating the table for companies
 static int createCompanyTable(const char *s)
 {
 
@@ -1399,7 +1501,7 @@ static int createConsumerTable(const char *s)
     return 0;
 }
 
-//Creating the world-table for cities/countries
+// Creating the world-table for cities/countries
 static int createWorldTable(const char *s)
 {
 
@@ -1465,11 +1567,11 @@ const char *get_sql_string()
     }
     else
     {
-        //sql_string = "/var/app/current/myDB/ekosimDB.db";
+        // sql_string = "/var/app/current/myDB/ekosimDB.db";
         sql_string = "/home/ecosim/myDB/ekosimDB.db";
     }
 
-    //cout << "I SQL Functions get sql string " << sql_string << typeid(sql_string).name() << endl;
+    // cout << "I SQL Functions get sql string " << sql_string << typeid(sql_string).name() << endl;
 
     return sql_string;
 }
@@ -1502,7 +1604,7 @@ string get_city_sql_string(string city_name)
     else
     {
         full_path = "/var/app/current/myDB/";
-        //full_path = "/home/ec2-user/ekosimProject/myDB/";
+        // full_path = "/home/ec2-user/ekosimProject/myDB/";
     }
 
     full_path += city_name;
@@ -1510,7 +1612,7 @@ string get_city_sql_string(string city_name)
 
     const char *sql_string = full_path.c_str();
 
-    //cout << "I SQL Functions get city sql string " << sql_string << " and as string: " << full_path << endl;
+    // cout << "I SQL Functions get city sql string " << sql_string << " and as string: " << full_path << endl;
 
     return full_path;
 }
