@@ -48,21 +48,21 @@ using namespace std;
 // }
 
 Company::Company(string name, Market *market, Market *global_market, Clock *clock) : name_(name),
-                                                              capital_(10000),
-                                                              stock_(0),
-                                                              invest_(0.6),
-                                                              production_function_(1),
-                                                              prod_const_skill_(60),
-                                                              prod_const_motivation_(40),
-                                                              wage_const_(0.1),
-                                                              wage_change_limit_(0.1),
-                                                              market_(market),
-                                                              global_market_(global_market),
-                                                              capacity_(3000),
-                                                              clock_(clock),
-                                                              enable_intercity_trading_(false),
-                                                              employees_(new Consumer_list("Employees")), 
-                                                            shareholders_(new Consumer_list("Shareholders") )
+                                                                                     capital_(10000),
+                                                                                     stock_(0),
+                                                                                     invest_(0.6),
+                                                                                     production_function_(1),
+                                                                                     prod_const_skill_(60),
+                                                                                     prod_const_motivation_(40),
+                                                                                     wage_const_(0.1),
+                                                                                     wage_change_limit_(0.1),
+                                                                                     market_(market),
+                                                                                     global_market_(global_market),
+                                                                                     capacity_(3000),
+                                                                                     clock_(clock),
+                                                                                     enable_intercity_trading_(false),
+                                                                                     employees_(new Consumer_list("Employees")),
+                                                                                     shareholders_(new Consumer_list("Shareholders"))
 {
 }
 
@@ -128,7 +128,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                                                clock_(clock),
                                                                                                                                                                                                                                                enable_intercity_trading_(false),
                                                                                                                                                                                                                                                employees_(new Consumer_list("Employees")),
-                                                                                                                                                                                                                                               shareholders_(new Consumer_list("Shareholders") )
+                                                                                                                                                                                                                                               shareholders_(new Consumer_list("Shareholders"))
 {
 }
 
@@ -384,7 +384,7 @@ double Company::get_items_for_production()
     return items;
 }
 
-double Company::get_desired_loans()
+double Company::get_desired_loans(double fac_rate, double cap_param, double cap_rate, double item_eff_rate)
 {
 
     double desired_investment = 0;
@@ -398,7 +398,7 @@ double Company::get_desired_loans()
     //  double investment_item_vs_factor_split = 0.5;
 
     capital_to_invest = capital_ * pbr_;
-    desired_investment = get_desired_investment();
+    desired_investment = get_desired_investment(fac_rate, cap_param, cap_rate, item_eff_rate);
     price_out = get_active_market()->get_price_out();
 
     desired_loans = fmax(0, desired_investment * price_out - capital_to_invest);
@@ -410,7 +410,7 @@ double Company::get_desired_loans()
     return desired_loans;
 }
 
-double Company::get_expected_net_flow_to_bank()
+double Company::get_expected_net_flow_to_bank(double fac_rate, double cap_param, double cap_rate, double item_eff_rate)
 {
 
     double loans_from_bank = 0;
@@ -433,7 +433,7 @@ double Company::get_expected_net_flow_to_bank()
     }
 
     interest_to_bank = interest * debts_;
-    loans_from_bank = get_desired_loans();
+    loans_from_bank = get_desired_loans(fac_rate, cap_param, cap_rate, item_eff_rate);
     sum = repayment_to_bank + interest_to_bank - loans_from_bank;
     // sum = interest_to_bank;
 
@@ -453,9 +453,12 @@ Market *Company::get_active_market()
 
     if (enable_intercity_trading_)
     {
-        if (global_market_ != nullptr) {
+        if (global_market_ != nullptr)
+        {
             return global_market_;
-        } else {
+        }
+        else
+        {
             // This should never happen in normal operation since global_market_ is initialized
             cout << "ERROR: Global market is null in company but intercity trading is enabled!" << endl;
             return market_;
@@ -652,7 +655,7 @@ void Company::add_employee(Consumer *consumer)
 
 void Company::add_shareholder(Consumer *consumer)
 {
-        shareholders_->add_first(consumer);
+    shareholders_->add_first(consumer);
 }
 
 void Company::remove_employee(Consumer *consumer)
@@ -664,7 +667,8 @@ void Company::remove_employee(Consumer *consumer)
     employees_->remove_consumer(consumer, capacity_);
 }
 
-void Company::add_multiple_shareholders(Element_consumer * new_shareholders) {
+void Company::add_multiple_shareholders(Element_consumer *new_shareholders)
+{
 
     shareholders_->add_multiple_last(new_shareholders);
 }
@@ -696,14 +700,16 @@ bool Company::update_employees(Consumer *opt)
         if (contribution_adding(opt) > 0.01)
         {
             try
-            {   if(get_average_wage() <= 0 and clock_ -> get_time() > 10 ) {
-                    cout << "Company " << name_ << " tried to hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:"<< get_average_wage() << endl;
+            {
+                if (get_average_wage() <= 0 and clock_->get_time() > 10)
+                {
+                    cout << "Company " << name_ << " tried to hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:" << get_average_wage() << endl;
                 }
-                else {
+                else
+                {
                     // cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:"<< get_average_wage() << endl;
                     add_employee(opt);
                 }
-                
             }
             catch (std::exception a)
             {
@@ -764,14 +770,6 @@ void Company::update_from_database(string city_name)
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(city_name);
-    // char dir[100];
-    // dir = full_path.c_str();
-
-    // cout << "I company update_from_databbase1 " << endl;
-    const char *dir = full_path.c_str();
-    // cout << "I company update_from_databbase2 " << endl;
-
     double wage_const = 0;
     double wage_change_limit = 0;
     double pbr = 0;
@@ -780,30 +778,53 @@ void Company::update_from_database(string city_name)
     int production_function = 0;
     double investment_capacity_vs_efficiency_split = 0;
 
-    // For loop for testing segmentation fault
-    // for(int i = 0; i<100; i++){
     production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
 
-    // const char* stmt = "SELECT * FROM PARAMETERS";
-    string stmt = "SELECT * FROM COMPANY_TABLE WHERE NAME = ";
-    stmt.append("'");
+    // Use PostgreSQL version - query company_data table
+    string stmt = "SELECT * FROM company_data WHERE company_name = '";
     stmt.append(name_);
-    stmt.append("'");
-    stmt.append(" AND TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM COMPANY_TABLE)");
-    // cout << "I company update_from_databbase3 " << endl;
-    Records records = select_stmt(stmt, dir);
-    // cout << "I company update_from_databbase4 " << endl;
+    stmt.append("' AND city_name = '");
+    stmt.append(city_name);
+    stmt.append("' AND time_stamp = (SELECT MAX(time_stamp) FROM company_data WHERE city_name = '");
+    stmt.append(city_name);
+    stmt.append("' AND company_name = '");
+    stmt.append(name_);
+    stmt.append("')");
 
-    if (not(records.empty()))
+    Records records = select_stmt_pg(stmt, "");
+
+    if (not(records.empty()) && not(records[0].empty()))
     {
-        wage_const = std::stod(records[0][9]);
-        wage_change_limit = std::stod(records[0][10]);
-        pbr = std::stod(records[0][12]);
-        decay = std::stod(records[0][13]);
-        // production_parameter = std::stod(records[0][13]);
-        production_function = std::stoi(records[0][15]);
+        // PostgreSQL company_data columns (0-indexed):
+        // 0:id, 1:city_name, 2:company_name, 3:time_stamp, 4:capital, 5:stock, 6:capacity,
+        // 7:debts, 8:pcskill, 9:pcmot, 10:wage_const, 11:wage_ch, 12:invest, 13:pbr,
+        // 14:decay, 15:prod_parm, 16:prod_fcn, 17:production, 18:employees,
+        // 19:item_efficiency, 20:cap_vs_eff_split, 21:created_at, 22:updated_at
 
-        investment_capacity_vs_efficiency_split = std::stod(records[0][19]);
+        try
+        {
+            wage_const = std::stod(records[0][10]);
+            wage_change_limit = std::stod(records[0][11]);
+            pbr = std::stod(records[0][13]);
+            decay = std::stod(records[0][14]);
+            production_function = std::stoi(records[0][16]);
+            investment_capacity_vs_efficiency_split = std::stod(records[0][20]);
+
+            cout << "Company " << name_ << " updated from database in " << city_name << ":" << endl;
+            cout << "  wage_const: " << wage_const << " (was: " << wage_const_ << ")" << endl;
+            cout << "  wage_change_limit: " << wage_change_limit << " (was: " << wage_change_limit_ << ")" << endl;
+            cout << "  pbr: " << pbr << " (was: " << pbr_ << ")" << endl;
+            cout << "  decay: " << decay << " (was: " << decay_ << ")" << endl;
+            cout << "  production_parameter: " << production_parameter << " (was: " << production_parameter_ << ")" << endl;
+            cout << "  production_function: " << production_function << " (was: " << production_function_ << ")" << endl;
+            cout << "  investment_capacity_vs_efficiency_split: " << investment_capacity_vs_efficiency_split << " (was: " << investment_capacity_vs_efficiency_split_ << ")" << endl;
+        }
+        catch (const std::exception &e)
+        {
+            cout << "ERROR in Company::update_from_database for " << name_ << " in " << city_name << ": " << e.what() << endl;
+            cout << "Record size: " << records[0].size() << endl;
+            return;
+        }
 
         // cout << "I company update_from_databbase4 " << endl;
         // }
@@ -822,6 +843,10 @@ void Company::update_from_database(string city_name)
         production_parameter_ = production_parameter;
         production_function_ = production_function;
         investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
+    }
+    else
+    {
+        cout << "No company data found in database for company " << name_ << " in " << city_name << endl;
     }
     // cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
@@ -985,12 +1010,11 @@ double Company::produce(string city_name)
     double price_in = 0;
     double total_wages = 0;
 
-
     price_out = get_active_market()->get_price_out();
     price_in = get_active_market()->get_price_in();
     total_wages = get_total_wages();
-    
-    items_needed =  buy_items_for_production();
+
+    items_needed = buy_items_for_production();
     production = get_production();
     current_production_items_ = production;
     stock_ += production;
@@ -1022,7 +1046,7 @@ void Company::sell_to_market()
         cout << "I comp sell to mkt, no items sold, price: " << price << " stock: " << stock_ << endl;
     }
 
-    cout << name_  << " i comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
+    cout << name_ << " i comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
 
     change_capital(actual_cost);
     change_stock(-actual_items);
@@ -1030,7 +1054,7 @@ void Company::sell_to_market()
     log_transaction_full(name_, "market", actual_cost, "Inventory", clock_->get_time());
 }
 
-double Company::invest()
+double Company::invest(double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1, double ItemEfficiencyRate)
 {
 
     int max_items = 0;
@@ -1053,26 +1077,14 @@ double Company::invest()
     double item_efficiency_change = 0;
     bool increase = true;
 
-    // Database parameters
-    double FacIncreaseRate_1 = 0.002;
-    double CapIncreaseParam_1 = 8000;
-    double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.001; // Should be updated from database
-
     // Parameters settging investment split between capacity and efficiency
     //  double investment_capacity_vs_efficiency_split = 0.5;
     //  double investment_item_vs_factor_split = 0.5;
 
-    // FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
-    // CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
-    // CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
-
-    // Getting priec and max items in market
     price_out = get_active_market()->get_price_out();
-    max_items = get_active_market()->get_items();
 
     // Getting the desired investment for the company (after max leverage) and available items
-    desired_items = fmax(0, get_desired_investment());
+    desired_items = fmax(0, get_desired_investment(FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate));
 
     // Calculating cost of the desired investment and available capital
     cost = desired_items * price_out;
@@ -1096,10 +1108,11 @@ double Company::invest()
     own_capital_to_invest = cost - loans;
 
     // Paying market for goods
+    cout << "Cost: " << cost << " available capital: " << available_capital << " PBR: " << pbr_ << " Own cap to invest: " << own_capital_to_invest << " loans: " << loans << " total cost: " << cost << " desired items: " << desired_items << " for " << name_ << endl;
     actual_items = get_active_market()->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
 
-    // cout << name_ << " i cmp inv, desired items: " << desired_items << " Act. ites bought: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
+    cout << name_ << " i cmp inv, desired items: " << desired_items << " Act. ites bought: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
 
     if (actual_amount < available_capital)
     {
@@ -1122,11 +1135,6 @@ double Company::invest()
 
     log_transaction_full(name_, "Bank", loans, "Loan", clock_->get_time());
     log_transaction_full(name_, "Market", own_capital_to_invest + loans, "Investment", clock_->get_time());
-
-    FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
-    CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
-    CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
-    ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
     // Increasing capacity and efficiency
 
@@ -1158,7 +1166,7 @@ double Company::invest()
     return cost;
 }
 
-int Company::get_desired_investment()
+int Company::get_desired_investment(double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1, double ItemEfficiencyRate)
 {
     // Investments in different type of things
     int invested_items_tot = 0;
@@ -1175,20 +1183,9 @@ int Company::get_desired_investment()
     double discounted_cashflows = 0;
     double borrow = 0;
 
-    // Database parameters
-    double FacIncreaseRate_1 = 0.002;
-    double CapIncreaseParam_1 = 8000;
-    double CapIncreaseRate_1 = 0.0001;
-    double ItemEfficiencyRate = 0.000001; // Should be updated from database
-
     // Parameters settging investment split between capacity and efficiency
     //  double investment_capacity_vs_efficiency_split = 0.5;
     //  double investment_item_vs_factor_split = 0.5;
-
-    FacIncreaseRate_1 = getDatabaseParameter("'FacIncreaseRate_1'", city_name_);
-    CapIncreaseParam_1 = getDatabaseParameter("'CapIncreaseParam_1'", city_name_);
-    CapIncreaseRate_1 = getDatabaseParameter("'CapIncreaseRate_1'", city_name_);
-    ItemEfficiencyRate = getDatabaseParameter("'ItemEfficiencyRate'", city_name_);
 
     // Items ivested and increase
     item_increase = 10000;
@@ -1199,7 +1196,7 @@ int Company::get_desired_investment()
 
     // cout << name_ << " capacity vs eff eplit: " << investment_capacity_vs_efficiency_split_ << " item vs factor split: " << investment_item_vs_factor_split_ << endl;
 
-    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_ )
+    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
     {
         // First split of invested items between capacity and efficiency
         invested_items_capacity = invested_items_tot * investment_capacity_vs_efficiency_split_;
@@ -1220,7 +1217,7 @@ int Company::get_desired_investment()
         }
 
         // calculating NPV of investment
-        //Printing all the input into the function for debugging
+        // Printing all the input into the function for debugging
         // if(name_ == "bempa_AB"){
         //     cout << "Calculating NPV for: " << name_ << endl;
         //     cout << " -invested_items_capacity: " << invested_items_capacity << endl;
@@ -1243,25 +1240,25 @@ int Company::get_desired_investment()
 
         // cout << name_ << " i comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
 
-        
+        // Checking which condition that breaks the while loop
+        if (NPV < 0)
+        {
+            cout << left << setw(25) << name_ << " | BREAK: NPV < 0       | NPV: " << setw(12) << NPV << " | Items: " << setw(8) << invested_items_tot << endl;
+        }
+        else if (NPV < NPV_old)
+        {
+            cout << left << setw(25) << name_ << " | BREAK: NPV declined  | NPV: " << setw(12) << NPV << " | Old: " << setw(12) << NPV_old << " | Items: " << setw(8) << invested_items_tot << endl;
+        }
+        if ((debts_ + borrow) / capital_ - 1 >= max_leverage_)
+        {
+            cout << left << setw(25) << name_ << " | BREAK: Max leverage  | Ratio: " << setw(10) << (debts_ + borrow) / capital_ - 1 << " | Max: " << setw(10) << max_leverage_ << " | Items: " << setw(8) << invested_items_tot << endl;
+        }
 
-    //Checking which condition that breaks the while loop
-    if(NPV < 0){
-        cout << left << setw(25) << name_ << " | BREAK: NPV < 0       | NPV: " << setw(12) << NPV << " | Items: " << setw(8) << invested_items_tot << endl;
+        invested_items_tot += item_increase;
+        // if(invested_items_tot >= max_items_in_market){
+        //     cout << left << setw(25) << name_ << " | BREAK: Market limit  | Want: " << setw(8) << invested_items_tot << " | Available: " << setw(8) << max_items_in_market << endl;
+        // }
     }
-    else if(NPV < NPV_old){
-        cout << left << setw(25) << name_ << " | BREAK: NPV declined  | NPV: " << setw(12) << NPV << " | Old: " << setw(12) << NPV_old << " | Items: " << setw(8) << invested_items_tot << endl;
-    }
-    if((debts_ + borrow) / capital_ - 1 >= max_leverage_){
-        cout << left << setw(25) << name_ << " | BREAK: Max leverage  | Ratio: " << setw(10) << (debts_ + borrow) / capital_ - 1 << " | Max: " << setw(10) << max_leverage_ << " | Items: " << setw(8) << invested_items_tot << endl;
-    }
-
-    invested_items_tot += item_increase;
-    // if(invested_items_tot >= max_items_in_market){
-    //     cout << left << setw(25) << name_ << " | BREAK: Market limit  | Want: " << setw(8) << invested_items_tot << " | Available: " << setw(8) << max_items_in_market << endl;
-    // }
-    }
-     
 
     // Adjusting for one extra loop increment after the last valid NPV calculation
     invested_items_tot = max(0.0, invested_items_tot - item_increase);
@@ -1438,7 +1435,6 @@ double Company::get_total_wages()
     if (size)
     {
         production = get_production();
-        
     }
 
     list<double>::iterator theIterator;
@@ -1491,7 +1487,7 @@ double Company::get_estimated_wages(double production)
     return wages;
 }
 
-double Company::pay_employees_individual(double income_tax)
+double Company::pay_employees_individual(double income_tax, int pay_wages_in_cash)
 {
     double size = 0;
     double wage_tot = 0;
@@ -1500,15 +1496,12 @@ double Company::pay_employees_individual(double income_tax)
     double income_tax_sum = 0;
     double skill_sum = 0;
     double motivation_sum = 0;
-    int pay_wages_in_cash = 1;
 
     price = get_active_market()->get_price_in();
     size = employees_->get_size();
 
     skill_sum = employees_->get_skill_sum();
     motivation_sum = employees_->get_motivation_sum();
-
-    pay_wages_in_cash = getDatabaseParameter("'PayWageInCash'", city_name_);
 
     // cout << "Pay in cash: " << pay_wages_in_cash << endl;
 
@@ -1523,7 +1516,7 @@ double Company::pay_employees_individual(double income_tax)
         // log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
 
-    cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot*income_tax << " " << name_ << endl;
+    cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot * income_tax << " " << name_ << endl;
     wages_.push_front(wage);
     employees_no_.push_front(size);
 
@@ -1595,8 +1588,7 @@ void Company::repay_to_bank()
     log_transaction_full(name_, "Bank", repayment, "Amortization", clock_->get_time());
 }
 
-
-//Zeors out capital and returns the paid dividend amount
+// Zeors out capital and returns the paid dividend amount
 double Company::pay_dividends()
 {
     double capital = 0;
@@ -1629,53 +1621,65 @@ double Company::pay_dividends_directly(double capital_gains_tax)
 
     // cout << "DEBUG: Starting pay_dividends_directly for company: " << name_ << endl;
 
-    if(shareholders_ == nullptr) {
+    if (shareholders_ == nullptr)
+    {
         cout << "Warning: Shareholders list is null for company " << name_ << ", skipping dividend payment" << endl;
         return 0;
     }
 
     // cout << "DEBUG: Shareholders list is not null, getting size..." << endl;
-    
-    try {
-        number_of_shareholders = shareholders_ -> get_size();
+
+    try
+    {
+        number_of_shareholders = shareholders_->get_size();
         // cout << "DEBUG: Number of shareholders: " << number_of_shareholders << endl;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         cout << "Error getting shareholders size for company " << name_ << ": " << e.what() << endl;
         return 0;
     }
 
     if (number_of_shareholders > 0)
     {
-        
-        if(capital_ > 0) {
+
+        if (capital_ > 0)
+        {
             dividends = capital_;
             tax = dividends * capital_gains_tax;
             dividend_per_shareholder = (dividends - tax) / number_of_shareholders;
             cout << "I company pay dividends directly, dividends: " << dividends << " tax: " << tax << " number of shareholders: " << number_of_shareholders << " for company: " << name_ << endl;
-            
+
             // cout << "DEBUG: About to call pay_all_dividends_log with dividend_per_shareholder: " << dividend_per_shareholder << endl;
-            
+
             // Additional safety check before calling pay_all_dividends_log
-            try {
+            try
+            {
                 // cout << "DEBUG: Calling shareholders_->pay_all_dividends_log..." << endl;
-                shareholders_ -> pay_all_dividends_log(dividend_per_shareholder, 0, 0);
+                shareholders_->pay_all_dividends_log(dividend_per_shareholder, 0, 0);
                 // cout << "DEBUG: Successfully completed pay_all_dividends_log" << endl;
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception &e)
+            {
                 cout << "Error paying dividends to shareholders for company " << name_ << ": " << e.what() << endl;
                 return 0;
-            } catch (...) {
+            }
+            catch (...)
+            {
                 cout << "Unknown error paying dividends to shareholders for company " << name_ << endl;
                 return 0;
             }
-            
+
             capital_ = 0;
         }
-        else {
+        else
+        {
             dividends = 0;
             cout << "I company pay dividends directly, dividends < 0 for company: " << name_ << endl;
         }
     }
-    else {
+    else
+    {
         cout << "I company pay dividends directly, no shareholders for company: " << name_ << endl;
     }
 
@@ -1710,7 +1714,6 @@ int Company::buy_items_for_production()
     change_environmental_impact(actual_items);
     // get_active_market() -> change_capital(amount);
     // get_active_market() -> change_items(-items);
-    
 
     log_transaction_full(name_, "Market", actual_amount, "Inventory", clock_->get_time());
 

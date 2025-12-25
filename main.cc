@@ -64,9 +64,9 @@ int main()
 		 * Setting parameters
 		 */
 
-		int simulation_cycles = 500;
+		int simulation_cycles = 100;
 		int current_cycle = 0;
-		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0;
+		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0, timer7 = 0;
 
 		for (int j = 1; j < simulation_cycles; j++)
 		{
@@ -178,6 +178,8 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Bennyland")->get_market()->get_capital() << endl;
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
+			timer7 = stopwatch();
+
 			// Creating a shared market, need some additional work to function well though
 			if (current_cycle == 501)
 			{
@@ -190,18 +192,16 @@ int main()
 			cout << endl
 				 << "TIME MEASUREMENTS" << endl;
 			cout << "--------------------" << endl;
-			cout << "Produce:  " << timer1 / 10000 << endl;
-			cout << "Buy/sell: " << timer2 / 10000 << endl;
-			cout << "Int & Iv: " << timer3 / 10000 << endl;
-			cout << "Bank bus: " << timer4 / 10000 << endl;
-			cout << "Divs:     " << timer5 / 10000 << endl;
-			cout << "Sav&up:   " << timer6 / 10000 << endl;
-			cout << "Total:    " << (timer1 + timer2 + timer3 + timer4 + timer5) / 10000 << endl
-				 << endl;
+			cout << "Pricing/Prod:    " << timer1 / 10000 << endl;
+			cout << "Buying/Selling:  " << timer2 / 10000 << endl;
+			cout << "Interest/Invest: " << timer3 / 10000 << endl;
+			cout << "Bank Business:   " << timer4 / 10000 << endl;
+			cout << "Divs/Transfers:  " << timer5 / 10000 << endl;
+			cout << "Saving Data:     " << timer6 / 10000 << endl;
+			cout << "Update/Comp DB:  " << timer7 / 10000 << endl;
+			cout << "Total:           " << (timer1 + timer2 + timer3 + timer4 + timer5 + timer6 + timer7) / 10000 << endl;
 
-			/*
-			 * END OF MAIN LOOP
-			 */
+			/* END OF MAIN LOOP */
 		}
 
 		/*

@@ -41,6 +41,7 @@ int insertCompanyDatapoint(string parameter, int value, int timestamp, string ci
 int insertHighScore(std::vector<double> myData, string city_name, string world_name, string timenow);
 int insertHighScorePG(std::vector<double> myData, string city_name, string user_id, string timenow);
 int insertConsumerData(std::vector<double> myData, string, string, string);
+int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, double, double, double, double, double, double, double, double, double, double, double>> &consumers, string city_name);
 
 double getDatabaseParameter(string, string);
 
@@ -60,6 +61,22 @@ int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string
 Records getCompanyDataPG(string city_name, string company_name, int limit);
 int deleteCompanyDataPG(string city_name);
 
+// PostgreSQL PARAMETERS functions
+int insertParameterPG(string city_name, string parameter, double value);
+double getParameterPG(string city_name, string parameter);
+int deleteParametersPG(string city_name);
+
+// PostgreSQL CONSUMER_DATA functions
+int insertConsumerDataPG(string city_name, string consumer_name, string employer,
+                         int items, double capital, double deposits, double debts, double skill,
+                         double mot, double spendwill, double savewill, double borrowwill,
+                         double income, double dividends, double transfers);
+Records getConsumerDataPG(string city_name, string consumer_name);
+int deleteConsumerDataPG(string city_name);
+
+// PostgreSQL COMPANY_DATA initialization
+int initiateCompanyTablePG(string city_name);
+
 static int updateData(const char *s);
 static int updateParameter(const char *s, string, double);
 static int deleteTheData(const char *s);
@@ -69,7 +86,8 @@ static int selectData(const char *s);
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 
 int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names);
-Records select_stmt(string stmt, const char *s); // const char*
+Records select_stmt(string stmt, const char *s);      // const char* - SQLite version (deprecated)
+Records select_stmt_pg(string sql, string city_name); // PostgreSQL version
 
 const char *get_sql_string();
 string get_city_sql_string(string city_name);

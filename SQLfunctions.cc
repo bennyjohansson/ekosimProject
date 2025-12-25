@@ -97,6 +97,9 @@ int initiateCityDB(string city_name)
     insertParameterData(dir);
     initiateCompanyTable(dir);
 
+    // Initialize PostgreSQL company data
+    initiateCompanyTablePG(city_name);
+
     cout << "I SQL functions initiate city db" << endl;
 
     // selectData(dir);
@@ -171,6 +174,137 @@ int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_
     return 0;
 }
 
+// PostgreSQL version of select_stmt
+Records select_stmt_pg(string sql, string city_name)
+{
+    Records records;
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for select query: " << pgManager.getLastError() << endl;
+        return records;
+    }
+
+    // Replace SQLite-style table names with PostgreSQL equivalents
+    // PARAMETERS -> parameters, CONSUMER_TABLE -> consumer_data, etc.
+    string pg_sql = sql;
+
+    // Convert to lowercase and replace table names
+    size_t pos = 0;
+    while ((pos = pg_sql.find("PARAMETERS", pos)) != string::npos)
+    {
+        pg_sql.replace(pos, 10, "parameters");
+        pos += 10;
+    }
+    pos = 0;
+    while ((pos = pg_sql.find("CONSUMER_TABLE", pos)) != string::npos)
+    {
+        pg_sql.replace(pos, 14, "consumer_data");
+        pos += 14;
+    }
+    pos = 0;
+    while ((pos = pg_sql.find("COMPANY_TABLE", pos)) != string::npos)
+    {
+        pg_sql.replace(pos, 13, "company_data");
+        pos += 13;
+    }
+    pos = 0;
+    while ((pos = pg_sql.find("TIME_DATA", pos)) != string::npos)
+    {
+        pg_sql.replace(pos, 9, "time_data");
+        pos += 9;
+    }
+    pos = 0;
+    while ((pos = pg_sql.find("MONEY_DATA", pos)) != string::npos)
+    {
+        pg_sql.replace(pos, 10, "money_data");
+        pos += 10;
+    }
+
+    // Add WHERE clause for city_name if not already present and if table supports it
+    bool has_where = (pg_sql.find("WHERE") != string::npos || pg_sql.find("where") != string::npos);
+    bool is_parameters_query = (pg_sql.find("parameters") != string::npos);
+    bool is_consumer_query = (pg_sql.find("consumer_data") != string::npos);
+    bool is_company_query = (pg_sql.find("company_data") != string::npos);
+    bool is_time_query = (pg_sql.find("time_data") != string::npos);
+    bool is_money_query = (pg_sql.find("money_data") != string::npos);
+
+    if (!city_name.empty() && !has_where && (is_parameters_query || is_consumer_query || is_company_query || is_time_query || is_money_query))
+    {
+        // Add city_name filter
+        size_t from_pos = pg_sql.find(" FROM ");
+        if (from_pos == string::npos)
+            from_pos = pg_sql.find(" from ");
+
+        if (from_pos != string::npos)
+        {
+            // Find the end of the table name
+            size_t table_end = pg_sql.find_first_of(" ;", from_pos + 6);
+            if (table_end != string::npos)
+            {
+                pg_sql.insert(table_end, " WHERE city_name = '" + city_name + "'");
+            }
+            else
+            {
+                pg_sql += " WHERE city_name = '" + city_name + "'";
+            }
+        }
+    }
+    else if (!city_name.empty() && has_where && (is_parameters_query || is_consumer_query || is_company_query || is_time_query || is_money_query))
+    {
+        // Add AND city_name condition
+        size_t where_pos = pg_sql.find("WHERE");
+        if (where_pos == string::npos)
+            where_pos = pg_sql.find("where");
+
+        if (where_pos != string::npos)
+        {
+            // Find the end of WHERE clause
+            size_t clause_end = pg_sql.find_first_of(";)", where_pos);
+            if (clause_end != string::npos)
+            {
+                pg_sql.insert(clause_end, " AND city_name = '" + city_name + "'");
+            }
+            else
+            {
+                pg_sql += " AND city_name = '" + city_name + "'";
+            }
+        }
+    }
+
+    PGresult *result = pgManager.executeQuery(pg_sql);
+
+    if (result && PQresultStatus(result) == PGRES_TUPLES_OK)
+    {
+        int rows = PQntuples(result);
+        int cols = PQnfields(result);
+
+        for (int i = 0; i < rows; i++)
+        {
+            Record row;
+            for (int j = 0; j < cols; j++)
+            {
+                row.push_back(PQgetvalue(result, i, j));
+            }
+            records.push_back(row);
+        }
+        PQclear(result);
+    }
+    else
+    {
+        if (result)
+        {
+            cerr << "Failed to execute select query: " << PQerrorMessage(pgManager.getConnection()) << endl;
+            cerr << "SQL: " << pg_sql << endl;
+            PQclear(result);
+        }
+    }
+
+    return records;
+}
+
+// SQLite version of select_stmt (deprecated - use select_stmt_pg instead)
 Records select_stmt(string stmt, const char *s) // const char*
 {
     Records records;
@@ -257,6 +391,22 @@ static int updateData(const char *s)
 
 static int updateParameter(const char *s, string parameter, double dValue)
 {
+    // Extract city name from the database path
+    string path_str(s);
+    size_t last_slash = path_str.find_last_of("/");
+    size_t dot_pos = path_str.find_last_of(".");
+    string city_name = "";
+
+    if (last_slash != string::npos && dot_pos != string::npos && dot_pos > last_slash)
+    {
+        city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
+    }
+
+    // Update PostgreSQL first (dual-write pattern)
+    if (!city_name.empty())
+    {
+        insertParameterPG(city_name, parameter, dValue);
+    }
 
     sqlite3 *DB;
     char *messageerror = new char[150];
@@ -293,6 +443,16 @@ static int updateParameter(const char *s, string parameter, double dValue)
 
 static int insertParameterData(const char *s)
 {
+    // Extract city name from the database path (e.g., "myDB/Bennyland.db" -> "Bennyland")
+    string path_str(s);
+    size_t last_slash = path_str.find_last_of("/");
+    size_t dot_pos = path_str.find_last_of(".");
+    string city_name = "";
+
+    if (last_slash != string::npos && dot_pos != string::npos && dot_pos > last_slash)
+    {
+        city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
+    }
 
     sqlite3 *DB;
     char *messageerror = new char[150];
@@ -318,6 +478,29 @@ static int insertParameterData(const char *s)
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('InflationTarget', 0.01);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('PayWageInCash', 0);"
                "INSERT INTO PARAMETERS (PARAMETER, VALUE) VALUES('BankDividendRatio', 0.1);");
+
+    // Insert to PostgreSQL first (dual-write pattern)
+    if (!city_name.empty())
+    {
+        cout << "Inserting parameters to PostgreSQL for city: " << city_name << endl;
+        insertParameterPG(city_name, "InterestRateMethod", 2);
+        insertParameterPG(city_name, "TargetInterestRate", 0.04);
+        insertParameterPG(city_name, "CapitalReserveRatio", 0.4);
+        insertParameterPG(city_name, "LiquidityReserveRatio", 0.5);
+        insertParameterPG(city_name, "AverageSpendwill", 0.8);
+        insertParameterPG(city_name, "AverageBorrowwill", 0.05);
+        insertParameterPG(city_name, "FacIncreaseRate_1", 0.05);
+        insertParameterPG(city_name, "CapIncreaseParam_1", 15000);
+        insertParameterPG(city_name, "CapIncreaseRate_1", 0.001);
+        insertParameterPG(city_name, "ItemEfficiencyRate", 0.0005);
+        insertParameterPG(city_name, "ProductionParameter", 0.002);
+        insertParameterPG(city_name, "IncomeTax", 0.3);
+        insertParameterPG(city_name, "CapitalGainsTax", 0.3);
+        insertParameterPG(city_name, "BudgetBalance", 0.00);
+        insertParameterPG(city_name, "InflationTarget", 0.01);
+        insertParameterPG(city_name, "PayWageInCash", 0);
+        insertParameterPG(city_name, "BankDividendRatio", 0.1);
+    }
 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
     // cout << "I SQL Fcn insterparam data, sql: " << sql << endl;
@@ -397,6 +580,58 @@ static int insertParameterData(const char *s)
     // mysql_free_result(result);
     // mysql_close(connection);
 
+    return 0;
+}
+
+// PostgreSQL version of initiateCompanyTable
+int initiateCompanyTablePG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for company table initialization: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+
+    // Insert initial company data for the city
+    // Schema matches PostgreSQL column names: wage_ch, invest, prod_parm, prod_fcn, cap_vs_eff_split
+
+    vector<string> companies = {
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'johansson_och_johansson', 0, 121, 112500, 620000, 0, 0.7, 0.75, 0.7, 0.03, 1, 0.4, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)",
+
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'limpan_AB', 0, 12001, 1185, 900000, 0, 0.6, 0.75, 0.7, 0.03, 1, 0.5, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)",
+
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'bempa_AB', 0, 12100, 1125, 250000, 0, 0.5, 0.75, 0.7, 0.03, 1, 0.5, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)",
+
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'bempa_CO', 0, 12100, 1125, 420000, 0, 0.8, 0.75, 0.7, 0.03, 1, 0.5, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)",
+
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'benny_enterprises', 0, 12001, 1125, 750000, 0, 0.9, 0.75, 0.7, 0.03, 1, 0.8, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)",
+
+        "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, production, employees, item_efficiency, cap_vs_eff_split) "
+        "VALUES('" +
+            city_name + "', 'benny_inc', 0, 12100, 1125, 1000000, 0, 0.7, 0.75, 0.5, 0.03, 1, 0.5, 0.001, 0.002, 1, 0, 0, 0.2, 0.5)"};
+
+    for (const auto &sql : companies)
+    {
+        if (!pgManager.executeCommand(sql))
+        {
+            cerr << "Failed to insert company data to PostgreSQL" << endl;
+            return -1;
+        }
+    }
+
+    cout << "Company records initiated successfully in PostgreSQL for " << city_name << endl;
     return 0;
 }
 
@@ -1445,11 +1680,423 @@ int deleteCompanyDataPG(string city_name)
     return 0;
 }
 
+// ========== PostgreSQL PARAMETERS Functions ==========
+
+int insertParameterPG(string city_name, string parameter, double value)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for parameter insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "INSERT INTO parameters (city_name, parameter, value) "
+                 "VALUES ($1, $2, $3) "
+                 "ON CONFLICT (city_name, parameter) "
+                 "DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP";
+
+    string value_str = std::to_string(value);
+    const char *paramValues[3] = {
+        city_name.c_str(),
+        parameter.c_str(),
+        value_str.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    3,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to insert parameter " << parameter << " for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    PQclear(result);
+    return 0;
+}
+
+double getParameterPG(string city_name, string parameter)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for parameter get: " << pgManager.getLastError() << endl;
+        return -1;
+    }
+
+    string sql = "SELECT value FROM parameters WHERE city_name = $1 AND parameter = $2";
+
+    const char *paramValues[2] = {
+        city_name.c_str(),
+        parameter.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    2,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_TUPLES_OK)
+    {
+        cerr << "Failed to get parameter " << parameter << " for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return -1;
+    }
+
+    double value = -1;
+    if (PQntuples(result) > 0)
+    {
+        value = atof(PQgetvalue(result, 0, 0));
+    }
+
+    PQclear(result);
+    return value;
+}
+
+int deleteParametersPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for parameters delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM parameters WHERE city_name = $1";
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete parameters for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "PARAMETERS deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
+// ========== PostgreSQL CONSUMER_DATA Functions ==========
+
+// Batch insert function for better performance (single connection, single transaction)
+int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, double, double, double, double, double, double, double, double, double, double, double>> &consumers, string city_name)
+{
+    if (consumers.empty())
+        return 0;
+
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for batch consumer_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    // Begin transaction
+    PGresult *beginResult = pgManager.executeQuery("BEGIN");
+    if (!beginResult || PQresultStatus(beginResult) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to begin transaction for batch insert" << endl;
+        if (beginResult)
+            PQclear(beginResult);
+        return 1;
+    }
+    PQclear(beginResult);
+
+    string sql = "INSERT INTO consumer_data (city_name, consumer_name, employer, items, "
+                 "capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, "
+                 "income, dividends, transfers) "
+                 "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) "
+                 "ON CONFLICT (city_name, consumer_name) "
+                 "DO UPDATE SET employer = EXCLUDED.employer, items = EXCLUDED.items, "
+                 "capital = EXCLUDED.capital, deposits = EXCLUDED.deposits, debts = EXCLUDED.debts, "
+                 "skill = EXCLUDED.skill, mot = EXCLUDED.mot, spendwill = EXCLUDED.spendwill, "
+                 "savewill = EXCLUDED.savewill, borrowwill = EXCLUDED.borrowwill, "
+                 "income = EXCLUDED.income, dividends = EXCLUDED.dividends, transfers = EXCLUDED.transfers, "
+                 "updated_at = CURRENT_TIMESTAMP";
+
+    int success_count = 0;
+    int fail_count = 0;
+
+    for (const auto &consumer : consumers)
+    {
+        string consumer_name, employer;
+        int items;
+        double capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, income, dividends, transfers;
+
+        tie(consumer_name, employer, ignore, items, capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, income, dividends, transfers) = consumer;
+
+        string items_str = to_string(items);
+        string capital_str = to_string(capital);
+        string deposits_str = to_string(deposits);
+        string debts_str = to_string(debts);
+        string skill_str = to_string(skill);
+        string mot_str = to_string(mot);
+        string spendwill_str = to_string(spendwill);
+        string savewill_str = to_string(savewill);
+        string borrowwill_str = to_string(borrowwill);
+        string income_str = to_string(income);
+        string dividends_str = to_string(dividends);
+        string transfers_str = to_string(transfers);
+
+        const char *paramValues[15] = {
+            city_name.c_str(),
+            consumer_name.c_str(),
+            employer.c_str(),
+            items_str.c_str(),
+            capital_str.c_str(),
+            deposits_str.c_str(),
+            debts_str.c_str(),
+            skill_str.c_str(),
+            mot_str.c_str(),
+            spendwill_str.c_str(),
+            savewill_str.c_str(),
+            borrowwill_str.c_str(),
+            income_str.c_str(),
+            dividends_str.c_str(),
+            transfers_str.c_str()};
+
+        PGresult *result = PQexecParams(pgManager.getConnection(),
+                                        sql.c_str(),
+                                        15,
+                                        NULL,
+                                        paramValues,
+                                        NULL,
+                                        NULL,
+                                        0);
+
+        if (PQresultStatus(result) != PGRES_COMMAND_OK)
+        {
+            cerr << "Failed to insert consumer " << consumer_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+            PQclear(result);
+            fail_count++;
+        }
+        else
+        {
+            success_count++;
+        }
+
+        if (result)
+            PQclear(result);
+    }
+
+    // Commit transaction
+    PGresult *commitResult = pgManager.executeQuery("COMMIT");
+    if (!commitResult || PQresultStatus(commitResult) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to commit transaction, rolling back" << endl;
+        pgManager.executeQuery("ROLLBACK");
+        if (commitResult)
+            PQclear(commitResult);
+        return 1;
+    }
+    PQclear(commitResult);
+
+    cout << "Batch inserted " << success_count << " consumers to PostgreSQL (" << fail_count << " failed)" << endl;
+    return fail_count > 0 ? 1 : 0;
+}
+
+int insertConsumerDataPG(string city_name, string consumer_name, string employer,
+                         int items, double capital, double deposits, double debts, double skill,
+                         double mot, double spendwill, double savewill, double borrowwill,
+                         double income, double dividends, double transfers)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for consumer_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "INSERT INTO consumer_data (city_name, consumer_name, employer, items, "
+                 "capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, "
+                 "income, dividends, transfers) "
+                 "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) "
+                 "ON CONFLICT (city_name, consumer_name) "
+                 "DO UPDATE SET employer = EXCLUDED.employer, items = EXCLUDED.items, "
+                 "capital = EXCLUDED.capital, deposits = EXCLUDED.deposits, debts = EXCLUDED.debts, "
+                 "skill = EXCLUDED.skill, mot = EXCLUDED.mot, spendwill = EXCLUDED.spendwill, "
+                 "savewill = EXCLUDED.savewill, borrowwill = EXCLUDED.borrowwill, "
+                 "income = EXCLUDED.income, dividends = EXCLUDED.dividends, transfers = EXCLUDED.transfers, "
+                 "updated_at = CURRENT_TIMESTAMP";
+
+    string items_str = std::to_string(items);
+    string capital_str = std::to_string(capital);
+    string deposits_str = std::to_string(deposits);
+    string debts_str = std::to_string(debts);
+    string skill_str = std::to_string(skill);
+    string mot_str = std::to_string(mot);
+    string spendwill_str = std::to_string(spendwill);
+    string savewill_str = std::to_string(savewill);
+    string borrowwill_str = std::to_string(borrowwill);
+    string income_str = std::to_string(income);
+    string dividends_str = std::to_string(dividends);
+    string transfers_str = std::to_string(transfers);
+
+    const char *paramValues[15] = {
+        city_name.c_str(),
+        consumer_name.c_str(),
+        employer.c_str(),
+        items_str.c_str(),
+        capital_str.c_str(),
+        deposits_str.c_str(),
+        debts_str.c_str(),
+        skill_str.c_str(),
+        mot_str.c_str(),
+        spendwill_str.c_str(),
+        savewill_str.c_str(),
+        borrowwill_str.c_str(),
+        income_str.c_str(),
+        dividends_str.c_str(),
+        transfers_str.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    15,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to insert consumer_data for " << consumer_name << " in " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    PQclear(result);
+    return 0;
+}
+
+Records getConsumerDataPG(string city_name, string consumer_name)
+{
+    PostgreSQLManager pgManager;
+    Records records;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for consumer_data get: " << pgManager.getLastError() << endl;
+        return records;
+    }
+
+    string sql = "SELECT consumer_name, employer, items, capital, deposits, debts, "
+                 "skill, mot, spendwill, savewill, borrowwill, income, dividends, transfers "
+                 "FROM consumer_data WHERE city_name = $1";
+
+    if (!consumer_name.empty())
+    {
+        sql += " AND consumer_name = $2";
+    }
+
+    const char *paramValues[2] = {
+        city_name.c_str(),
+        consumer_name.c_str()};
+
+    int numParams = consumer_name.empty() ? 1 : 2;
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    numParams,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_TUPLES_OK)
+    {
+        cerr << "Failed to get consumer_data for " << consumer_name << " in " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return records;
+    }
+
+    int nrows = PQntuples(result);
+    for (int i = 0; i < nrows; i++)
+    {
+        Record record;
+        for (int j = 0; j < PQnfields(result); j++)
+        {
+            record.push_back(PQgetvalue(result, i, j));
+        }
+        records.push_back(record);
+    }
+
+    PQclear(result);
+    return records;
+}
+
+int deleteConsumerDataPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for consumer_data delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM consumer_data WHERE city_name = $1";
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete consumer_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "CONSUMER_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
 int insertConsumerData(std::vector<double> myData, string country, string name, string employer)
 { // std::vector<int> money
 
     string full_path = get_city_sql_string(country);
     const char *dir = full_path.c_str();
+
+    // NOTE: PostgreSQL insert is now handled by batch insert in Consumer_list::save_consumers()
+    // This function only writes to SQLite for backward compatibility
+    // Remove the following line to avoid duplicate PostgreSQL inserts:
+    // insertConsumerDataPG(country, name, employer, ...);
 
     sqlite3 *DB;
     char *messageerror = new char[150];
@@ -1460,7 +2107,7 @@ int insertConsumerData(std::vector<double> myData, string country, string name, 
 
     sql.append("'" + name + "', ");                           // name
     sql.append("'" + employer + "', ");                       // employer
-    sql.append(std::to_string((int)round(myData[0])) + ", "); // items  (int)round(myData[1]))
+    sql.append(std::to_string((int)round(myData[0])) + ", "); // items
     sql.append(std::to_string(myData[1]) + ", ");             // capital
     sql.append(std::to_string(myData[2]) + ", ");             // loans
     sql.append(std::to_string(myData[3]) + ", ");             // debts
@@ -1497,34 +2144,30 @@ double getDatabaseParameter(string parameter, string city_name)
     using Record = vector<string>;
     using Records = vector<Record>;
 
-    // cout << "i SQLF getdatabaseparam1" << endl;
-    string full_path = get_city_sql_string(city_name);
-    const char *dir = full_path.c_str();
-    // cout << "i SQLF getdatabaseparam2" << endl;
-    // cout << city_name << endl;
-
+    // Use PostgreSQL version
     double myParameterValue = 0;
 
     string stmt = "SELECT * FROM PARAMETERS WHERE PARAMETER = "; // 'AverageSpendwill'";
     stmt.append(parameter);
 
-    Records records = select_stmt(stmt, dir);
+    Records records = select_stmt_pg(stmt, city_name);
     // cout << "i SQLF getdatabaseparam3" << parameter << endl;
     try
     {
         if (not(records.empty()))
         {
-            myParameterValue = std::stod(records[0][2]);
+            // PostgreSQL parameters table: 0:id, 1:city_name, 2:parameter, 3:value
+            myParameterValue = std::stod(records[0][3]);
         }
         else
         {
-            cout << "Empty return from database" << endl;
+            cout << "Empty return from database for parameter " << parameter << " in city " << city_name << endl;
         }
     }
     catch (const exception &e)
     {
 
-        cerr << e.what();
+        cerr << "Error in getDatabaseParameter: " << e.what() << " for parameter " << parameter << " in city " << city_name << endl;
     }
 
     // cout << "i SQLF getdatabaseparam4" << endl;
@@ -1584,6 +2227,8 @@ static int deleteTheData(const char *s)
         deleteTimeDataPG(city_name);
         deleteMoneyDataPG(city_name);
         deleteCompanyDataPG(city_name);
+        deleteParametersPG(city_name);
+        deleteConsumerDataPG(city_name);
     }
 
     sqlite3 *DB;

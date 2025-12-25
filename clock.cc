@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Clock::Clock() : time_(1) //
+Clock::Clock() : time_(0) //
 {
 }
 

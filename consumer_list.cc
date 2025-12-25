@@ -1,11 +1,12 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-//#include <tuple>
+#include <tuple>
+#include <vector>
 
-//#include "element_consumer.h"
+// #include "element_consumer.h"
 #include "consumer_list.h"
-//#include "consumer.h"
+// #include "consumer.h"
 #include "error_no_return.h"
 #include "functions.h"
 #include "SQLfunctions.h"
@@ -38,7 +39,7 @@ void Consumer_list::info()
   long items = 0;
   int employed = 0;
   int unemployed = 0;
-  //int size = 0;
+  // int size = 0;
   int trustworthy = 0;
 
   if (list_)
@@ -280,9 +281,9 @@ double Consumer_list::get_total_demand() const
 
   Element_consumer *p;
   double sum = 0;
-  //double sw = 0;
-  //double cap = 0;
-  //double loans = 0;
+  // double sw = 0;
+  // double cap = 0;
+  // double loans = 0;
 
   if (list_)
   {
@@ -290,10 +291,10 @@ double Consumer_list::get_total_demand() const
     {
 
       sum += p->get_consumer()->get_demand();
-      //sw = p -> get_spendwill();
-      //cap = p -> get_capital();
-      //loans = p -> get_loans();
-      //sum += (sw*(cap + loans));
+      // sw = p -> get_spendwill();
+      // cap = p -> get_capital();
+      // loans = p -> get_loans();
+      // sum += (sw*(cap + loans));
     }
   }
   else
@@ -395,11 +396,11 @@ Consumer *Consumer_list::get_random_consumer()
   int nr = (rand() % size_);
   Element_consumer *p = list_.get();
 
-  //cout << "random nr: " << nr << endl;
+  // cout << "random nr: " << nr << endl;
 
   for (int i = 0; i < nr; i++)
   {
-    //cout << i << endl;
+    // cout << i << endl;
     p = p->next_.get();
   }
 
@@ -471,7 +472,7 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
 
     if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter)) && !(p->get_employment_status()))
     {
-      //if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter))) {
+      // if ((get_prod(consumer, capacity, production_function, production_parameter) > get_prod(besta, capacity, production_function, production_parameter))) {
       best = p;
       //	cout << "I consumer list get optimal" << p -> get_skill() << " x  " << best -> get_skill() << endl;
     }
@@ -526,17 +527,19 @@ void Consumer_list::set_name(string name_string)
   name_ = name_string;
 }
 
-void Consumer_list::set_market(Market * newMarket) {
+void Consumer_list::set_market(Market *newMarket)
+{
 
   Element_consumer *p;
-  
+
   for (p = list_.get(); p; p = p->next_.get())
   {
     p->get_consumer()->set_market(newMarket);
   }
 }
 
-void Consumer_list::set_intecity_trading(bool enable) {
+void Consumer_list::set_intecity_trading(bool enable)
+{
   Element_consumer *p;
 
   for (p = list_.get(); p; p = p->next_.get())
@@ -582,7 +585,7 @@ void Consumer_list::add_last(Consumer *cons)
   }
 }
 
-void Consumer_list::add_multiple_last(Element_consumer * list)
+void Consumer_list::add_multiple_last(Element_consumer *list)
 {
   int list_length = 0;
   Element_consumer *temp = list;
@@ -594,7 +597,7 @@ void Consumer_list::add_multiple_last(Element_consumer * list)
   size_ += list_length;
 
   Element_consumer *p;
-  
+
   if (list_)
   {
     for (p = list_.get(); p->next_; p = p->next_.get())
@@ -616,7 +619,7 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
   Element_consumer *p = list_.get();
   Element_consumer *q = list_.get();
 
-  //check that the list is not empty and if the first consumer is the one to remove
+  // check that the list is not empty and if the first consumer is the one to remove
   if (list_ && list_->get_consumer() == consumer)
   {
 
@@ -626,20 +629,20 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
     consumer->set_employer("");
   }
 
-  //If list not empty and not the first consumer
+  // If list not empty and not the first consumer
   else if (list_)
   {
     q = list_.get();
     for (p = list_->next_.get(); p; p = p->next_.get())
     {
 
-      //Is it the consumer we are pointing at?
+      // Is it the consumer we are pointing at?
       if (p->get_consumer() == consumer)
       {
         // Set employment status BEFORE removing from list
         p->get_consumer()->set_employment_status(false);
         p->get_consumer()->set_employer("");
-        
+
         size_--;
         q->next_ = std::move(p->next_);
         break; // Exit loop after removal
@@ -712,7 +715,7 @@ double Consumer_list::consumers_buy()
   {
     sum += (p->get_consumer())->buy();
   }
-  //cout << "I cons list, actual consumption: " << sum << " $BJ" << endl;
+  // cout << "I cons list, actual consumption: " << sum << " $BJ" << endl;
 
   return sum;
 }
@@ -732,18 +735,18 @@ void Consumer_list::bank_business()
   Element_consumer *p;
   double payed_interest_sum = 0;
   double received_interest_sum = 0;
-  //double repayments = 0;
+  // double repayments = 0;
   double capital_before = 0;
   double temp_capital = 0;
 
-  capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+  capital_before = get_capital_sum() + list_.get()->get_consumer()->get_bank()->get_liquidity();
 
   for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
-    
-    //Receiving interest
-    received_interest_sum += consumer->get_interest(); //Check, some error
+
+    // Receiving interest
+    received_interest_sum += consumer->get_interest(); // Check, some error
     // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
 
     // //Checking for money leakage
@@ -752,29 +755,29 @@ void Consumer_list::bank_business()
     //   capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
     // }
 
-    //Paying interest
-    payed_interest_sum += consumer->pay_interest();    //Check
+    // Paying interest
+    payed_interest_sum += consumer->pay_interest(); // Check
     // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
-    //Checking for money leakage
+    // Checking for money leakage
     // if(std::abs(temp_capital - capital_before) > 0.01 ) {
     //   cout << "Money leakage in paying interest" << endl;
     //   // capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
     // }
-    
-    //Repaying loan
-    consumer->repay_to_bank();                         //Check
-    //consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
-    temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
-    //Checking for money leakage
-    // if(std::abs(temp_capital - capital_before) > 0.01 ) {
-    //   cout << "Money leakage in repaying loan, leaked " << abs(temp_capital - capital_before) << endl;
-    //   capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
-    // }
 
-    //Deposit and borrow from bank
-    consumer->deposit_and_borrow_from_bank(); //Check
+    // Repaying loan
+    consumer->repay_to_bank(); // Check
+    // consumer -> get_repayment_from_bank(); //This is not actually happening, removing function
+    temp_capital = get_capital_sum() + list_.get()->get_consumer()->get_bank()->get_liquidity();
+    // Checking for money leakage
+    //  if(std::abs(temp_capital - capital_before) > 0.01 ) {
+    //    cout << "Money leakage in repaying loan, leaked " << abs(temp_capital - capital_before) << endl;
+    //    capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
+    //  }
+
+    // Deposit and borrow from bank
+    consumer->deposit_and_borrow_from_bank(); // Check
     // temp_capital = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
-    //Checking for money leakage
+    // Checking for money leakage
     // if(std::abs(temp_capital - capital_before) > 0.01 ) {
     //   cout << "Money leakage in deposit and borrow from bank" << endl;
     //   // capital_before = get_capital_sum() + list_.get() ->get_consumer()->get_bank() ->get_liquidity();
@@ -876,7 +879,7 @@ double Consumer_list::pay_employees_individual(double wage_sum, double skill_sum
     else
     {
       consumer->accept_deposit(my_wage - my_income_tax);
-      //cout << "Paying wage to deposit account" << endl;
+      // cout << "Paying wage to deposit account" << endl;
     }
     //
 
@@ -903,24 +906,27 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
 
   Element_consumer *p;
 
-  if(list_ == nullptr) {
+  if (list_ == nullptr)
+  {
     cout << "Warning: Consumer list is null, skipping dividend payments" << endl;
     return;
   }
 
   for (p = list_.get(); p; p = p->next_.get())
   {
-    if(p == nullptr) {
+    if (p == nullptr)
+    {
       cout << "Warning: Found null element in consumer list, skipping..." << endl;
       continue;
     }
-    
+
     Consumer *consumer = p->get_consumer();
-    if(consumer == nullptr) {
+    if (consumer == nullptr)
+    {
       cout << "Warning: Found null consumer pointer, skipping dividend payment..." << endl;
       continue;
     }
-    //consumer -> change_capital(amount);
+    // consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
   }
@@ -931,24 +937,27 @@ void Consumer_list::pay_transfers_log(double amount, string party_pay)
 
   Element_consumer *p;
 
-  if(list_ == nullptr) {
+  if (list_ == nullptr)
+  {
     cout << "Warning: Consumer list is null, skipping transfer payments" << endl;
     return;
   }
 
   for (p = list_.get(); p; p = p->next_.get())
   {
-    if(p == nullptr) {
+    if (p == nullptr)
+    {
       cout << "Warning: Found null element in consumer list, skipping..." << endl;
       continue;
     }
-    
+
     Consumer *consumer = p->get_consumer();
-    if(consumer == nullptr) {
+    if (consumer == nullptr)
+    {
       cout << "Warning: Found null consumer pointer, skipping transfer payment..." << endl;
       continue;
     }
-    //consumer -> change_capital(amount);
+    // consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
     consumer->set_transfers(amount);
@@ -963,36 +972,45 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
   string name;
   int pay_dividends_in_cash = 0;
 
-  if(list_ == nullptr) {
+  if (list_ == nullptr)
+  {
     cout << "Warning: Consumer list is null, skipping dividend payments" << endl;
     return 0;
   }
 
   for (p = list_.get(); p; p = p->next_.get())
   {
-    if(p == nullptr) {
+    if (p == nullptr)
+    {
       cout << "Warning: Found null element in consumer list, skipping..." << endl;
       continue;
     }
-    
+
     Consumer *consumer = p->get_consumer();
-    if(consumer == nullptr) {
+    if (consumer == nullptr)
+    {
       cout << "Warning: Found null consumer pointer, skipping dividend payment..." << endl;
       continue;
     }
 
-    try {
+    try
+    {
       name = consumer->get_name();
       time = consumer->get_time();
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
       cout << "Error getting consumer info: " << e.what() << endl;
       continue;
-    } catch (...) {
+    }
+    catch (...)
+    {
       cout << "Unknown error getting consumer info" << endl;
       continue;
     }
 
-    try {
+    try
+    {
       if (pay_dividends_in_cash == 0)
       {
         consumer->accept_deposit(amount_company);
@@ -1005,31 +1023,63 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
         consumer->change_capital(amount_market);
         consumer->change_capital(amount_bank);
       }
-      
+
       log_transaction_full("Company", name, amount_company, "Dividends", time);
       log_transaction_full("Market", name, amount_market, "Dividends", time);
       log_transaction_full("Bank", name, amount_bank, "Dividends", time);
       consumer->set_dividends(amount_company + amount_market + amount_bank);
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
       cout << "Error processing dividend payments for consumer " << name << ": " << e.what() << endl;
       continue;
-    } catch (...) {
+    }
+    catch (...)
+    {
       cout << "Unknown error processing dividend payments for consumer " << name << endl;
       continue;
     }
   }
-  
+
   return 0;
 }
 
 void Consumer_list::save_consumers()
 {
+  // Batch insert for PostgreSQL (much faster than individual inserts)
+  vector<tuple<string, string, string, int, double, double, double, double, double, double, double, double, double, double, double>> consumer_batch;
 
   Element_consumer *p;
-
   for (p = list_.get(); p; p = p->next_.get())
   {
     Consumer *consumer = p->get_consumer();
-    consumer->save_to_database();
+
+    // Collect consumer data for batch insert
+    consumer_batch.push_back(make_tuple(
+        consumer->get_name(),
+        consumer->get_employer(),
+        "", // placeholder for unused field
+        consumer->get_items(),
+        consumer->get_capital(),
+        consumer->get_loans(),
+        consumer->get_debts(),
+        consumer->get_skill(),
+        consumer->get_motivation(),
+        consumer->get_spendwill(),
+        consumer->get_savewill(),
+        consumer->get_borrowwill(),
+        consumer->get_income(),
+        consumer->get_dividends(),
+        consumer->get_transfers()));
+
+    // Still save to SQLite individually (for backward compatibility)
+    // COMMENTED OUT FOR PERFORMANCE TESTING - PostgreSQL only
+    // consumer->save_to_database();
+  }
+
+  // Batch insert to PostgreSQL
+  if (!consumer_batch.empty() && !name_.empty())
+  {
+    batchInsertConsumerDataPG(consumer_batch, name_);
   }
 }

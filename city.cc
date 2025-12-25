@@ -16,8 +16,8 @@
 using namespace std;
 
 City::City() : name_("bennyland"),
-               consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
-               company_list_(std::make_unique<Company_list>("COMPANIES")),
+               consumers_(std::make_unique<Consumer_list>("bennyland")),
+               company_list_(std::make_unique<Company_list>("bennyland")),
                // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                market_(std::make_unique<Market>()),
                global_market_(nullptr),
@@ -28,10 +28,10 @@ City::City() : name_("bennyland"),
 }
 
 City::City(string name) : name_(name),
-                          consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
-                          company_list_(std::make_unique<Company_list>("COMPANIES")),
+                          consumers_(std::make_unique<Consumer_list>(name)),
+                          company_list_(std::make_unique<Company_list>(name)),
                           // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
-                          capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
+                          capital_owners_(std::make_unique<Consumer_list>(name)),
                           market_(std::make_unique<Market>()),
                           global_market_(nullptr),
                           bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
@@ -43,15 +43,16 @@ City::City(string name) : name_(name),
                           capital_(0),
                           vat_(0.2),
                           income_tax_(0.3),
-          capital_gains_tax_(0.3),
-          time_to_steal_(7919),
-          enable_intercity_trading_(false)
+                          capital_gains_tax_(0.3),
+                          time_to_steal_(7919),
+                          enable_intercity_trading_(false)
 {
-}City::City(string name, Clock *clock) : name_(name),
-                                        consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
-                                        company_list_(std::make_unique<Company_list>("COMPANIES")),
+}
+City::City(string name, Clock *clock) : name_(name),
+                                        consumers_(std::make_unique<Consumer_list>(name)),
+                                        company_list_(std::make_unique<Company_list>(name)),
                                         // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
-                                        capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
+                                        capital_owners_(std::make_unique<Consumer_list>(name)),
                                         market_(std::make_unique<Market>()),
                                         global_market_(nullptr),
                                         bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
@@ -71,25 +72,30 @@ City::City(string name) : name_(name),
 }
 
 City::City(string name, Clock *clock, Market *global_market) : name_(name),
-                                        consumers_(std::make_unique<Consumer_list>("CONSUMERS")),
-                                        company_list_(std::make_unique<Company_list>("COMPANIES")),
-                                        // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
-                                        capital_owners_(std::make_unique<Consumer_list>("CAPITAL OWNERS")),
-                                        market_(std::make_unique<Market>()),
-                                        global_market_(global_market),
-                                        bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
-                                        clock_(clock),
-                                        flash_counter_(0),
-                                        shareToSteal_(0.95),
-                                        laundry_factor_(0.95),
-                                        no_years_laundry_(4),
-                                        capital_(0),
-                                        vat_(0.2),
-                                        income_tax_(0.3),
-                                        capital_gains_tax_(0.3),
-                                        budget_balance_(0.00),
-                                        time_to_steal_(7919),
-                                        enable_intercity_trading_(false)
+                                                               consumers_(std::make_unique<Consumer_list>(name)),
+                                                               company_list_(std::make_unique<Company_list>(name)),
+                                                               // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
+                                                               capital_owners_(std::make_unique<Consumer_list>(name)),
+                                                               market_(std::make_unique<Market>()),
+                                                               global_market_(global_market),
+                                                               bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
+                                                               clock_(clock),
+                                                               flash_counter_(0),
+                                                               shareToSteal_(0.95),
+                                                               laundry_factor_(0.95),
+                                                               no_years_laundry_(4),
+                                                               capital_(0),
+                                                               vat_(0.2),
+                                                               income_tax_(0.3),
+                                                               capital_gains_tax_(0.3),
+                                                               budget_balance_(0.00),
+                                                               time_to_steal_(7919),
+                                                               enable_intercity_trading_(false),
+                                                               fac_increase_rate_1_(0.002),
+                                                               cap_increase_param_1_(8000),
+                                                               cap_increase_rate_1_(0.0001),
+                                                               item_efficiency_rate_(0.001),
+                                                               pay_wage_in_cash_(1)
 {
 }
 
@@ -323,33 +329,37 @@ Consumer *City::get_random_consumer()
     return consumers_->get_random_consumer();
 }
 
-Element_consumer * City::get_random_consumers(int number_of_consumers) {
+Element_consumer *City::get_random_consumers(int number_of_consumers)
+{
 
-    Element_consumer * head = nullptr;
-    Element_consumer * tail = nullptr;
+    Element_consumer *head = nullptr;
+    Element_consumer *tail = nullptr;
 
-    for (int i=0; i<number_of_consumers; i++) {
-        Consumer * cons = consumers_ -> get_random_consumer();
+    for (int i = 0; i < number_of_consumers; i++)
+    {
+        Consumer *cons = consumers_->get_random_consumer();
 
-        Element_consumer * new_element = new Element_consumer(nullptr, cons);
+        Element_consumer *new_element = new Element_consumer(nullptr, cons);
 
-        if (head==nullptr) {
+        if (head == nullptr)
+        {
             head = new_element;
             tail = new_element;
         }
-        else {
-            tail -> next_ = std::make_unique<Element_consumer>(nullptr, cons);
-            tail = tail -> next_.get();
+        else
+        {
+            tail->next_ = std::make_unique<Element_consumer>(nullptr, cons);
+            tail = tail->next_.get();
         }
     }
 
     return head;
-}   
+}
 
 double City::get_capital_sum()
 {
     double csum = 0;
-    csum = consumers_->get_capital_sum() + company_list_->get_capital_sum() + market_->get_capital() + bank_->get_liquidity() + get_capital(); //bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum()
+    csum = consumers_->get_capital_sum() + company_list_->get_capital_sum() + market_->get_capital() + bank_->get_liquidity() + get_capital(); // bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum()
 
     return csum;
 }
@@ -384,8 +394,6 @@ double City::get_capital_gains_tax() const
     return capital_gains_tax_;
 }
 
-
-
 double City::get_budget_balance() const
 {
     return budget_balance_;
@@ -396,7 +404,32 @@ double City::get_inflation_target() const
     return inflation_target_;
 }
 
-Company *City::get_company(const string& name)
+double City::get_fac_increase_rate_1() const
+{
+    return fac_increase_rate_1_;
+}
+
+double City::get_cap_increase_param_1() const
+{
+    return cap_increase_param_1_;
+}
+
+double City::get_cap_increase_rate_1() const
+{
+    return cap_increase_rate_1_;
+}
+
+double City::get_item_efficiency_rate() const
+{
+    return item_efficiency_rate_;
+}
+
+int City::get_pay_wage_in_cash() const
+{
+    return pay_wage_in_cash_;
+}
+
+Company *City::get_company(const string &name)
 {
     return company_list_->get_company(name);
 }
@@ -456,7 +489,6 @@ string City::get_name() const
 int City::get_no_consumers() const
 {
     return consumers_->get_size();
-    
 }
 
 Market *City::get_active_market()
@@ -477,7 +509,8 @@ Market *City::get_active_market()
     }
 }
 
-Market * City::get_global_market() {
+Market *City::get_global_market()
+{
 
     return global_market_;
 }
@@ -588,24 +621,23 @@ void City::set_inflation_target(double inflation_target)
 
 void City::set_market(Market *market)
 {
-    //Changing market for the City
+    // Changing market for the City
     market_.reset(market);
 
-    //Changing market for all consumers
-    consumers_ -> set_market(market);
+    // Changing market for all consumers
+    consumers_->set_market(market);
 
-
-    //Changing market for all companies
-    company_list_ -> set_market(market);
+    // Changing market for all companies
+    company_list_->set_market(market);
 }
 
 void City::set_enable_intercity_trading(bool enable)
 {
     enable_intercity_trading_ = enable;
 
-    consumers_ -> set_intecity_trading(enable);
+    consumers_->set_intecity_trading(enable);
 
-    company_list_ -> set_intecity_trading(enable);
+    company_list_->set_intecity_trading(enable);
 }
 
 /*
@@ -677,23 +709,22 @@ void City::add_random_shareholders(int number_of_shareholders)
 {
 
     // looping over all the companies and adding random shareholders
-    //Using the function get company_by_index to get all companies
+    // Using the function get company_by_index to get all companies
     // the number of companies is get_no_companies(), looping from 0 to number of companies -1
     int numbe_of_companies = get_no_companies();
     for (int i = 0; i < numbe_of_companies; i++)
     {
-        Company * company = company_list_ -> get_company_by_index(i);
+        Company *company = company_list_->get_company_by_index(i);
 
-        Element_consumer * new_shareholders = get_random_consumers(number_of_shareholders);
+        Element_consumer *new_shareholders = get_random_consumers(number_of_shareholders);
 
         company->add_multiple_shareholders(new_shareholders);
 
         // company -> print_shareholders();
 
-
         cout << "I city add random shareholders, added: " << number_of_shareholders << " shareholders to company " << company->get_name() << endl;
     }
-   }
+}
 
 void City::add_company(Company *company)
 {
@@ -712,20 +743,20 @@ double City::invest_in_new_company(string nameactual, double capital)
     double max_capital = 0;
     int capital_owner_size = 0;
 
-    //Getting max investment
+    // Getting max investment
     max_capital = capital_owners_->get_capital_sum();
     capital = fmax(fmin(capital, max_capital), 0);
 
-    //Number of investrs
+    // Number of investrs
     capital_owner_size = capital_owners_->get_size();
 
-    //Creating a new company from file
+    // Creating a new company from file
     load_company(nameactual);
 
-    //Setting capital to new company
+    // Setting capital to new company
     company_list_->get_company(nameactual)->set_capital(capital);
 
-    //Charging capital owners with "reverse dividend"
+    // Charging capital owners with "reverse dividend"
     capital_owners_->pay_dividends_log(-capital / capital_owner_size, nameactual);
 
     cout << "Added company" << endl;
@@ -814,9 +845,9 @@ void City::load_company(string nameactual)
     {
         cout << "Unable to open file" << endl;
     }
-    //cout << "I city load_company(String) capital =  " << capital << " wc " << wage_const <<  endl;
-    //cout << " name " << name << " capital " << capital << " stock " << stock << " capacity " << capacity << " mot " << p_c_mot << " skill " << p_c_skill << " wage_const " << wage_const << " pbr " << pbr << " wcl " << wage_change_limit << " decay " << decay << endl;
-    //pbr = 0.3;
+    // cout << "I city load_company(String) capital =  " << capital << " wc " << wage_const <<  endl;
+    // cout << " name " << name << " capital " << capital << " stock " << stock << " capacity " << capacity << " mot " << p_c_mot << " skill " << p_c_skill << " wage_const " << wage_const << " pbr " << pbr << " wcl " << wage_change_limit << " decay " << decay << endl;
+    // pbr = 0.3;
     wage_const = 0.7;
     cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
     add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_));
@@ -825,10 +856,10 @@ void City::load_company(string nameactual)
 void City::load_launder_parameters()
 {
 
-    //double shareToSteal;
-    //double laundry_factor;
-    //double no_years_laundry;
-    //double time_to_steal;
+    // double shareToSteal;
+    // double laundry_factor;
+    // double no_years_laundry;
+    // double time_to_steal;
 
     string nameactual = "launder_parameters.txt";
 
@@ -841,8 +872,8 @@ void City::load_launder_parameters()
     if (myfile.is_open())
     {
 
-        //getline (myfile,line);
-        //name = line;
+        // getline (myfile,line);
+        // name = line;
 
         getline(myfile, line);
         strcpy(char_name, line.c_str());
@@ -866,9 +897,9 @@ void City::load_launder_parameters()
         cout << "Unable to open file" << endl;
     }
 
-    //cout << "I functions load parameters" << endl << "sts: " << shareToSteal_ << endl << "lf: " << laundry_factor_ << endl << "years: " << no_years_laundry_ << endl << "ttts: " << time_to_steal_ << endl;
+    // cout << "I functions load parameters" << endl << "sts: " << shareToSteal_ << endl << "lf: " << laundry_factor_ << endl << "years: " << no_years_laundry_ << endl << "ttts: " << time_to_steal_ << endl;
 
-    //return param{shareToSteal, laundry_factor, no_years_laundry, time_to_steal};
+    // return param{shareToSteal, laundry_factor, no_years_laundry, time_to_steal};
 }
 
 /*
@@ -876,7 +907,8 @@ void City::load_launder_parameters()
  * The update_company_employees() is also not in use
  */
 
-void City::update_supply_and_demand() {
+void City::update_supply_and_demand()
+{
 
     double demand = 0;
     double consumer_demand = 0;
@@ -898,45 +930,44 @@ void City::update_supply_and_demand() {
     double price_old = 0;
     int size = 0;
     int number_of_market_participants = 0;
-    //int i = 0;
+    // int i = 0;
     list<double>::iterator invest; // = NULL;//list::end();
 
     invest = investments_.begin();
-    marginal = get_active_market() ->get_marginal();
+    marginal = get_active_market()->get_marginal();
     size = consumers_->get_size();
     price_out = get_active_market()->get_price_out();
     price_old = price_out;
-    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(),1);
-    
+    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(), 1);
 
-    //Getting demand from participants
-    consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
-    investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
+    // Getting demand from participants
+    consumer_demand = consumers_->get_total_demand();                                                                                                            //*demand_.begin(); //
+    investment_demand = company_list_->get_investment_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_) * price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
     // market_excess_demand = (get_active_market()->get_excess_demand_items()/number_of_market_participants) * price_out;
-    market_excess_demand = (get_average_excess_demand_items(3)/number_of_market_participants) * price_out;
-    //Getting avilable items;
+    market_excess_demand = (get_average_excess_demand_items(3) / number_of_market_participants) * price_out;
+    // Getting avilable items;
     company_items = company_list_->get_item_sum();
     company_planned_production = company_list_->get_planned_production_sum();
     market_items = get_active_market()->get_items();
 
-    demand = consumer_demand + production_demand + investment_demand + market_excess_demand; 
+    demand = consumer_demand + production_demand + investment_demand + market_excess_demand;
 
     items = market_items + company_items + company_planned_production;
 
     // price_out = demand / items;
     // price_in = price_out / (1 + marginal);
 
-    //Printing market aggregate supply and demand
+    // Printing market aggregate supply and demand
     cout << "I City " << name_ << " update supply and demand"
-         << " Tot dmd: " << get_active_market() -> get_aggregate_demand() << "$BJ, items " << get_active_market() -> get_aggregate_supply() << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
+         << " Tot dmd: " << get_active_market()->get_aggregate_demand() << "$BJ, items " << get_active_market()->get_aggregate_supply() << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << "market it: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl;
 
-    get_active_market()-> change_aggregate_demand(demand);
-    get_active_market() -> change_aggregate_supply(items);
-    get_active_market() -> change_number_of_participants(1); //Adding one market participant, the city
+    get_active_market()->change_aggregate_demand(demand);
+    get_active_market()->change_aggregate_supply(items);
+    get_active_market()->change_number_of_participants(1); // Adding one market participant, the city
 
-    aggregate_demand = get_active_market() -> get_aggregate_demand();
-    aggregate_supply = get_active_market() -> get_aggregate_supply();
+    aggregate_demand = get_active_market()->get_aggregate_demand();
+    aggregate_supply = get_active_market()->get_aggregate_supply();
 
     cout << "I City " << name_ << " update supply and demand"
          << " Tot dmd: " << demand << "$BJ, items " << items << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << " P. without exc.: " << (demand - market_excess_demand) / items << " market items: " << market_items << " comp it " << company_items << " comp planned " << company_planned_production << endl
@@ -944,20 +975,20 @@ void City::update_supply_and_demand() {
 
     // Save excess demand items to historical list
     excess_demand_items_.push_front(get_active_market()->get_excess_demand_items());
-
 }
 
-void City::update_market_price() {
+void City::update_market_price()
+{
 
     double aggregate_supply = 0;
     double aggregate_demand = 0;
     double price_out = 0;
     double market_excess_demand = 0;
 
-    //Getting aggregate supply and demand from market
+    // Getting aggregate supply and demand from market
 
-    aggregate_demand = get_active_market() ->get_aggregate_demand();
-    aggregate_supply = get_active_market() ->get_aggregate_supply();
+    aggregate_demand = get_active_market()->get_aggregate_demand();
+    aggregate_supply = get_active_market()->get_aggregate_supply();
     // market_excess_demand = get_active_market() -> get_excess_demand_items();
     market_excess_demand = get_average_excess_demand_items(3);
 
@@ -966,19 +997,16 @@ void City::update_market_price() {
     cout << "I City update price"
          << " Tot dmd: " << aggregate_demand << "$BJ, items " << aggregate_supply << ", makt excess dmd: " << market_excess_demand << " Price: " << price_out << endl;
 
-    get_active_market() ->set_price_out(price_out);
+    get_active_market()->set_price_out(price_out);
 
-    //cout << "I city neg market price, price: " << price_out << endl;
-    
-
-
+    // cout << "I city neg market price, price: " << price_out << endl;
 }
 
-void City::reset_supply_and_demand() {
+void City::reset_supply_and_demand()
+{
     get_active_market()->reset_excess_demand_items();
     get_active_market()->reset_aggregate_demand_and_supply();
 }
-
 
 void City::negotiate_market_price()
 {
@@ -986,7 +1014,7 @@ void City::negotiate_market_price()
     double demand = 0;
     double consumer_demand = 0;
     double investment_demand = 0;
-    //double average_investment = 0;
+    // double average_investment = 0;
     double expected_investment = 0;
     double production_demand = 0;
     double market_items = 0;
@@ -999,31 +1027,31 @@ void City::negotiate_market_price()
     double price_in = 0;
     double price_old = 0;
     int size = 0;
-    //int i = 0;
+    // int i = 0;
     list<double>::iterator invest; // = NULL;//list::end();
 
     invest = investments_.begin();
-    //demand = demand_.begin();
+    // demand = demand_.begin();
     marginal = get_active_market()->get_marginal();
     size = consumers_->get_size();
     price_out = get_active_market()->get_price_out();
     price_old = price_out;
-    //for (int i = 0; i < 4; i++) {
+    // for (int i = 0; i < 4; i++) {
 
     //   for(i; i < 4; i++) {
     //     average_investment += *invest;
     //   invest++;
     // }
-    //average_investment = average_investment/i;
+    // average_investment = average_investment/i;
     //   expected_investment = (1 - *investmnts_.begin()/average_investment);
 
-    //Getting demand from participants
-    consumer_demand = consumers_->get_total_demand(); //*demand_.begin(); //
-    investment_demand = company_list_ -> get_investment_sum()*price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
+    // Getting demand from participants
+    consumer_demand = consumers_->get_total_demand();                                                                                                            //*demand_.begin(); //
+    investment_demand = company_list_->get_investment_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_) * price_out; //*investments_.begin();        //average_investment;//price_out*(company_list_ -> get_investment_sum());//*investments_.begin();//
     production_demand = (company_list_->get_items_for_production_sum()) * price_out;
     market_excess_demand = (get_active_market()->get_excess_demand_items()) * price_out;
 
-    //Getting avilable items;
+    // Getting avilable items;
     company_items = company_list_->get_item_sum();
     company_planned_production = company_list_->get_planned_production_sum();
     market_items = market_->get_items();
@@ -1040,16 +1068,16 @@ void City::negotiate_market_price()
 
     market_->set_price_out(price_out);
 
-    //cout << "I city neg market price, price: " << price_out << endl;
+    // cout << "I city neg market price, price: " << price_out << endl;
     market_->reset_excess_demand_items();
 
-    //market_ -> set_price_in(price_in);
-    //cout << "I city neg price, planned investment: " << investment_demand << " $BJ at the price: " << price_old << endl << "And planned production: " << company_planned_production  << endl << "   And planned demand: " << consumer_demand << endl;
-    //      cout << "I city negotiate, price out: " << price_out << "  demand tot, $BJ:  " << demand << "  items tot:  " << items << endl
-    //   << "cons demand: " << consumer_demand << "  investment_demand: " << investment_demand << "  prod dmeand: " << production_demand
-    //   << endl
-    //   << "market_items: " << market_items << "  company_items: " << company_items << "  planned production: " << company_planned_production
-    //   << endl;
+    // market_ -> set_price_in(price_in);
+    // cout << "I city neg price, planned investment: " << investment_demand << " $BJ at the price: " << price_old << endl << "And planned production: " << company_planned_production  << endl << "   And planned demand: " << consumer_demand << endl;
+    //       cout << "I city negotiate, price out: " << price_out << "  demand tot, $BJ:  " << demand << "  items tot:  " << items << endl
+    //    << "cons demand: " << consumer_demand << "  investment_demand: " << investment_demand << "  prod dmeand: " << production_demand
+    //    << endl
+    //    << "market_items: " << market_items << "  company_items: " << company_items << "  planned production: " << company_planned_production
+    //    << endl;
 
     //}
 }
@@ -1066,7 +1094,7 @@ void City::update_consumer_list()
     cout << "I City Updating consumers, setting average spendwill to: " << set_avg_spendwill << endl;
     cout << "I City Updating consumers, setting average borrowwill to: " << set_avg_borrowwill << endl;
 
-    //double test = getDatabaseParameter("AverageSpendwill");
+    // double test = getDatabaseParameter("AverageSpendwill");
 
     consumers_->update(set_avg_spendwill, set_avg_borrowwill);
 }
@@ -1095,7 +1123,7 @@ void City::update_interest_rate()
     double bank_sum = 0;
     double max_bank_borrow_to_consumers = 0;
 
-    double diff_limit = 10000; //500 works fine
+    double diff_limit = 10000; // 500 works fine
     double sum_flows_to_bank = 0;
     double prev_flows_to_bank = 0;
     double initial_flows_to_bank = 0;
@@ -1104,14 +1132,14 @@ void City::update_interest_rate()
     double d_sum_di = 1;
     double max_interest_rate = 0.5;
     double ir_delta = 0.0005;
-    int number_of_iterations = 20; //20 works fine
+    int number_of_iterations = 20; // 20 works fine
     int ir_method_select = 1;
 
     cout << endl
          << "Updating interest rate" << endl
          << endl;
 
-    //Reading interest rates
+    // Reading interest rates
     ir_method_select = bank_->get_interest_rate_method();
     target_interest = bank_->get_target_interest();
     interest = bank_->get_interest();
@@ -1119,23 +1147,23 @@ void City::update_interest_rate()
     prev_interest = interest;
     max_bank_borrow_to_consumers = bank_->get_max_customer_borrow();
 
-    //Interest rate method, target or market
+    // Interest rate method, target or market
     switch (ir_method_select)
     {
-    case 1: //Market interest rate
+    case 1: // Market interest rate
         cout << "Using Market Interest method" << endl;
-        //Calculating capital sums
+        // Calculating capital sums
 
         consumer_sum = consumers_->get_expected_net_flow_to_bank_sum();
-        company_sum = company_list_->get_expected_net_flow_to_bank_sum();
+        company_sum = company_list_->get_expected_net_flow_to_bank_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_);
         bank_sum = (bank_->get_sum_to_borrow());
 
         break;
 
-    case 2: //Target interest rate
+    case 2: // Target interest rate
         cout << "Using Target Interest method" << endl;
         bank_->set_interest(target_interest);
-        company_sum = company_list_->get_expected_net_flow_to_bank_sum();
+        company_sum = company_list_->get_expected_net_flow_to_bank_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_);
         consumer_sum = consumers_->get_expected_net_flow_to_bank_sum();
 
         bank_sum = fmin(-(consumer_sum + company_sum), max_bank_borrow_to_consumers);
@@ -1144,20 +1172,20 @@ void City::update_interest_rate()
         break;
     }
 
-    //Getting estimated flows to the bank before interest change
+    // Getting estimated flows to the bank before interest change
     sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
     initial_flows_to_bank = sum_flows_to_bank;
     prev_flows_to_bank = sum_flows_to_bank;
 
     cout << "In city upd. flows to bank ir: " << interest << "  cons sum " << setw(6) << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl;
 
-    //If we are outside tolerance (diff_limit), do something, else do nothing
+    // If we are outside tolerance (diff_limit), do something, else do nothing
     if (abs(sum_flows_to_bank) > abs(diff_limit))
     {
 
-        //cout << "I City update interest, interest needs to be updated" << endl;
+        // cout << "I City update interest, interest needs to be updated" << endl;
 
-        //Setting ir_change_factor
+        // Setting ir_change_factor
         if (sum_flows_to_bank > 0)
         {
             est_ir_change = -interest / 10;
@@ -1167,11 +1195,11 @@ void City::update_interest_rate()
             est_ir_change = interest / 10;
         }
 
-        //Updating interest rate
+        // Updating interest rate
         bank_->change_interest(est_ir_change);
         interest = bank_->get_interest();
 
-        //If max interest rate setting interest to max_interest/2
+        // If max interest rate setting interest to max_interest/2
         if (interest >= max_interest_rate)
         {
             interest = max_interest_rate / 2;
@@ -1180,34 +1208,34 @@ void City::update_interest_rate()
 
     while (abs(sum_flows_to_bank) > diff_limit && counter < number_of_iterations && interest < max_interest_rate)
     {
-        //Getting cash-flows after initial interest change
+        // Getting cash-flows after initial interest change
         consumer_sum = consumers_->get_expected_net_flow_to_bank_sum();
 
-        company_sum = company_list_->get_expected_net_flow_to_bank_sum();
+        company_sum = company_list_->get_expected_net_flow_to_bank_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_);
 
-        //COMMENT THIS LINE IN TO GET BACK TO NON-TARGET IR SETTING
-        //bank_sum = (bank_ -> get_sum_to_borrow());
+        // COMMENT THIS LINE IN TO GET BACK TO NON-TARGET IR SETTING
+        // bank_sum = (bank_ -> get_sum_to_borrow());
 
-        //Updating flows to bank
+        // Updating flows to bank
         prev_flows_to_bank = sum_flows_to_bank;
         sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
 
-        //Calculating cash-flow deltas after interest update
-        //delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
+        // Calculating cash-flow deltas after interest update
+        // delta_sum = (consumer_sum + company_sum + bank_sum) - sum_flows_to_bank;
         delta_sum = sum_flows_to_bank - prev_flows_to_bank;
         ir_delta = (prev_interest - interest);
 
-        //If flows to bank increases we have risk of divergence, changing back half a step
+        // If flows to bank increases we have risk of divergence, changing back half a step
         if (abs(prev_flows_to_bank) <= abs(sum_flows_to_bank))
         {
 
             cout << "In city upd. re, divergence: " << counter << " interest: " << interest << " prev flows: " << prev_flows_to_bank << "  and new flows " << sum_flows_to_bank << endl;
-            //Changing back interest rate half way
+            // Changing back interest rate half way
             bank_->change_interest(-est_ir_change * ir_change_factor / 2);
 
-            //Updating cashflows
+            // Updating cashflows
             consumer_sum = consumers_->get_expected_net_flow_to_bank_sum();
-            company_sum = company_list_->get_expected_net_flow_to_bank_sum();
+            company_sum = company_list_->get_expected_net_flow_to_bank_sum(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_);
 
             prev_flows_to_bank = sum_flows_to_bank;
             sum_flows_to_bank = consumer_sum + company_sum + bank_sum;
@@ -1219,12 +1247,12 @@ void City::update_interest_rate()
 
         if (ir_delta == 0)
         {
-            //cout << "I city updte IR, IR delta: " << ir_delta << " Prev: " << prev_interest << " Current: " << interest << endl;
+            // cout << "I city updte IR, IR delta: " << ir_delta << " Prev: " << prev_interest << " Current: " << interest << endl;
             ir_delta = est_ir_change;
         }
 
         d_sum_di = delta_sum / ir_delta;
-        //d_sum_di = delta_sum/(prev_interest - interest);
+        // d_sum_di = delta_sum/(prev_interest - interest);
 
         if (d_sum_di == 0)
         {
@@ -1233,11 +1261,11 @@ void City::update_interest_rate()
         }
 
         est_ir_change = sum_flows_to_bank / d_sum_di;
-        //cout << fixed << setprecision(2) << setfill(' ');
+        // cout << fixed << setprecision(2) << setfill(' ');
 
         cout << "In city upd. flows to bank ir: " << counter << " ir: " << interest << "  cons sum " << setw(6) << consumer_sum << " comp sum " << company_sum << " bank sum " << bank_sum << " tot flow " << sum_flows_to_bank << endl;
 
-        //Changint interest rate
+        // Changint interest rate
         prev_interest = interest;
         bank_->change_interest(est_ir_change * ir_change_factor);
         interest = bank_->get_interest();
@@ -1245,7 +1273,7 @@ void City::update_interest_rate()
         counter = counter + 1;
     }
 
-    //If interest above max interest
+    // If interest above max interest
     if (interest > max_interest_rate)
     {
         cout << "I city update interest rate, setting max rate of: " << max_interest_rate << " was " << interest << endl;
@@ -1257,7 +1285,7 @@ void City::update_interest_rate()
         bank_->set_interest(-max_interest_rate);
     }
 
-    //If divergence and initial interest better than final
+    // If divergence and initial interest better than final
     if (abs(initial_flows_to_bank) < abs(sum_flows_to_bank) && counter == 20)
     {
         cout << "Final divergence and worse than initial IR, setting initial IR of: " << initial_interest << " vs " << interest << " and initial flows: " << initial_flows_to_bank << " vs flows " << sum_flows_to_bank << endl;
@@ -1288,7 +1316,7 @@ void City::update_employees()
 
     /*
      * A company does not always hire the optimal consumer first. A random company is selected
-     * and asked if it wants to hire the consumer optimal for its conditions. If not hired other 
+     * and asked if it wants to hire the consumer optimal for its conditions. If not hired other
      * companies are asked if they want to hire the consumer, and sometimes they may, even though
      * there might be other conusmers more optimal for them...
      */
@@ -1303,11 +1331,11 @@ void City::update_employees()
     while (company_list_->update_employees2(opt = get_optimal_consumer(mot, skill, prod_fcn, prod_param)))
     {
         no_consumers_hired++;
-        //cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
+        // cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
     }
     cout << "I City update employees, hired a total of: " << no_consumers_hired << " employees" << endl;
 
-    //Employees looking for new jobs every 10(?) years
+    // Employees looking for new jobs every 10(?) years
     if ((clock_->get_time()) % 10 == 0)
     {
         Element_consumer *p;
@@ -1334,7 +1362,7 @@ void City::update_employees2()
     int prod_fcn = 1;
     double prod_param = 0.001;
     int no_consumers_hired = 0;
-    int job_change_frequency = 10; //Years between job changes
+    int job_change_frequency = 10; // Years between job changes
     Consumer *opt = 0;
 
     /*
@@ -1344,8 +1372,7 @@ void City::update_employees2()
     company_list_->remove_usless_employees();
     cout << "I City update emplyees" << endl;
 
-    
-    //Employees looking for new jobs - distributed approach (1/10 per year instead of all every 10 years)
+    // Employees looking for new jobs - distributed approach (1/10 per year instead of all every 10 years)
     int total_consumers = consumers_->get_size();
     if (total_consumers > 0)
     {
@@ -1354,7 +1381,7 @@ void City::update_employees2()
         int consumers_per_year = total_consumers / job_change_frequency;
         int start_position = year_position * consumers_per_year;
         int end_position = start_position + consumers_per_year;
-        
+
         // Handle remainder for last year of cycle
         if (year_position == job_change_frequency - 1)
         {
@@ -1378,8 +1405,8 @@ void City::update_employees2()
             p = p->next_.get();
             current_position++;
         }
-        
-        cout << "I City update employees2, processed consumers " << start_position << " to " << (end_position-1) 
+
+        cout << "I City update employees2, processed consumers " << start_position << " to " << (end_position - 1)
              << " (year " << year_position << " of " << job_change_frequency << " cycle)" << endl;
     }
 }
@@ -1396,7 +1423,7 @@ void City::save_data()
     double growth = 0;
     double item = 0;
     int time = 0;
-    //double gdp = 0;
+    // double gdp = 0;
     double nominal_gdp = 0;
     double price_out = 0;
     double interest_rate = 0;
@@ -1427,7 +1454,7 @@ void City::save_data()
     employed = consumers_->get_employed();
     unemployed = consumers_->get_unemployed();
     unemployment = unemployed / size;
-    wages = company_list_ -> get_average_wage(); //*((company_list_->get_company("bempa_AB"))->wages_.begin());
+    wages = company_list_->get_average_wage(); //*((company_list_->get_company("bempa_AB"))->wages_.begin());
     nominal_gdp = price_out * item;
     GDP = GDP_.begin();
     time = clock_->get_time();
@@ -1443,10 +1470,10 @@ void City::save_data()
     }
 
     cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployed / size << " size: " << size << endl;
-    //file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
+    // file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
     //<< employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
 
-    //Populating vector for database storage
+    // Populating vector for database storage
     time_data.push_back((double)time);
     time_data.push_back((double)item);
     time_data.push_back((double)demand);
@@ -1530,7 +1557,7 @@ void City::save_money_data()
     total_capital = get_capital_sum(); //    csum = consumers_ -> get_capital_sum() + company_list_ -> get_capital_sum() + market_ -> get_capital() + bank_ -> get_liquidity();//bank_ -> get_capital() consumers_ -> get_loans_sum();+ consumers_ -> get_loans_sum()
     time = clock_->get_time();
 
-    //Populating vector for database storage
+    // Populating vector for database storage
     money_data.push_back((int)time);
     money_data.push_back((int)bank_capital);
     money_data.push_back((int)bank_loans);
@@ -1571,7 +1598,7 @@ void City::save_money_data()
 
 /*
  * save_flash(double time) registrerar alla transaktioner i bennyland i ett tidsschema s� att man kan se hur
- * pengar fl�dar mellan olika instanser under en "m�nad". 
+ * pengar fl�dar mellan olika instanser under en "m�nad".
  */
 
 void City::save_flash(int time)
@@ -1579,7 +1606,7 @@ void City::save_flash(int time)
     int timec = 0;
     timec = clock_->get_time();
     bool write_to_file = false;
-    //If right time, do everything, else, do nothing  && timec < time + 10
+    // If right time, do everything, else, do nothing  && timec < time + 10
     if (timec >= time)
     {
         double consumer_capital = 0;
@@ -1654,7 +1681,7 @@ void City::invest(bool invest)
 
     if (invest)
     {
-        invested_capital = company_list_->invest();
+        invested_capital = company_list_->invest(fac_increase_rate_1_, cap_increase_param_1_, cap_increase_rate_1_, item_efficiency_rate_);
     }
 
     investments_.push_front(invested_capital);
@@ -1673,7 +1700,7 @@ void City::adjust_money()
     double bank_money = 0;
     double inflation = 0;
     double item_inflation = 0;
-    double scale_factor = 0.5; //0.5
+    double scale_factor = 0.5; // 0.5
     double target_inflation = 0;
 
     double MAX_CHANGE_FACTOR = 0.6;
@@ -1684,7 +1711,7 @@ void City::adjust_money()
      *
      */
 
-    int function_select = 3; //3
+    int function_select = 3; // 3
     int payment_function_select = 1;
 
     int i = 0;
@@ -1695,7 +1722,6 @@ void City::adjust_money()
     double wages_a = 0;
     double average_wage_now = 0;
     double average_wage_historical = 0;
-    
 
     double sum = 0;
     double sum_items = 0;
@@ -1712,7 +1738,7 @@ void City::adjust_money()
     total_money = get_capital_sum();
     bank_money = bank_->get_capital();
 
-    //Function 1
+    // Function 1
 
     items_a = *Items;
     Items = GDP_.begin();
@@ -1721,12 +1747,12 @@ void City::adjust_money()
     {
         sum_items += *Items;
         Items++;
-        //cout << i << " i and items"<<  *Items << endl;
+        // cout << i << " i and items"<<  *Items << endl;
     }
 
     average_items = sum_items / i;
 
-    //Function 2
+    // Function 2
 
     price_a = *Price_out;
     Price_out = price_out_.begin();
@@ -1740,9 +1766,8 @@ void City::adjust_money()
 
     average_price = sum / i;
 
-
-    //Function 3
-    //OLD CODE - REMOVE!
+    // Function 3
+    // OLD CODE - REMOVE!
     wages_a = *Wages;
     Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
 
@@ -1754,9 +1779,9 @@ void City::adjust_money()
     }
 
     average_wage = sum / i;
-    //average_wage = company_list_ -> get_average_wage();
+    // average_wage = company_list_ -> get_average_wage();
 
-    //cout << "I city adjust money, money change function " << function_select << endl;
+    // cout << "I city adjust money, money change function " << function_select << endl;
 
     switch (function_select)
     {
@@ -1772,19 +1797,20 @@ void City::adjust_money()
         break;
 
     case 3:
-       
-        //Checking for 0 average wage
 
-        average_wage_now = company_list_.get() -> get_average_wage();
-        average_wage_historical = company_list_.get() -> get_average_wage_historical(average_history);
+        // Checking for 0 average wage
 
-        
+        average_wage_now = company_list_.get()->get_average_wage();
+        average_wage_historical = company_list_.get()->get_average_wage_historical(average_history);
+
         cout << "I City adjust money, using wage inflation, average now = " << average_wage_now << " average historical = " << average_wage_historical << endl;
-        if(average_wage_historical != 0) {
+        if (average_wage_historical != 0)
+        {
             inflation = average_wage_now / average_wage_historical - 1;
         }
-        else {
-            average_wage_historical = 1; //To avoid division by zero
+        else
+        {
+            average_wage_historical = 1; // To avoid division by zero
             inflation = average_wage_now / average_wage_historical - 1;
             cout << "Warning: Average wage historical is zero, setting to 1 to avoid division by zero" << endl;
         }
@@ -1815,18 +1841,18 @@ void City::adjust_money()
     money_change = total_money * money_change_factor * scale_factor;
 
     cout << "I city adj. money, inflation: " << inflation << " target: " << inflation_target_ << " money ch %: " << money_change / total_money << " Total money " << total_money << " Money change " << money_change << endl;
-    //money_change = (1-average_items/items_a)*total_money;
+    // money_change = (1-average_items/items_a)*total_money;
 
-    //if(price_a > average_price) {
-    //    money_change = (1-average_price/price_a)*total_money;
-    //}
+    // if(price_a > average_price) {
+    //     money_change = (1-average_price/price_a)*total_money;
+    // }
 
     /*
      *What happends if we increase the money without any reason?!!?
      */
     /*
     if(clock_ -> get_time() == 200) {
-        
+
         money_change = -10000000;
         cout << "In city adjust money increasing money at time 200" << endl;
     }
@@ -1851,14 +1877,14 @@ void City::adjust_money()
 void City::pay_company_employees()
 {
     double income_tax_sum = 0;
-    //company_list_ -> pay_employees();
-    income_tax_sum = company_list_->pay_employees(income_tax_);
+    // company_list_ -> pay_employees();
+    income_tax_sum = company_list_->pay_employees(income_tax_, pay_wage_in_cash_);
 
     cout << "I city pay employees, actual income tax: " << income_tax_sum << endl;
 
     change_capital(income_tax_sum);
 
-    //NEED TO UPDATEESTIMATED WAGES or add A tAX ESTIMATE!!!
+    // NEED TO UPDATEESTIMATED WAGES or add A tAX ESTIMATE!!!
 }
 
 void City::company_pay_interest()
@@ -1877,10 +1903,10 @@ void City::consumers_bank_business()
     consumers_->bank_business();
 }
 
-//void City::consumers_bank_business() {
-//    consumers_ -> repay_to_bank();
-//    consumers_ -> get_repayment_from_bank();
-//}
+// void City::consumers_bank_business() {
+//     consumers_ -> repay_to_bank();
+//     consumers_ -> get_repayment_from_bank();
+// }
 
 void City::consumer_get_and_pay_interest()
 {
@@ -1888,7 +1914,7 @@ void City::consumer_get_and_pay_interest()
 }
 
 /*
- * Assuming that all the capital_owners owns an equal share of 
+ * Assuming that all the capital_owners owns an equal share of
  * each company.
  */
 
@@ -1905,32 +1931,34 @@ void City::company_pay_dividends()
     int number_of_capital_owners = 0;
 
     number_of_capital_owners = capital_owners_->get_size();
-    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(),1);
+    number_of_market_participants = fmax(get_active_market()->get_number_of_participants(), 1);
 
-    //Companies paying tax to city
+    // Companies paying tax to city
     total_profit_c = company_list_->pay_dividends_directly(capital_gains_tax_);
 
-    //Bank paying dividends
+    // Bank paying dividends
     total_profit_b = bank_->pay_dividends();
 
-    if(!enable_intercity_trading_) {
+    if (!enable_intercity_trading_)
+    {
         total_profit_m = get_active_market()->pay_dividends();
     }
-    else {
+    else
+    {
         total_profit_m = 0;
     }
 
-    //Calculating capital gains tax
-    company_tax = total_profit_c*capital_gains_tax_;
-    market_tax = total_profit_m*capital_gains_tax_;
-    bank_tax = total_profit_b*capital_gains_tax_;
+    // Calculating capital gains tax
+    company_tax = total_profit_c * capital_gains_tax_;
+    market_tax = total_profit_m * capital_gains_tax_;
+    bank_tax = total_profit_b * capital_gains_tax_;
 
-    //Paying dividends after tax to capital owners
-    //capital_owners_->pay_all_dividends_log((total_profit_c - company_tax) / number_of_capital_owners, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
-    
+    // Paying dividends after tax to capital owners
+    // capital_owners_->pay_all_dividends_log((total_profit_c - company_tax) / number_of_capital_owners, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
+
     capital_owners_->pay_all_dividends_log(0, (total_profit_m - market_tax) / number_of_capital_owners, (total_profit_b - bank_tax) / number_of_capital_owners);
-    
-    //Increasing city capital with collected tax
+
+    // Increasing city capital with collected tax
     change_capital(company_tax + bank_tax + market_tax);
 
     cout << endl
@@ -1991,13 +2019,13 @@ void City::consumers_deposit_and_borrow_from_bank()
 {
     consumers_->deposit_and_borrow_from_bank();
 
-    //cout << "I city consumers_deposit_and_borrow_from_bank, no consumer lending activated" << endl;
-    //cout << "I city consumers deposit and loan, bank_loans: " << bank_ -> get_loans() << endl;
-    //cout << "I city consumers deposit and loan, consumer_loans: " << consumers_ -> get_loans_sum() << endl;
-    //cout << "I city consumers deposit and loan, consumer_debts: " << consumers_ -> get_debts_sum() << endl;
-    //cout << "I city consumers deposit and loan, company_loans: " << company_list_ -> get_debts_sum() << endl;
+    // cout << "I city consumers_deposit_and_borrow_from_bank, no consumer lending activated" << endl;
+    // cout << "I city consumers deposit and loan, bank_loans: " << bank_ -> get_loans() << endl;
+    // cout << "I city consumers deposit and loan, consumer_loans: " << consumers_ -> get_loans_sum() << endl;
+    // cout << "I city consumers deposit and loan, consumer_debts: " << consumers_ -> get_debts_sum() << endl;
+    // cout << "I city consumers deposit and loan, company_loans: " << company_list_ -> get_debts_sum() << endl;
 
-    //cout << "I city consumers deposit and loan, bank_borrow: " << bank_ -> get_deposits() << endl;
+    // cout << "I city consumers deposit and loan, bank_borrow: " << bank_ -> get_deposits() << endl;
 }
 
 void City::consumers_deposit_to_bank()
@@ -2030,7 +2058,7 @@ string City::steal_money(string theThiefString)
     cout << "Thief money before:" << theThief->get_capital() << endl;
 
     Company *theCompany = company_list_->get_company("johansson_och_johansson"); // -> get_company();
-    //bank_ -> info();
+    // bank_ -> info();
 
     capital_to_steal = theCompany->get_capital() * shareToSteal_;
 
@@ -2053,8 +2081,8 @@ double City::launder_money(string theThiefString, string theFraudCompanyString)
     Consumer *theThief = consumers_->get_consumer(theThiefString);
     money_to_launder = (theThief->get_capital()) * laundry_factor_;
 
-    //cout << "I city launder money" << endl;
-    //theThief -> info();
+    // cout << "I city launder money" << endl;
+    // theThief -> info();
 
     for (int j = 1; j <= no_years_laundry_; j++)
     {
@@ -2081,7 +2109,7 @@ void City::randomize_laundry_parameters()
 
     log_launder_parameters(shareToSteal_, laundry_factor_, no_years_laundry_, time_to_steal_);
 
-    //Share to steal
+    // Share to steal
 
     std::normal_distribution<double> distribution_1(shareToSteal_, 1.0);
     temp = distribution_1(generator);
@@ -2138,12 +2166,12 @@ void City::update_interest_parameters()
     double liquidity_reserve_ratio = 0;
     double bank_dividend_ratio = 0;
 
-    //const char* stmt = "SELECT * FROM PARAMETERS";
+    // const char* stmt = "SELECT * FROM PARAMETERS";
     string stmt = "SELECT * FROM PARAMETERS";
-    //cout << "Test i cuty update interest parameters" << endl;
+    // cout << "Test i cuty update interest parameters" << endl;
 
     Records records = select_stmt(stmt, dir);
-    //sqlite3_close(DB);
+    // sqlite3_close(DB);
 
     for (int i = 0; i < records.size(); i++)
     {
@@ -2187,42 +2215,63 @@ void City::update_parameters_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_);
-    const char *dir = full_path.c_str();
-
     double budgetBalance = 0;
     double incomeTax = 0;
     double inflationTarget = 0;
 
-    //const char* stmt = "SELECT * FROM PARAMETERS";
+    // Use PostgreSQL version
     string stmt = "SELECT * FROM PARAMETERS";
-    //cout << "Test i cuty update interest parameters" << endl;
 
-    Records records = select_stmt(stmt, dir);
-    //sqlite3_close(DB);
+    Records records = select_stmt_pg(stmt, name_);
+    // sqlite3_close(DB);
     if (not(records.empty()))
     {
         for (int i = 0; i < records.size(); i++)
         {
-            if (records[i][1] == "BudgetBalance")
+            if (records[i][2] == "BudgetBalance")
             {
-                budgetBalance = std::stod(records[i][2]);
-                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+                budgetBalance = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
             }
-            if (records[i][1] == "IncomeTax")
+            if (records[i][2] == "IncomeTax")
             {
-                incomeTax = std::stod(records[i][2]);
-                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+                incomeTax = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
             }
-            if (records[i][1] == "InflationTarget")
+            if (records[i][2] == "InflationTarget")
             {
-                inflationTarget = std::stod(records[i][2]);
-                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+                inflationTarget = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
             }
-            if (records[i][1] == "CapitalGainsTax")
+            if (records[i][2] == "CapitalGainsTax")
             {
-                capital_gains_tax_ = std::stod(records[i][2]);
-                cout << records[i][1] << " set to: " << std::stod(records[i][2]) << endl;
+                capital_gains_tax_ = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "FacIncreaseRate_1")
+            {
+                fac_increase_rate_1_ = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "CapIncreaseParam_1")
+            {
+                cap_increase_param_1_ = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "CapIncreaseRate_1")
+            {
+                cap_increase_rate_1_ = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "ItemEfficiencyRate")
+            {
+                item_efficiency_rate_ = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "PayWageInCash")
+            {
+                pay_wage_in_cash_ = std::stoi(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stoi(records[i][3]) << endl;
             }
         }
 
@@ -2257,9 +2306,9 @@ void City::add_companies_from_database()
     int production_function = 0;
 
     cout << "I City add companies from DB, dir: " << dir << endl;
-    //const char* stmt = "SELECT * FROM PARAMETERS";
+    // const char* stmt = "SELECT * FROM PARAMETERS";
     string stmt = "SELECT * FROM COMPANY_TABLE";
-    //cout << "Test i cuty update interest parameters" << endl;
+    // cout << "Test i cuty update interest parameters" << endl;
 
     Records records = select_stmt(stmt, dir);
 
@@ -2321,7 +2370,7 @@ void City::save_high_score()
     string timenow = "";
     string world_name = "Bennyworld";
 
-    total_years = clock_ -> get_time();
+    total_years = clock_->get_time();
 
     std::vector<double> score;
 
@@ -2329,9 +2378,10 @@ void City::save_high_score()
     palma_index = calculate_Palma_ratio();
     environmental_impact = company_list_->get_environmental_impact_sum();
 
-    if(total_years > 0) {
+    if (total_years > 0)
+    {
         cout << "I save highscore, years: " << total_years << endl;
-        environmental_impact_per_year = round(environmental_impact/total_years);
+        environmental_impact_per_year = round(environmental_impact / total_years);
     }
 
     std::time_t t = std::time(0); // get time now
@@ -2347,18 +2397,24 @@ void City::save_high_score()
 
     // Write to SQLite (existing functionality)
     insertHighScore(score, name_, world_name, timenow);
-    
+
     // Also write to PostgreSQL for centralized high scores
     // This enables cross-country leaderboards while maintaining backward compatibility
-    try {
+    try
+    {
         cout << "Saving high score to PostgreSQL..." << endl;
         int pg_result = insertHighScorePG(score, name_, "", timenow);
-        if (pg_result == 0) {
+        if (pg_result == 0)
+        {
             cout << "High score successfully saved to PostgreSQL centralized database" << endl;
-        } else {
+        }
+        else
+        {
             cout << "Warning: Failed to save high score to PostgreSQL, but SQLite save was successful" << endl;
         }
-    } catch (const exception& e) {
+    }
+    catch (const exception &e)
+    {
         cout << "Warning: PostgreSQL high score save failed with exception: " << e.what() << endl;
         cout << "SQLite high score save was successful" << endl;
     }
@@ -2377,66 +2433,67 @@ double City::calculate_CAGR(int end_time)
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_);
-    const char *dir = full_path.c_str();
-
+    // Use PostgreSQL instead of SQLite
     string stmt1 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(start_time1);
-    //stmt1.append("'" + std::to_string(start_time1) + "'");
-
     string stmt2 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(end_time);
-    //stmt2.append("'" + std::to_string(end_time) + "'");
 
-    // cout << "Test i city calculate CAGR: " << stmt1 << endl;
-    // cout << "Test i city calculate CAGR: " << stmt2 << endl;
-
-    Records records_start = select_stmt(stmt1, dir);
-    Records records_end = select_stmt(stmt2, dir);
+    // Query PostgreSQL with automatic city_name filtering
+    Records records_start = select_stmt_pg(stmt1, name_);
+    Records records_end = select_stmt_pg(stmt2, name_);
 
     try
     {
-        if (not(records_start.empty()))
+        if (not(records_start.empty()) && records_start[0].size() > 2)
         {
             start_GDP_real = std::stod(records_start[0][2]);
         }
         else
         {
-            cout << "Empty return from database in City calculate CAGR" << endl;
+            cout << "No start time data in database for " << name_ << " at time " << start_time1 << endl;
+            return 0.0;
         }
     }
     catch (const exception &e1)
     {
-
-        cerr << e1.what();
+        cerr << "Error parsing start GDP data: " << e1.what() << endl;
+        return 0.0;
     }
 
     try
     {
-        if (not(records_end.empty()))
+        if (not(records_end.empty()) && records_end[0].size() > 2)
         {
             end_GDP_real = std::stod(records_end[0][2]);
         }
         else
         {
-            cout << "Empty return from database in City calculate CAGR" << endl;
+            cout << "No end time data in database for " << name_ << " at time " << end_time << endl;
+            return 0.0;
         }
     }
     catch (const exception &e2)
     {
-
-        cerr << e2.what();
+        cerr << "Error parsing end GDP data: " << e2.what() << endl;
+        return 0.0;
     }
 
-    //cout << "Test i city calculate CAGR: " << CAGR << " GDP real start: " << start_GDP_real << " End GDP real " << end_GDP_real << endl;
-
-    if ((not(start_GDP_real == 0)) && not(end_time == start_time1))
+    // Calculate CAGR with additional safety checks
+    if (start_GDP_real <= 0)
     {
-        delta_time = end_time - start_time1;
-        //cout << "Test i city calculate GDP end/start: " << end_GDP_real/start_GDP_real << " 1/delta time " << 1/delta_time <<  endl;
-        CAGR = pow(end_GDP_real / start_GDP_real, 1 / delta_time) - 1;
-        //CAGR = end_GDP_real/start_GDP_real - 1;
-        //CAGR = pow(2,10);
+        cout << "Invalid start GDP (<=0) for " << name_ << ", cannot calculate CAGR" << endl;
+        return 0.0;
     }
-    cout << "Test i city calculate CAGR: " << CAGR << endl;
+
+    if (end_time <= start_time1)
+    {
+        cout << "Invalid time range for " << name_ << ", cannot calculate CAGR" << endl;
+        return 0.0;
+    }
+
+    delta_time = end_time - start_time1;
+    CAGR = pow(end_GDP_real / start_GDP_real, 1.0 / delta_time) - 1.0;
+
+    cout << "CAGR calculated for " << name_ << ": " << CAGR << " (GDP: " << start_GDP_real << " -> " << end_GDP_real << " over " << delta_time << " periods)" << endl;
 
     return CAGR;
 }
@@ -2457,39 +2514,80 @@ double City::calculate_Palma_ratio()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    //SETTING LIMITS
+    // SETTING LIMITS
     number_of_consumers = consumers_->get_size();
+
+    if (number_of_consumers == 0)
+    {
+        cout << "No consumers found for " << name_ << ", cannot calculate Palma ratio" << endl;
+        return 0.0;
+    }
+
     bottom_count = floor(bottom_percentile * number_of_consumers);
     top_count = ceil(top_percentile * number_of_consumers);
 
-    string full_path = get_city_sql_string(name_);
-    const char *dir = full_path.c_str();
-
-    //SETTING SELECT STATEMENTS
-    string top_net_wealth_stmt = "select sum(NET_INCOME) from (select (INCOME + DIVIDENDS + TRANSFERS) as NET_INCOME from CONSUMER_TABLE order by (INCOME + DIVIDENDS + TRANSFERS)  DESC limit " + std::to_string(top_count) + ")";
-    string bottom_net_wealth_stmt = "select sum(NET_INCOME) from (select (INCOME + DIVIDENDS + TRANSFERS) as NET_INCOME from CONSUMER_TABLE order by (INCOME + DIVIDENDS + TRANSFERS)  ASC limit " + std::to_string(bottom_count) + ")";
-
-    Records records_top = select_stmt(top_net_wealth_stmt, dir);
-    Records records_bottom = select_stmt(bottom_net_wealth_stmt, dir);
-
-    if (not(records_top.empty()))
+    // Debug: Check if consumer data exists in database
+    string count_query = "SELECT COUNT(*) FROM consumer_data WHERE city_name = '" + name_ + "'";
+    Records count_result = select_stmt_pg(count_query, "");
+    if (!count_result.empty() && count_result[0].size() > 0)
     {
-        top_net_wealth = std::stod(records_top[0][0]);
-        cout << "Extracting net income top: " << top_net_wealth << endl;
+        cout << "Consumer records in database for " << name_ << ": " << count_result[0][0] << endl;
     }
 
-    if (not(records_bottom.empty()))
+    // Construct PostgreSQL queries with city_name filter already included
+    // Pass empty string to select_stmt_pg to skip automatic WHERE injection
+    string top_net_wealth_stmt = "SELECT sum(NET_INCOME) FROM (SELECT (income + dividends + transfers) as NET_INCOME FROM consumer_data WHERE city_name = '" + name_ + "' ORDER BY (income + dividends + transfers) DESC LIMIT " + std::to_string(top_count) + ") as top_consumers";
+    string bottom_net_wealth_stmt = "SELECT sum(NET_INCOME) FROM (SELECT (income + dividends + transfers) as NET_INCOME FROM consumer_data WHERE city_name = '" + name_ + "' ORDER BY (income + dividends + transfers) ASC LIMIT " + std::to_string(bottom_count) + ") as bottom_consumers";
+
+    // Call select_stmt_pg with empty city_name to skip automatic WHERE injection
+    Records records_top = select_stmt_pg(top_net_wealth_stmt, "");
+    Records records_bottom = select_stmt_pg(bottom_net_wealth_stmt, "");
+
+    try
     {
-        bottom_net_wealth = std::stod(records_bottom[0][0]);
-        cout << "Extracting net income bottom: " << bottom_net_wealth << endl;
+        if (not(records_top.empty()) && records_top[0].size() > 0 && !records_top[0][0].empty())
+        {
+            top_net_wealth = std::stod(records_top[0][0]);
+            cout << "Extracting net income top: " << top_net_wealth << endl;
+        }
+        else
+        {
+            cout << "No top wealth data found for " << name_ << endl;
+        }
+    }
+    catch (const exception &e)
+    {
+        cerr << "Error parsing top wealth data: " << e.what() << endl;
     }
 
-    if (not(bottom_net_wealth == 0))
+    try
+    {
+        if (not(records_bottom.empty()) && records_bottom[0].size() > 0 && !records_bottom[0][0].empty())
+        {
+            bottom_net_wealth = std::stod(records_bottom[0][0]);
+            cout << "Extracting net income bottom: " << bottom_net_wealth << endl;
+        }
+        else
+        {
+            cout << "No bottom wealth data found for " << name_ << endl;
+        }
+    }
+    catch (const exception &e)
+    {
+        cerr << "Error parsing bottom wealth data: " << e.what() << endl;
+    }
+
+    if (bottom_net_wealth > 0)
     {
         Palma_ratio = top_net_wealth / bottom_net_wealth;
     }
+    else
+    {
+        cout << "Bottom wealth is zero or negative for " << name_ << ", cannot calculate Palma ratio" << endl;
+        return 0.0;
+    }
 
-    cout << "Palma ratio: " << Palma_ratio << endl;
+    cout << "Palma ratio for " << name_ << ": " << Palma_ratio << endl;
 
     return Palma_ratio;
 }
@@ -2501,7 +2599,7 @@ void City::save_consumers()
     {
 
         consumers_->save_consumers();
-        
+
         // Export CONSUMER_TABLE to CSV file
         // export_consumers_to_csv();
     }
@@ -2509,37 +2607,44 @@ void City::save_consumers()
 
 void City::export_consumers_to_csv()
 {
-    try {
+    try
+    {
         // Create SQL query to select all data from CONSUMER_TABLE for this city
         string sql_query = "SELECT ID, NAME, EMPLOYER, ITEMS, CAPITAL, DEPOSITS, DEBTS, SKILL, MOT, SPENDWILL, SAVEWILL, BORROWWILL, INCOME, DIVIDENDS, TRANSFERS FROM CONSUMER_TABLE";
-        
+
         // Execute the query and get results
         Records consumer_records = select_stmt(sql_query, get_city_sql_string(name_).c_str());
-        
+
         // Create filename with city name and timestamp
         string filename = "consumers_" + name_ + "_cycle_" + std::to_string(get_time()) + ".csv";
-        
+
         // Open file for writing
         std::ofstream csv_file(filename);
-        if (!csv_file.is_open()) {
+        if (!csv_file.is_open())
+        {
             std::cerr << "Error: Could not open file " << filename << " for writing" << std::endl;
             return;
         }
-        
+
         // Write CSV header
         csv_file << "ID,NAME,EMPLOYER,ITEMS,CAPITAL,DEPOSITS,DEBTS,SKILL,MOT,SPENDWILL,SAVEWILL,BORROWWILL,INCOME,DIVIDENDS,TRANSFERS" << std::endl;
-        
+
         // Write data rows
-        for (const auto& record : consumer_records) {
-            for (size_t i = 0; i < record.size(); ++i) {
-                if (i > 0) csv_file << ",";
-                
+        for (const auto &record : consumer_records)
+        {
+            for (size_t i = 0; i < record.size(); ++i)
+            {
+                if (i > 0)
+                    csv_file << ",";
+
                 // Escape any commas or quotes in the data
                 string field = record[i];
-                if (field.find(',') != std::string::npos || field.find('"') != std::string::npos) {
+                if (field.find(',') != std::string::npos || field.find('"') != std::string::npos)
+                {
                     // Replace quotes with double quotes and wrap in quotes
                     size_t pos = 0;
-                    while ((pos = field.find('"', pos)) != std::string::npos) {
+                    while ((pos = field.find('"', pos)) != std::string::npos)
+                    {
                         field.replace(pos, 1, "\"\"");
                         pos += 2;
                     }
@@ -2549,12 +2654,13 @@ void City::export_consumers_to_csv()
             }
             csv_file << std::endl;
         }
-        
+
         csv_file.close();
-        
+
         std::cout << "Consumer data exported to CSV file: " << filename << " (" << consumer_records.size() << " records)" << std::endl;
-        
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error exporting consumers to CSV: " << e.what() << std::endl;
     }
 }

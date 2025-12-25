@@ -36,14 +36,14 @@ public:
   double get_capital_sum() const;
   double get_item_sum() const;
   double get_capacity_sum() const;
-  double get_investment_sum() const;
-  double get_desired_loans_sum() const;
+  double get_investment_sum(double, double, double, double) const;
+  double get_desired_loans_sum(double, double, double, double) const;
   double get_debts_sum() const;
   int get_environmental_impact_sum() const;
   double get_average_wage() const;
   double get_average_wage_historical(int years) const;
 
-  double get_expected_net_flow_to_bank_sum() const;
+  double get_expected_net_flow_to_bank_sum(double, double, double, double) const;
   double get_items_for_production_sum() const;
   double get_planned_production_sum() const;
   Company *get_company(string name) const;
@@ -67,7 +67,7 @@ public:
   bool update_employees(Consumer *);
   bool update_employees2(Consumer *);
   bool update_employees3(Consumer *);
-  void set_market(Market * newMarket);
+  void set_market(Market *newMarket);
   void set_intecity_trading(bool);
 
   void remove_usless_employees();
@@ -80,12 +80,12 @@ public:
 
   double produce(string);
   void sell_to_market();
-  double pay_employees(double);
+  double pay_employees(double, int);
   double pay_dividends();
   double pay_dividends_directly(double);
   void pay_interest();
   void repay_to_bank();
-  double invest();
+  double invest(double, double, double, double);
 
 private:
   string name_;

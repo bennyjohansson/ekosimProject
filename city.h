@@ -12,228 +12,231 @@
 #include "bank.h"
 #include "clock.h"
 #include "market.h"
-//#include "consumer.h"
+// #include "consumer.h"
 
 using namespace std;
 
-class City {
-   public:
+class City
+{
+public:
+   City();
+   City(string name);
+   City(string name, Clock *clock);
+   City(string name, Clock *clock, Market *global_market);
 
-      City();
-      City(string name);
-      City(string name, Clock * clock);
-      City(string name, Clock * clock, Market * global_market);
+   /*
+    * Info-funktioner
+    */
 
-      /*
-       * Info-funktioner
-       */
+   void info();
+   void print_consumer_list();
+   void print_employees(string company);
+   // void print_labour_market();
+   void consumer_info();
+   void capital_owners_info();
+   // void labour_info();
+   void print_company_info(string name); // EJ GJORD
+   void market_info();
+   void bank_info();
+   void employee_info();
+   void employee_info(string);
+   void print_company_list();
+   void print_GDP();
 
-      void info();
-      void print_consumer_list();
-      void print_employees(string company);
-      // void print_labour_market();
-      void consumer_info();
-      void capital_owners_info();
-      // void labour_info();
-      void print_company_info(string name);  //EJ GJORD
-      void market_info();
-      void bank_info();
-      void employee_info();
-      void employee_info(string);
-      void print_company_list();
-      void print_GDP();
+   /*
+    * Get-funktioner
+    */
 
-      /*
-       * Get-funktioner
-       */
+   int get_time() const;
+   Clock *get_clock() const;
+   Market *get_market();
+   Market *get_global_market() const;
+   Bank *get_bank();
+   double get_consumer_capital_sum();
+   double get_company_capacity_sum();
+   double get_expected_consumer_net_flow_to_bank_sum();
+   int get_no_companies() const;
+   double get_capital_sum();
+   double get_loans_to_bank();
+   Company *get_company(const string &name);
+   Consumer *get_random_consumer();
+   Element_consumer *get_random_consumers(int number_of_consumers);
 
-      int get_time() const;
-      Clock * get_clock() const;
-      Market * get_market();
-      Market * get_global_market() const;
-      Bank * get_bank();
-      double get_consumer_capital_sum();
-      double get_company_capacity_sum();
-      double get_expected_consumer_net_flow_to_bank_sum();
-      int get_no_companies() const; 
-      double get_capital_sum(); 
-      double get_loans_to_bank();
-      Company * get_company(const string& name);
-      Consumer * get_random_consumer();
-      Element_consumer * get_random_consumers(int number_of_consumers);
+   Company *get_random_company();
+   Consumer *get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
+   double get_shareToSteal() const;
+   double get_laundry_factor() const;
+   double get_capital() const;
+   double get_vat() const;
+   double get_income_tax() const;
+   double get_capital_gains_tax() const;
+   double get_budget_balance() const;
+   double get_inflation_target() const;
+   double get_fac_increase_rate_1() const;
+   double get_cap_increase_param_1() const;
+   double get_cap_increase_rate_1() const;
+   double get_item_efficiency_rate() const;
+   int get_pay_wage_in_cash() const;
+   int get_no_years_laundry() const;
+   int get_time_to_steal() const;
+   string get_name() const;
+   int get_no_consumers() const;
+   Market *get_active_market();
+   Market *get_global_market();
+   bool get_enable_intercity_trading() const;
+   double get_average_excess_demand_items(int average_time) const;
 
-      Company * get_random_company();
-      Consumer * get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
-      double get_shareToSteal() const;
-      double get_laundry_factor() const;
-      double get_capital() const;
-      double get_vat() const;
-      double get_income_tax() const;
-      double get_capital_gains_tax() const;
-      double get_budget_balance() const;
-      double get_inflation_target() const;
-      int get_no_years_laundry() const;
-      int get_time_to_steal() const;
-      string get_name() const;
-      int get_no_consumers() const;
-      Market * get_active_market();
-      Market * get_global_market();
-      bool get_enable_intercity_trading() const;
-      double get_average_excess_demand_items(int average_time) const;
-      
-      /*
-       * Change-functions
-       */
-       
-       void change_capital(double);
+   /*
+    * Change-functions
+    */
 
-      /*
-       * Set-functions
-       */
+   void change_capital(double);
 
-      void set_consumers(Consumer_list * consumer_list);
-      void set_companies(Company_list * company_list);
-      void set_shareToSteal(double);
-      void set_laundry_factor(double);
-      void set_no_years_laundry(int);
-      void set_time_to_steal(int);
-      void set_vat(double);
-      void set_income_tax(double);
-      void set_capital_gains_tax(double);
-      void set_budget_balance(double);
-      void set_inflation_target(double);
-      void set_market(Market *);
-      void set_enable_intercity_trading(bool);
+   /*
+    * Set-functions
+    */
 
+   void set_consumers(Consumer_list *consumer_list);
+   void set_companies(Company_list *company_list);
+   void set_shareToSteal(double);
+   void set_laundry_factor(double);
+   void set_no_years_laundry(int);
+   void set_time_to_steal(int);
+   void set_vat(double);
+   void set_income_tax(double);
+   void set_capital_gains_tax(double);
+   void set_budget_balance(double);
+   void set_inflation_target(double);
+   void set_market(Market *);
+   void set_enable_intercity_trading(bool);
 
-      /*
-       * Functions to add companies and employees to Bennyland
-       */ 
+   /*
+    * Functions to add companies and employees to Bennyland
+    */
 
-      void add_consumer(Consumer * consumer);
-      void add_random_consumers(int);
-      void add_random_consumers(int, double);
-      void add_capital_owners(double);
-      void add_random_shareholders(int);
-      void add_company(Company * company);
-      void add_company(string name);
-      void load_company(string); 
-      double invest_in_new_company(string, double);
-      void load_launder_parameters();
+   void add_consumer(Consumer *consumer);
+   void add_random_consumers(int);
+   void add_random_consumers(int, double);
+   void add_capital_owners(double);
+   void add_random_shareholders(int);
+   void add_company(Company *company);
+   void add_company(string name);
+   void load_company(string);
+   double invest_in_new_company(string, double);
+   void load_launder_parameters();
 
-      /*
-       * Functions to update Bennyland. Note that update_market() is old and not in use.
-       * The update_company_employees() is also not in use
-       */
+   /*
+    * Functions to update Bennyland. Note that update_market() is old and not in use.
+    * The update_company_employees() is also not in use
+    */
 
-      void update_supply_and_demand();
-      void reset_supply_and_demand();
-      void update_market_price();
-      void negotiate_market_price();
-      void update_consumer_list();
-      void update_interest_rate();
-      void update_interest_rate2();
-      void update_companies();
-      void update_employees();
-      void update_employees2();
-      string steal_money();
-      string steal_money(string);
-      double launder_money(string, string);
-      void randomize_laundry_parameters();
-      
- 
-      void tick(); 
-      void save_data();
-      void save_money_data();
-      void save_flash(int);
+   void update_supply_and_demand();
+   void reset_supply_and_demand();
+   void update_market_price();
+   void negotiate_market_price();
+   void update_consumer_list();
+   void update_interest_rate();
+   void update_interest_rate2();
+   void update_companies();
+   void update_employees();
+   void update_employees2();
+   string steal_money();
+   string steal_money(string);
+   double launder_money(string, string);
+   void randomize_laundry_parameters();
 
-      /*
-       * Functions for producing, selling and buying. 
-       */
+   void tick();
+   void save_data();
+   void save_money_data();
+   void save_flash(int);
 
-      void produce();
-      void sell_to_market();
-      void consumers_buy();
-      void invest(bool);
-      void adjust_money();
+   /*
+    * Functions for producing, selling and buying.
+    */
 
-      void pay_company_employees();
-      void pay_transfers();
-      void company_pay_dividends();
-      void company_pay_dividends(string, string, double);
-      void company_pay_interest();
-      void company_repay_to_bank();
-      void consumer_bank_business();
-      void consumer_get_and_pay_interest();
-      void consumers_deposit_and_borrow_from_bank();
-      void consumers_deposit_to_bank();
-      void consumers_borrow_from_bank();
-      void consumers_bank_business();
-      void add_companies_from_database();
-      void update_companies_from_database();
-      void write_time_data_to_company_database();
-      void save_high_score();
-      void save_consumers();
-      void export_consumers_to_csv();
-      double calculate_CAGR(int);
-      double calculate_Palma_ratio();
-      
-      //Database functions
-      void update_interest_parameters();
-      void update_parameters_from_database();
+   void produce();
+   void sell_to_market();
+   void consumers_buy();
+   void invest(bool);
+   void adjust_money();
 
-      list<double> GDP_;
-      list<double> growth_;
-      list<double> investments_;
-      list<double> company_consumption_;
-      list<double> demand_;
-      list<double> price_out_;
-      list<double> excess_demand_items_;
-      list<double> employed_;
-      list<double> time_;
+   void pay_company_employees();
+   void pay_transfers();
+   void company_pay_dividends();
+   void company_pay_dividends(string, string, double);
+   void company_pay_interest();
+   void company_repay_to_bank();
+   void consumer_bank_business();
+   void consumer_get_and_pay_interest();
+   void consumers_deposit_and_borrow_from_bank();
+   void consumers_deposit_to_bank();
+   void consumers_borrow_from_bank();
+   void consumers_bank_business();
+   void add_companies_from_database();
+   void update_companies_from_database();
+   void write_time_data_to_company_database();
+   void save_high_score();
+   void save_consumers();
+   void export_consumers_to_csv();
+   double calculate_CAGR(int);
+   double calculate_Palma_ratio();
 
-      list<double> company_capital_;
-      list<double> consumer_capital_;
-      list<double> bank_capital_;
-      list<double> market_capital_;
-      list<double> total_capital_;
-      list<double> capital_sum_;
+   // Database functions
+   void update_interest_parameters();
+   void update_parameters_from_database();
 
-      list<double> interest_rate_;
- 
+   list<double> GDP_;
+   list<double> growth_;
+   list<double> investments_;
+   list<double> company_consumption_;
+   list<double> demand_;
+   list<double> price_out_;
+   list<double> excess_demand_items_;
+   list<double> employed_;
+   list<double> time_;
 
-   private:
+   list<double> company_capital_;
+   list<double> consumer_capital_;
+   list<double> bank_capital_;
+   list<double> market_capital_;
+   list<double> total_capital_;
+   list<double> capital_sum_;
 
-      string name_;
+   list<double> interest_rate_;
 
-      std::unique_ptr<Consumer_list> consumers_;
-      // std::unique_ptr<Consumer_list> labour_market_;
-      std::unique_ptr<Consumer_list> capital_owners_;
-      std::unique_ptr<Company_list> company_list_;
-      std::unique_ptr<Market> market_;
-      Market * global_market_;  // Pointer to global market (owned by World)
-      std::unique_ptr<Bank> bank_;
-      Clock * clock_;  // Keep as raw pointer - may be shared resource
-      int flash_counter_;
-      double loans_to_bank_;
-      double vat_;
-      double income_tax_; 
-      double capital_gains_tax_;
-      double budget_balance_;
-      double inflation_target_;
-      double capital_;
-      bool enable_intercity_trading_;
-      
-    
-    
-    //Launder parameters  
-    double shareToSteal_;
-   	double laundry_factor_;
-    double no_years_laundry_;
-   	double time_to_steal_; 
+private:
+   string name_;
+
+   std::unique_ptr<Consumer_list> consumers_;
+   // std::unique_ptr<Consumer_list> labour_market_;
+   std::unique_ptr<Consumer_list> capital_owners_;
+   std::unique_ptr<Company_list> company_list_;
+   std::unique_ptr<Market> market_;
+   Market *global_market_; // Pointer to global market (owned by World)
+   std::unique_ptr<Bank> bank_;
+   Clock *clock_; // Keep as raw pointer - may be shared resource
+   int flash_counter_;
+   double loans_to_bank_;
+   double vat_;
+   double income_tax_;
+   double capital_gains_tax_;
+   double budget_balance_;
+   double inflation_target_;
+   double capital_;
+   bool enable_intercity_trading_;
+
+   // Company investment and production parameters
+   double fac_increase_rate_1_;
+   double cap_increase_param_1_;
+   double cap_increase_rate_1_;
+   double item_efficiency_rate_;
+   int pay_wage_in_cash_;
+
+   // Launder parameters
+   double shareToSteal_;
+   double laundry_factor_;
+   double no_years_laundry_;
+   double time_to_steal_;
 };
 
-
-
 #endif
-
