@@ -433,6 +433,15 @@ static int initiateCompanyTable(const char *s)
 int insertMoneyData(std::vector<int> money, string city_name)
 { // std::vector<int> money
 
+    // Use PostgreSQL for money_data (centralized)
+    int pgResult = insertMoneyDataPG(money, city_name);
+
+    if (pgResult != 0)
+    {
+        cerr << "Warning: Failed to insert money data to PostgreSQL" << endl;
+    }
+
+    // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str(); //"/var/app/current/myDB/ekosimDB.db";
 
@@ -1056,7 +1065,7 @@ int deleteTimeDataPG(string city_name)
     }
 
     string sql = "DELETE FROM time_data WHERE city_name = $1";
-    
+
     const char *paramValues[1] = {city_name.c_str()};
 
     PGresult *result = PQexecParams(pgManager.getConnection(),
@@ -1076,6 +1085,174 @@ int deleteTimeDataPG(string city_name)
     }
 
     cout << "TIME_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
+// Insert money data to PostgreSQL
+int insertMoneyDataPG(std::vector<int> money, string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for money_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "INSERT INTO money_data (city_name, time, bank_capital, bank_loans, bank_deposits, "
+                 "bank_liquidity, consumer_capital, consumer_deposits, consumer_debts, company_debts, "
+                 "company_capital, market_capital, city_capital, total_capital) "
+                 "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) "
+                 "ON CONFLICT (city_name, time) DO UPDATE SET "
+                 "bank_capital = EXCLUDED.bank_capital, "
+                 "bank_loans = EXCLUDED.bank_loans, "
+                 "bank_deposits = EXCLUDED.bank_deposits, "
+                 "bank_liquidity = EXCLUDED.bank_liquidity, "
+                 "consumer_capital = EXCLUDED.consumer_capital, "
+                 "consumer_deposits = EXCLUDED.consumer_deposits, "
+                 "consumer_debts = EXCLUDED.consumer_debts, "
+                 "company_debts = EXCLUDED.company_debts, "
+                 "company_capital = EXCLUDED.company_capital, "
+                 "market_capital = EXCLUDED.market_capital, "
+                 "city_capital = EXCLUDED.city_capital, "
+                 "total_capital = EXCLUDED.total_capital";
+
+    const char *paramValues[14];
+    string values[14];
+
+    values[0] = city_name;                  // city_name
+    values[1] = std::to_string(money[0]);   // time
+    values[2] = std::to_string(money[1]);   // bank_capital
+    values[3] = std::to_string(money[2]);   // bank_loans
+    values[4] = std::to_string(money[3]);   // bank_deposits
+    values[5] = std::to_string(money[4]);   // bank_liquidity
+    values[6] = std::to_string(money[5]);   // consumer_capital
+    values[7] = std::to_string(money[6]);   // consumer_deposits
+    values[8] = std::to_string(money[7]);   // consumer_debts
+    values[9] = std::to_string(money[8]);   // company_debts
+    values[10] = std::to_string(money[9]);  // company_capital
+    values[11] = std::to_string(money[10]); // market_capital
+    values[12] = std::to_string(money[11]); // city_capital
+    values[13] = std::to_string(money[12]); // total_capital
+
+    for (int i = 0; i < 14; i++)
+    {
+        paramValues[i] = values[i].c_str();
+    }
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    14,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "I insert money data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "I insert money data (PostgreSQL) for city: " << city_name << " at time: " << values[1] << endl;
+    PQclear(result);
+    return 0;
+}
+
+// Get money data from PostgreSQL
+Records getMoneyDataPG(string city_name, int limit)
+{
+    Records results;
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for money_data read: " << pgManager.getLastError() << endl;
+        return results;
+    }
+
+    string sql = "SELECT time, bank_capital, bank_loans, bank_deposits, bank_liquidity, "
+                 "consumer_capital, consumer_deposits, consumer_debts, company_debts, "
+                 "company_capital, market_capital, city_capital, total_capital "
+                 "FROM money_data WHERE city_name = $1 "
+                 "ORDER BY time DESC";
+
+    if (limit > 0)
+    {
+        sql += " LIMIT " + std::to_string(limit);
+    }
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) == PGRES_TUPLES_OK)
+    {
+        int rows = PQntuples(result);
+        int cols = PQnfields(result);
+
+        for (int i = 0; i < rows; i++)
+        {
+            Record row;
+            for (int j = 0; j < cols; j++)
+            {
+                row.push_back(PQgetvalue(result, i, j));
+            }
+            results.push_back(row);
+        }
+        PQclear(result);
+    }
+    else
+    {
+        cerr << "Failed to fetch money_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+    }
+
+    return results;
+}
+
+// Delete money data from PostgreSQL for a specific city
+int deleteMoneyDataPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for money_data delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM money_data WHERE city_name = $1";
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete money_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "MONEY_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
     PQclear(result);
     return 0;
 }
@@ -1209,13 +1386,15 @@ static int deleteTheData(const char *s)
     size_t last_slash = path_str.find_last_of("/");
     size_t dot_pos = path_str.find_last_of(".");
     string city_name = "";
-    
-    if (last_slash != string::npos && dot_pos != string::npos && dot_pos > last_slash) {
+
+    if (last_slash != string::npos && dot_pos != string::npos && dot_pos > last_slash)
+    {
         city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
         cout << "Extracted city name: " << city_name << " from path: " << path_str << endl;
-        
+
         // Delete from PostgreSQL first
         deleteTimeDataPG(city_name);
+        deleteMoneyDataPG(city_name);
     }
 
     sqlite3 *DB;

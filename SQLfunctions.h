@@ -53,6 +53,9 @@ Records getWorldTablePG(string world_name);
 int insertTimeDataPG(std::vector<double> myData, string city_name);
 Records getTimeDataPG(string city_name, int limit);
 int deleteTimeDataPG(string city_name);
+int insertMoneyDataPG(std::vector<int> money, string city_name);
+Records getMoneyDataPG(string city_name, int limit);
+int deleteMoneyDataPG(string city_name);
 
 static int updateData(const char *s);
 static int updateParameter(const char *s, string, double);
