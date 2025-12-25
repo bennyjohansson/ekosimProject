@@ -622,6 +622,15 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
 int insertCompanyTimeData(std::vector<double> myData, string city_name, string company_name)
 { // std::vector<int> money
 
+    // Use PostgreSQL for company_data (centralized)
+    int pgResult = insertCompanyTimeDataPG(myData, city_name, company_name);
+
+    if (pgResult != 0)
+    {
+        cerr << "Warning: Failed to insert company data to PostgreSQL" << endl;
+    }
+
+    // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
 
@@ -1257,6 +1266,185 @@ int deleteMoneyDataPG(string city_name)
     return 0;
 }
 
+// Insert company time data to PostgreSQL
+int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string company_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for company_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, "
+                 "debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, "
+                 "production, employees, item_efficiency, cap_vs_eff_split) "
+                 "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) "
+                 "ON CONFLICT (city_name, company_name, time_stamp) DO UPDATE SET "
+                 "capital = EXCLUDED.capital, "
+                 "stock = EXCLUDED.stock, "
+                 "capacity = EXCLUDED.capacity, "
+                 "debts = EXCLUDED.debts, "
+                 "pcskill = EXCLUDED.pcskill, "
+                 "pcmot = EXCLUDED.pcmot, "
+                 "wage_const = EXCLUDED.wage_const, "
+                 "wage_ch = EXCLUDED.wage_ch, "
+                 "invest = EXCLUDED.invest, "
+                 "pbr = EXCLUDED.pbr, "
+                 "decay = EXCLUDED.decay, "
+                 "prod_parm = EXCLUDED.prod_parm, "
+                 "prod_fcn = EXCLUDED.prod_fcn, "
+                 "production = EXCLUDED.production, "
+                 "employees = EXCLUDED.employees, "
+                 "item_efficiency = EXCLUDED.item_efficiency, "
+                 "cap_vs_eff_split = EXCLUDED.cap_vs_eff_split";
+
+    const char *paramValues[20];
+    string values[20];
+
+    values[0] = city_name;                               // city_name
+    values[1] = company_name;                            // company_name
+    values[2] = std::to_string((int)round(myData[0]));   // time_stamp
+    values[3] = std::to_string((int)round(myData[1]));   // capital
+    values[4] = std::to_string((int)round(myData[2]));   // stock
+    values[5] = std::to_string((int)round(myData[3]));   // capacity
+    values[6] = std::to_string((int)round(myData[4]));   // debts
+    values[7] = std::to_string(myData[5]);               // pcskill
+    values[8] = std::to_string(myData[6]);               // pcmot
+    values[9] = std::to_string(myData[7]);               // wage_const
+    values[10] = std::to_string(myData[8]);              // wage_ch
+    values[11] = std::to_string((int)round(myData[9]));  // invest
+    values[12] = std::to_string(myData[10]);             // pbr
+    values[13] = std::to_string(myData[11]);             // decay
+    values[14] = std::to_string(myData[12]);             // prod_parm
+    values[15] = std::to_string((int)round(myData[13])); // prod_fcn
+    values[16] = std::to_string((int)round(myData[14])); // production
+    values[17] = std::to_string((int)round(myData[15])); // employees
+    values[18] = std::to_string(myData[16]);             // item_efficiency
+    values[19] = std::to_string(myData[17]);             // cap_vs_eff_split
+
+    for (int i = 0; i < 20; i++)
+    {
+        paramValues[i] = values[i].c_str();
+    }
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    20,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "I insert company data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "I insert company data (PostgreSQL) for " << company_name << " in " << city_name << " at time: " << values[2] << endl;
+    PQclear(result);
+    return 0;
+}
+
+// Get company data from PostgreSQL
+Records getCompanyDataPG(string city_name, string company_name, int limit)
+{
+    Records results;
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for company_data read: " << pgManager.getLastError() << endl;
+        return results;
+    }
+
+    string sql = "SELECT time_stamp, capital, stock, capacity, debts, pcskill, pcmot, "
+                 "wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, "
+                 "production, employees, item_efficiency, cap_vs_eff_split "
+                 "FROM company_data WHERE city_name = $1 AND company_name = $2 "
+                 "ORDER BY time_stamp DESC";
+
+    if (limit > 0)
+    {
+        sql += " LIMIT " + std::to_string(limit);
+    }
+
+    const char *paramValues[2] = {city_name.c_str(), company_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    2,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) == PGRES_TUPLES_OK)
+    {
+        int rows = PQntuples(result);
+        int cols = PQnfields(result);
+
+        for (int i = 0; i < rows; i++)
+        {
+            Record row;
+            for (int j = 0; j < cols; j++)
+            {
+                row.push_back(PQgetvalue(result, i, j));
+            }
+            results.push_back(row);
+        }
+        PQclear(result);
+    }
+    else
+    {
+        cerr << "Failed to fetch company_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+    }
+
+    return results;
+}
+
+// Delete company data from PostgreSQL for a specific city
+int deleteCompanyDataPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for company_data delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM company_data WHERE city_name = $1";
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete company_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "COMPANY_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
 int insertConsumerData(std::vector<double> myData, string country, string name, string employer)
 { // std::vector<int> money
 
@@ -1395,6 +1583,7 @@ static int deleteTheData(const char *s)
         // Delete from PostgreSQL first
         deleteTimeDataPG(city_name);
         deleteMoneyDataPG(city_name);
+        deleteCompanyDataPG(city_name);
     }
 
     sqlite3 *DB;

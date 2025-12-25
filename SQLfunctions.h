@@ -56,6 +56,9 @@ int deleteTimeDataPG(string city_name);
 int insertMoneyDataPG(std::vector<int> money, string city_name);
 Records getMoneyDataPG(string city_name, int limit);
 int deleteMoneyDataPG(string city_name);
+int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string company_name);
+Records getCompanyDataPG(string city_name, string company_name, int limit);
+int deleteCompanyDataPG(string city_name);
 
 static int updateData(const char *s);
 static int updateParameter(const char *s, string, double);
