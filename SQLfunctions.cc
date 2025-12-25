@@ -477,6 +477,15 @@ int insertMoneyData(std::vector<int> money, string city_name)
 int insertTimeData(std::vector<double> myData, string city_name)
 { // std::vector<int> money
 
+    // Use PostgreSQL for time_data (centralized)
+    int pgResult = insertTimeDataPG(myData, city_name);
+
+    if (pgResult != 0)
+    {
+        cerr << "Warning: Failed to insert time data to PostgreSQL" << endl;
+    }
+
+    // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(city_name);
     const char *dir = full_path.c_str();
 
@@ -504,12 +513,12 @@ int insertTimeData(std::vector<double> myData, string city_name)
 
     if (exit != SQLITE_OK)
     {
-        cerr << "Error insert" << endl;
+        cerr << "Error insert time data (SQLite)" << endl;
         sqlite3_free(messageerror);
     }
     else
     {
-        cout << "Time data updated successfully" << endl;
+        cout << "Time data updated successfully (SQLite)" << endl;
     }
     sqlite3_close(DB);
     return 0;
@@ -906,6 +915,171 @@ Records getWorldTablePG(string world_name)
     return results;
 }
 
+// Insert time series data to PostgreSQL
+int insertTimeDataPG(std::vector<double> myData, string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for time_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "INSERT INTO time_data (city_name, time, gdp_items, demand, price, unemployment, "
+                 "wages, interest_rate, investments, gdp_nominal, liquidity_reserve_ratio, "
+                 "capital_reserve_ratio, bank_dividend_ratio) "
+                 "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) "
+                 "ON CONFLICT (city_name, time) DO UPDATE SET "
+                 "gdp_items = EXCLUDED.gdp_items, "
+                 "demand = EXCLUDED.demand, "
+                 "price = EXCLUDED.price, "
+                 "unemployment = EXCLUDED.unemployment, "
+                 "wages = EXCLUDED.wages, "
+                 "interest_rate = EXCLUDED.interest_rate, "
+                 "investments = EXCLUDED.investments, "
+                 "gdp_nominal = EXCLUDED.gdp_nominal, "
+                 "liquidity_reserve_ratio = EXCLUDED.liquidity_reserve_ratio, "
+                 "capital_reserve_ratio = EXCLUDED.capital_reserve_ratio, "
+                 "bank_dividend_ratio = EXCLUDED.bank_dividend_ratio";
+
+    const char *paramValues[13];
+    string values[13];
+
+    values[0] = city_name;                             // city_name
+    values[1] = std::to_string((int)round(myData[0])); // time
+    values[2] = std::to_string((int)round(myData[1])); // gdp_items
+    values[3] = std::to_string(myData[2]);             // demand
+    values[4] = std::to_string(myData[3]);             // price
+    values[5] = std::to_string(myData[4]);             // unemployment
+    values[6] = std::to_string(myData[5]);             // wages
+    values[7] = std::to_string(myData[6]);             // interest_rate
+    values[8] = std::to_string(myData[7]);             // investments
+    values[9] = std::to_string((int)round(myData[8])); // gdp_nominal
+    values[10] = std::to_string(myData[9]);            // liquidity_reserve_ratio
+    values[11] = std::to_string(myData[10]);           // capital_reserve_ratio
+    values[12] = std::to_string(myData[11]);           // bank_dividend_ratio
+
+    for (int i = 0; i < 13; i++)
+    {
+        paramValues[i] = values[i].c_str();
+    }
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    13,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "I insert time data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "I insert time data (PostgreSQL) for city: " << city_name << " at time: " << values[1] << endl;
+    PQclear(result);
+    return 0;
+}
+
+// Get time series data from PostgreSQL
+Records getTimeDataPG(string city_name, int limit)
+{
+    Records results;
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for time_data read: " << pgManager.getLastError() << endl;
+        return results;
+    }
+
+    string sql = "SELECT time, gdp_items, demand, price, unemployment, wages, interest_rate, "
+                 "investments, gdp_nominal, liquidity_reserve_ratio, capital_reserve_ratio, "
+                 "bank_dividend_ratio FROM time_data WHERE city_name = $1 "
+                 "ORDER BY time DESC";
+
+    if (limit > 0)
+    {
+        sql += " LIMIT " + std::to_string(limit);
+    }
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) == PGRES_TUPLES_OK)
+    {
+        int rows = PQntuples(result);
+        int cols = PQnfields(result);
+
+        for (int i = 0; i < rows; i++)
+        {
+            Record row;
+            for (int j = 0; j < cols; j++)
+            {
+                row.push_back(PQgetvalue(result, i, j));
+            }
+            results.push_back(row);
+        }
+        PQclear(result);
+    }
+    else
+    {
+        cerr << "Failed to fetch time_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+    }
+
+    return results;
+}
+
+// Delete time series data from PostgreSQL for a specific city
+int deleteTimeDataPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for time_data delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM time_data WHERE city_name = $1";
+    
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete time_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "TIME_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
 int insertConsumerData(std::vector<double> myData, string country, string name, string employer)
 { // std::vector<int> money
 
@@ -1030,6 +1204,19 @@ int testPostgreSQLConnection()
 
 static int deleteTheData(const char *s)
 {
+    // Extract city name from the database path (e.g., "myDB/Bennyland.db" -> "Bennyland")
+    string path_str(s);
+    size_t last_slash = path_str.find_last_of("/");
+    size_t dot_pos = path_str.find_last_of(".");
+    string city_name = "";
+    
+    if (last_slash != string::npos && dot_pos != string::npos && dot_pos > last_slash) {
+        city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
+        cout << "Extracted city name: " << city_name << " from path: " << path_str << endl;
+        
+        // Delete from PostgreSQL first
+        deleteTimeDataPG(city_name);
+    }
 
     sqlite3 *DB;
     char *messageerror = new char[150];

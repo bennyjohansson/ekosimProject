@@ -50,6 +50,9 @@ int insertHighScorePG(std::vector<double> myData, string city_name, string user_
 vector<vector<string>> getHighScoresPG(string country_filter, int limit);
 int insertWorldDataPG(string world_name, string city_name, int consumers, string email, int created);
 Records getWorldTablePG(string world_name);
+int insertTimeDataPG(std::vector<double> myData, string city_name);
+Records getTimeDataPG(string city_name, int limit);
+int deleteTimeDataPG(string city_name);
 
 static int updateData(const char *s);
 static int updateParameter(const char *s, string, double);
