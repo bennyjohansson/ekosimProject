@@ -676,45 +676,46 @@ int insertMoneyData(std::vector<int> money, string city_name)
         cerr << "Warning: Failed to insert money data to PostgreSQL" << endl;
     }
 
+    // COMMENTED OUT: SQLite writes disabled to verify PostgreSQL migration
     // Keep SQLite write for backward compatibility during migration
-    string full_path = get_city_sql_string(city_name);
-    const char *dir = full_path.c_str(); //"/var/app/current/myDB/ekosimDB.db";
+    // string full_path = get_city_sql_string(city_name);
+    // const char *dir = full_path.c_str(); //"/var/app/current/myDB/ekosimDB.db";
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(dir, &DB);
+    // int exit = sqlite3_open(dir, &DB);
 
-    string sql = "INSERT INTO MONEY_DATA (TIME, BANK_CAPITAL, BANK_LOANS, BANK_DEPOSITS, BANK_LIQUIDITY, CONSUMER_CAPITAL, CONSUMER_DEPOSITS, CONSUMER_DEBTS, COMPANY_DEBTS, COMPANY_CAPITAL, MARKET_CAPITAL, CITY_CAPITAL, TOTAL_CAPITAL) VALUES(";
+    // string sql = "INSERT INTO MONEY_DATA (TIME, BANK_CAPITAL, BANK_LOANS, BANK_DEPOSITS, BANK_LIQUIDITY, CONSUMER_CAPITAL, CONSUMER_DEPOSITS, CONSUMER_DEBTS, COMPANY_DEBTS, COMPANY_CAPITAL, MARKET_CAPITAL, CITY_CAPITAL, TOTAL_CAPITAL) VALUES(";
 
-    sql.append(std::to_string(money[0]) + ", ");
-    sql.append(std::to_string(money[1]) + ", ");
-    sql.append(std::to_string(money[2]) + ", ");
-    sql.append(std::to_string(money[3]) + ", ");
-    sql.append(std::to_string(money[4]) + ", ");
-    sql.append(std::to_string(money[5]) + ", ");
-    sql.append(std::to_string(money[6]) + ", ");
-    sql.append(std::to_string(money[7]) + ", ");
-    sql.append(std::to_string(money[8]) + ", ");
-    sql.append(std::to_string(money[9]) + ", ");
-    sql.append(std::to_string(money[10]) + ", ");
-    sql.append(std::to_string(money[11]) + ", ");
-    sql.append(std::to_string(money[12]) + ");");
+    // sql.append(std::to_string(money[0]) + ", ");
+    // sql.append(std::to_string(money[1]) + ", ");
+    // sql.append(std::to_string(money[2]) + ", ");
+    // sql.append(std::to_string(money[3]) + ", ");
+    // sql.append(std::to_string(money[4]) + ", ");
+    // sql.append(std::to_string(money[5]) + ", ");
+    // sql.append(std::to_string(money[6]) + ", ");
+    // sql.append(std::to_string(money[7]) + ", ");
+    // sql.append(std::to_string(money[8]) + ", ");
+    // sql.append(std::to_string(money[9]) + ", ");
+    // sql.append(std::to_string(money[10]) + ", ");
+    // sql.append(std::to_string(money[11]) + ", ");
+    // sql.append(std::to_string(money[12]) + ");");
 
-    // cout << "I SQL insert money data: " << sql << endl;
+    // // cout << "I SQL insert money data: " << sql << endl;
 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert money data" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "Money data updated successfully" << endl;
-    }
-    sqlite3_close(DB);
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error insert money data" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "Money data updated successfully" << endl;
+    // }
+    // sqlite3_close(DB);
     return 0;
 }
 
@@ -729,42 +730,43 @@ int insertTimeData(std::vector<double> myData, string city_name)
         cerr << "Warning: Failed to insert time data to PostgreSQL" << endl;
     }
 
+    // COMMENTED OUT: SQLite writes disabled to verify PostgreSQL migration
     // Keep SQLite write for backward compatibility during migration
-    string full_path = get_city_sql_string(city_name);
-    const char *dir = full_path.c_str();
+    // string full_path = get_city_sql_string(city_name);
+    // const char *dir = full_path.c_str();
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(dir, &DB);
+    // int exit = sqlite3_open(dir, &DB);
 
-    string sql = "INSERT INTO TIME_DATA (TIME, GDP_ITEMS, DEMAND, PRICE, UNEMPLOYMENT, WAGES, INTEREST_RATE, INVESTMENTS, GDP_NOMINAL, LIQ_RES_RATIO, CAP_RES_RATIO, BANK_DIV_RATIO) VALUES(";
+    // string sql = "INSERT INTO TIME_DATA (TIME, GDP_ITEMS, DEMAND, PRICE, UNEMPLOYMENT, WAGES, INTEREST_RATE, INVESTMENTS, GDP_NOMINAL, LIQ_RES_RATIO, CAP_RES_RATIO, BANK_DIV_RATIO) VALUES(";
 
-    sql.append(std::to_string((int)round(myData[0])) + ", ");
-    sql.append(std::to_string((int)round(myData[1])) + ", ");
-    sql.append(std::to_string(myData[2]) + ", ");
-    sql.append(std::to_string(myData[3]) + ", ");
-    sql.append(std::to_string(myData[4]) + ", ");
-    sql.append(std::to_string(myData[5]) + ", ");
-    sql.append(std::to_string(myData[6]) + ", ");
-    sql.append(std::to_string(myData[7]) + ", ");
-    sql.append(std::to_string((int)round(myData[8])) + ", ");
-    sql.append(std::to_string(myData[9]) + ", ");
-    sql.append(std::to_string(myData[10]) + ", ");
-    sql.append(std::to_string(myData[11]) + ");");
+    // sql.append(std::to_string((int)round(myData[0])) + ", ");
+    // sql.append(std::to_string((int)round(myData[1])) + ", ");
+    // sql.append(std::to_string(myData[2]) + ", ");
+    // sql.append(std::to_string(myData[3]) + ", ");
+    // sql.append(std::to_string(myData[4]) + ", ");
+    // sql.append(std::to_string(myData[5]) + ", ");
+    // sql.append(std::to_string(myData[6]) + ", ");
+    // sql.append(std::to_string(myData[7]) + ", ");
+    // sql.append(std::to_string((int)round(myData[8])) + ", ");
+    // sql.append(std::to_string(myData[9]) + ", ");
+    // sql.append(std::to_string(myData[10]) + ", ");
+    // sql.append(std::to_string(myData[11]) + ");");
 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert time data (SQLite)" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "Time data updated successfully (SQLite)" << endl;
-    }
-    sqlite3_close(DB);
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error insert time data (SQLite)" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "Time data updated successfully (SQLite)" << endl;
+    // }
+    // sqlite3_close(DB);
     return 0;
 }
 
@@ -866,53 +868,54 @@ int insertCompanyTimeData(std::vector<double> myData, string city_name, string c
     //     cerr << "Warning: Failed to insert company data to PostgreSQL" << endl;
     // }
 
+    // COMMENTED OUT: SQLite writes disabled to verify PostgreSQL migration
     // Keep SQLite write for backward compatibility during migration
-    string full_path = get_city_sql_string(city_name);
-    const char *dir = full_path.c_str();
+    // string full_path = get_city_sql_string(city_name);
+    // const char *dir = full_path.c_str();
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(dir, &DB);
+    // int exit = sqlite3_open(dir, &DB);
 
-    string sql = "INSERT INTO COMPANY_TABLE (TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT, WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN, PRODUCTION, EMPLOYEES, ITEM_EFFICIENCY, CAP_VS_EFF_SPLIT) VALUES(";
+    // string sql = "INSERT INTO COMPANY_TABLE (TIME_STAMP, NAME, CAPITAL, STOCK, CAPACITY, DEBTS, PCSKILL, PCMOT, WAGE_CONST, WAGE_CH, INVEST, PBR, DECAY, PROD_PARM, PROD_FCN, PRODUCTION, EMPLOYEES, ITEM_EFFICIENCY, CAP_VS_EFF_SPLIT) VALUES(";
 
-    sql.append(std::to_string((int)round(myData[0])) + ", ");  // time
-    sql.append("'" + company_name + "', ");                    // name
-    sql.append(std::to_string((int)round(myData[1])) + ", ");  // capital
-    sql.append(std::to_string((int)round(myData[2])) + ", ");  // stock
-    sql.append(std::to_string((int)round(myData[3])) + ", ");  // capacity
-    sql.append(std::to_string((int)round(myData[4])) + ", ");  // debts
-    sql.append(std::to_string(myData[5]) + ", ");              // PC_SKILL
-    sql.append(std::to_string(myData[6]) + ", ");              // pc_mot
-    sql.append(std::to_string(myData[7]) + ", ");              // wage_const
-    sql.append(std::to_string(myData[8]) + ", ");              // wage_ch
-    sql.append(std::to_string((int)round(myData[9])) + ", ");  // invest
-    sql.append(std::to_string(myData[10]) + ", ");             // pbr
-    sql.append(std::to_string(myData[11]) + ", ");             // decay
-    sql.append(std::to_string(myData[12]) + ", ");             // prod_param
-    sql.append(std::to_string((int)round(myData[13])) + ", "); // prod_fcn
-    sql.append(std::to_string((int)round(myData[14])) + ", "); // Production
-    sql.append(std::to_string((int)round(myData[15])) + ", "); // employees
-    sql.append(std::to_string(myData[16]) + ", ");             // item efficiency
-    sql.append(std::to_string(myData[17]) + ");");             // cap eff splie
+    // sql.append(std::to_string((int)round(myData[0])) + ", ");  // time
+    // sql.append("'" + company_name + "', ");                    // name
+    // sql.append(std::to_string((int)round(myData[1])) + ", ");  // capital
+    // sql.append(std::to_string((int)round(myData[2])) + ", ");  // stock
+    // sql.append(std::to_string((int)round(myData[3])) + ", ");  // capacity
+    // sql.append(std::to_string((int)round(myData[4])) + ", ");  // debts
+    // sql.append(std::to_string(myData[5]) + ", ");              // PC_SKILL
+    // sql.append(std::to_string(myData[6]) + ", ");              // pc_mot
+    // sql.append(std::to_string(myData[7]) + ", ");              // wage_const
+    // sql.append(std::to_string(myData[8]) + ", ");              // wage_ch
+    // sql.append(std::to_string((int)round(myData[9])) + ", ");  // invest
+    // sql.append(std::to_string(myData[10]) + ", ");             // pbr
+    // sql.append(std::to_string(myData[11]) + ", ");             // decay
+    // sql.append(std::to_string(myData[12]) + ", ");             // prod_param
+    // sql.append(std::to_string((int)round(myData[13])) + ", "); // prod_fcn
+    // sql.append(std::to_string((int)round(myData[14])) + ", "); // Production
+    // sql.append(std::to_string((int)round(myData[15])) + ", "); // employees
+    // sql.append(std::to_string(myData[16]) + ", ");             // item efficiency
+    // sql.append(std::to_string(myData[17]) + ");");             // cap eff splie
 
-    // sql.append(std::to_string(myData[11])  + ");");
+    // // sql.append(std::to_string(myData[11])  + ");");
 
-    // cout << sql << endl;
+    // // cout << sql << endl;
 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert company time data: " << messageerror << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "Company time data updated successfully" << endl;
-    }
-    sqlite3_close(DB);
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error insert company time data: " << messageerror << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "Company time data updated successfully" << endl;
+    // }
+    // sqlite3_close(DB);
     return 0;
 }
 
@@ -2265,48 +2268,49 @@ int insertConsumerData(std::vector<double> myData, string country, string name, 
     string full_path = get_city_sql_string(country);
     const char *dir = full_path.c_str();
 
+    // COMMENTED OUT: SQLite writes disabled to verify PostgreSQL migration
     // NOTE: PostgreSQL insert is now handled by batch insert in Consumer_list::save_consumers()
     // This function only writes to SQLite for backward compatibility
     // Remove the following line to avoid duplicate PostgreSQL inserts:
     // insertConsumerDataPG(country, name, employer, ...);
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(dir, &DB);
+    // int exit = sqlite3_open(dir, &DB);
 
-    string sql = "INSERT INTO CONSUMER_TABLE (NAME, EMPLOYER, ITEMS, CAPITAL, DEPOSITS, DEBTS, SKILL, MOT, SPENDWILL, SAVEWILL, BORROWWILL, INCOME, DIVIDENDS, TRANSFERS) VALUES(";
+    // string sql = "INSERT INTO CONSUMER_TABLE (NAME, EMPLOYER, ITEMS, CAPITAL, DEPOSITS, DEBTS, SKILL, MOT, SPENDWILL, SAVEWILL, BORROWWILL, INCOME, DIVIDENDS, TRANSFERS) VALUES(";
 
-    sql.append("'" + name + "', ");                           // name
-    sql.append("'" + employer + "', ");                       // employer
-    sql.append(std::to_string((int)round(myData[0])) + ", "); // items
-    sql.append(std::to_string(myData[1]) + ", ");             // capital
-    sql.append(std::to_string(myData[2]) + ", ");             // loans
-    sql.append(std::to_string(myData[3]) + ", ");             // debts
-    sql.append(std::to_string(myData[4]) + ", ");             // skill
-    sql.append(std::to_string(myData[5]) + ", ");             // mot
-    sql.append(std::to_string(myData[6]) + ", ");             // spendwill
-    sql.append(std::to_string(myData[7]) + ", ");             // savewill
-    sql.append(std::to_string(myData[8]) + ", ");             // borrowwill
-    sql.append(std::to_string(myData[9]) + ", ");             // INCOME
-    sql.append(std::to_string(myData[10]) + ", ");            // dividends
-    sql.append(std::to_string(myData[11]) + ");");            // transfers
+    // sql.append("'" + name + "', ");                           // name
+    // sql.append("'" + employer + "', ");                       // employer
+    // sql.append(std::to_string((int)round(myData[0])) + ", "); // items
+    // sql.append(std::to_string(myData[1]) + ", ");             // capital
+    // sql.append(std::to_string(myData[2]) + ", ");             // loans
+    // sql.append(std::to_string(myData[3]) + ", ");             // debts
+    // sql.append(std::to_string(myData[4]) + ", ");             // skill
+    // sql.append(std::to_string(myData[5]) + ", ");             // mot
+    // sql.append(std::to_string(myData[6]) + ", ");             // spendwill
+    // sql.append(std::to_string(myData[7]) + ", ");             // savewill
+    // sql.append(std::to_string(myData[8]) + ", ");             // borrowwill
+    // sql.append(std::to_string(myData[9]) + ", ");             // INCOME
+    // sql.append(std::to_string(myData[10]) + ", ");            // dividends
+    // sql.append(std::to_string(myData[11]) + ");");            // transfers
 
-    // cout << sql << endl;
+    // // cout << sql << endl;
 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert CONSUMER_TABLE: " << messageerror << endl;
-        cerr << "SQL: " << sql << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        // cout << "CONSUMER_TABLE updated successfully" << endl;
-    }
-    sqlite3_close(DB);
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error insert CONSUMER_TABLE: " << messageerror << endl;
+    //     cerr << "SQL: " << sql << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     // cout << "CONSUMER_TABLE updated successfully" << endl;
+    // }
+    // sqlite3_close(DB);
     return 0;
 }
 
