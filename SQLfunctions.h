@@ -58,7 +58,9 @@ int insertMoneyDataPG(std::vector<int> money, string city_name);
 Records getMoneyDataPG(string city_name, int limit);
 int deleteMoneyDataPG(string city_name);
 int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string company_name);
+int batchInsertCompanyTimeDataPG(const vector<tuple<string, vector<double>>> &companies_data, string city_name);
 Records getCompanyDataPG(string city_name, string company_name, int limit);
+Records getAllCompaniesLatestDataPG(string city_name);
 int deleteCompanyDataPG(string city_name);
 
 // PostgreSQL PARAMETERS functions

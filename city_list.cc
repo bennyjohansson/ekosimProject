@@ -6,358 +6,424 @@
 #include <stdexcept>
 
 #include "city_list.h"
-//#include "error_no_return.h"
+// #include "error_no_return.h"
 
 using namespace std;
 
 // City_list::City_list(string name) :
 // list_(std::make_unique<Element_city>(nullptr, new City("Bennyland"))),
-// size_(1), 
+// size_(1),
 // name_(name)
 // {}
 
 // City_list::City_list(string name, Clock * clock) :
 // list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock))),
-// size_(1), 
+// size_(1),
 // name_(name)
 // {}
 
-City_list::City_list(string name, Clock * clock, Market * global_market) :
-list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock, global_market))),
-size_(1), 
-name_(name)
-{}
+City_list::City_list(string name, Clock *clock, Market *global_market) : list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock, global_market))),
+                                                                         size_(1),
+                                                                         name_(name)
+{
+}
 
 /*
  * Functions to add cities
- */ 
+ */
 
-City * City_list::get_city(string name) {
-    Element_city * p;
-    
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            if (p ->get_name() == name) {
-                return p -> get_city() ;
+City *City_list::get_city(string name)
+{
+    Element_city *p;
+
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_name() == name)
+            {
+                return p->get_city();
             }
         }
-        //throw no_return_error("Cant find the city");
+        // throw no_return_error("Cant find the city");
         throw std::runtime_error(std::string("Cant find the city"));
     }
-    else {
-        // throw no_return_error("no list"); 
-        throw std::runtime_error(std::string("No city list"));
-        
-    } 
-}
-
-double City_list::get_capital_sum() const {
-    Element_city * p;
-    double sum = 0;
-    
-    if(list_) {
-        for (p = list_.get(); p; p = p -> next_.get()) {
-            sum += p -> get_city() -> get_capital_sum();
-        }
-    } 
-    else {
+    else
+    {
+        // throw no_return_error("no list");
         throw std::runtime_error(std::string("No city list"));
     }
-    
-    return sum; 
 }
 
-double City_list::get_added_capital_sum() const {
-    Element_city * p;
+double City_list::get_capital_sum() const
+{
+    Element_city *p;
     double sum = 0;
-    
-    if(list_) {
-        for (p = list_.get(); p; p = p -> next_.get()) {
-            sum += p -> get_city() -> get_loans_to_bank();
+
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            sum += p->get_city()->get_capital_sum();
         }
-    }   
-    else {
+    }
+    else
+    {
         throw std::runtime_error(std::string("No city list"));
     }
-    
-    return sum; 
+
+    return sum;
+}
+
+double City_list::get_added_capital_sum() const
+{
+    Element_city *p;
+    double sum = 0;
+
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            sum += p->get_city()->get_loans_to_bank();
+        }
+    }
+    else
+    {
+        throw std::runtime_error(std::string("No city list"));
+    }
+
+    return sum;
 }
 
 /*
  * Functions to add cities
- */ 
+ */
 
-void City_list::add_city(City * city) {
-    //Element_city * p;
+void City_list::add_city(City *city)
+{
+    // Element_city * p;
     size_++;
-    
-    if(list_) {
+
+    if (list_)
+    {
         list_ = std::make_unique<Element_city>(std::move(list_), city);
     }
-    else {
+    else
+    {
         list_ = std::make_unique<Element_city>(nullptr, city);
     }
 }
-
 
 /*
  * Info-functions
  */
 
-void City_list::info() {
-    cout << endl << "CITIES" << endl << "----------------------------------------------------------" << endl; 
-    cout << "Number of cities: " << size_ << endl << endl;
+void City_list::info()
+{
+    cout << endl
+         << "CITIES" << endl
+         << "----------------------------------------------------------" << endl;
+    cout << "Number of cities: " << size_ << endl
+         << endl;
 }
 
-void City_list::validate_list_integrity() {
+void City_list::validate_list_integrity()
+{
     cout << "=== VALIDATING CITY LIST INTEGRITY ===" << endl;
-    if(!list_) {
+    if (!list_)
+    {
         cout << "ERROR: City list is null!" << endl;
         return;
     }
-    
+
     int count = 0;
     Element_city *p = list_.get();
-    
-    while(p) {
+
+    while (p)
+    {
         count++;
         cout << "Element " << count << ": ";
-        
-        if(p->city_ == nullptr) {
+
+        if (p->city_ == nullptr)
+        {
             cout << "ERROR - NULL CITY POINTER!" << endl;
-        } else {
+        }
+        else
+        {
             cout << "OK - City: " << p->city_->get_name();
-            if(p->city_->get_active_market() == nullptr) {
+            if (p->city_->get_active_market() == nullptr)
+            {
                 cout << " (WARNING: NULL MARKET)";
             }
             cout << endl;
         }
-        
+
         p = p->next_.get();
-        
-        if(count > 100) {  // Prevent infinite loop
+
+        if (count > 100)
+        { // Prevent infinite loop
             cout << "ERROR: Potential circular reference detected!" << endl;
             break;
         }
     }
-    
+
     cout << "Total elements checked: " << count << " (expected: " << size_ << ")" << endl;
     cout << "========================================" << endl;
 }
 
+void City_list::print_list()
+{
 
-void City_list::print_list() {
-    
     info();
-    if(list_) {
-        for (Element_city *p = list_.get(); p; p = p -> next_.get()) {
+    if (list_)
+    {
+        for (Element_city *p = list_.get(); p; p = p->next_.get())
+        {
             p->city_->info();
         }
     }
-    
-    cout << endl; 
+
+    cout << endl;
 }
 
-void City_list::print_GDP() {
-    
-    if(list_) {
-        for (Element_city *p = list_.get(); p; p = p -> next_.get()) {
-            p->city_-> print_GDP();
+void City_list::print_GDP()
+{
+
+    if (list_)
+    {
+        for (Element_city *p = list_.get(); p; p = p->next_.get())
+        {
+            p->city_->print_GDP();
         }
     }
-    
-    cout << endl; 
+
+    cout << endl;
 }
 
-bool City_list::update_employees() {
+bool City_list::update_employees()
+{
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> update_employees2();
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->update_employees2();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to update employees" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_supply_demand_cycle() {
-    
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            if (p->get_city() == nullptr) {
+bool City_list::run_supply_demand_cycle()
+{
+
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_city() == nullptr)
+            {
                 cout << "Warning: Found null city pointer, skipping supply demand cycle..." << endl;
                 continue;
             }
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
             cout << "Running supply demand cycle" << endl;
-            p -> get_city() -> update_supply_and_demand();
+            p->get_city()->update_supply_and_demand();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run supply demand cycle" << endl;
         return false;
     }
     return true;
 }
 
-bool City_list::update_market_price() {
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            if (p->get_city() == nullptr) {
+bool City_list::update_market_price()
+{
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_city() == nullptr)
+            {
                 cout << "Warning: Found null city pointer, skipping market price update..." << endl;
                 continue;
             }
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
             cout << "Updating market price" << endl;
-            p -> get_city() -> update_market_price();
-
+            p->get_city()->update_market_price();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to update price" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::reset_market_calculations() {
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            if (p->get_city() == nullptr) {
+bool City_list::reset_market_calculations()
+{
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_city() == nullptr)
+            {
                 cout << "Warning: Found null city pointer, skipping..." << endl;
                 continue;
             }
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
             cout << "Resetting market calculations" << endl;
-            p -> get_city() -> reset_supply_and_demand();
+            p->get_city()->reset_supply_and_demand();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to reset market calculations" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::reset_number_of_market_participants() {
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            if (p->get_city() == nullptr) {
+bool City_list::reset_number_of_market_participants()
+{
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_city() == nullptr)
+            {
                 cout << "Warning: Found null city pointer, skipping market participants reset..." << endl;
                 continue;
             }
-            if (p -> get_city() -> get_active_market() == nullptr) {
+            if (p->get_city()->get_active_market() == nullptr)
+            {
                 cout << "Warning: Found null market pointer for city " << p->get_city()->get_name() << ", skipping..." << endl;
                 continue;
             }
-            p -> get_city() -> get_active_market() -> reset_numnber_of_participants();
+            p->get_city()->get_active_market()->reset_numnber_of_participants();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to reset market participants" << endl;
         return false;
     }
     return true;
 }
 
-bool City_list::run_production_cycle() {
+bool City_list::run_production_cycle()
+{
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
             cout << "Produce" << endl;
-            p -> get_city() -> produce();
+            p->get_city()->produce();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run production cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_employee_pricing_and_production_cycle() {
+bool City_list::run_employee_pricing_and_production_cycle()
+{
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
             cout << "Updating employees" << endl;
-            p -> get_city() -> update_employees();
+            p->get_city()->update_employees();
             cout << "Negotiate market price" << endl;
-            p -> get_city() -> negotiate_market_price();
+            p->get_city()->negotiate_market_price();
             cout << "Produce" << endl;
-            p -> get_city() -> produce();
+            p->get_city()->produce();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run production cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_sales_cycle() {
+bool City_list::run_sales_cycle()
+{
 
-    	// bennyland.update_companies();
-		// bennyland.save_data();
-		// bennyland.sell_to_market();
-		// bennyland.consumers_buy();
-		// bennyland.pay_company_employees();
+    // bennyland.update_companies();
+    // bennyland.save_data();
+    // bennyland.sell_to_market();
+    // bennyland.consumers_buy();
+    // bennyland.pay_company_employees();
 
-        double temp_money = 0;
-        double temp_money2 = 0;
-        
+    double temp_money = 0;
+    double temp_money2 = 0;
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+
             // temp_money = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-    
-            p -> get_city() -> update_companies();
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+
+            p->get_city()->update_companies();
             // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
             // if(std::abs(temp_money - temp_money2) > 0.01) {
-            //     cout << "Leakage in update_companies!" << endl; 
+            //     cout << "Leakage in update_companies!" << endl;
             //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();}
-            p -> get_city() -> save_data();
+            p->get_city()->save_data();
 
-            p -> get_city() -> sell_to_market();
+            p->get_city()->sell_to_market();
             // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
-            
+
             // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
-            //     cout << "Leakage in sell_to_market!" << endl; 
+            //     cout << "Leakage in sell_to_market!" << endl;
             //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
             // }
 
-            
-            p -> get_city() -> consumers_buy();
+            p->get_city()->consumers_buy();
             // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
             // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
             //     cout << "Leakage in consumers_buy!" << endl;
             //     temp_money = p-> get_city() -> get_capital_sum()+ p->get_city() -> get_global_market() -> get_capital();
             // }
-            p -> get_city() -> pay_company_employees();
+            p->get_city()->pay_company_employees();
             // temp_money2 = p-> get_city() -> get_capital_sum() + p->get_city() -> get_global_market() -> get_capital();
 
             // if(std::abs(temp_money - p-> get_city() -> get_capital_sum()) > 0.01) {
@@ -366,241 +432,272 @@ bool City_list::run_sales_cycle() {
             // }
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run sales cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_investment_cycle() {
+bool City_list::run_investment_cycle()
+{
 
-		// bennyland.update_interest_parameters();
-    	// bennyland.update_interest_rate();
-    	// bennyland.invest(true);
+    // bennyland.update_interest_parameters();
+    // bennyland.update_interest_rate();
+    // bennyland.invest(true);
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> update_interest_parameters();
-            p -> get_city() -> update_interest_rate();
-            p -> get_city() -> invest(true);
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            // p->get_city()->update_interest_parameters();
+            p->get_city()->update_interest_rate();
+            p->get_city()->invest(true);
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run investment cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
+bool City_list::run_banking_cycle()
+{
 
+    // bennyland.consumers_bank_business();
+    // bennyland.company_pay_interest();
+    // bennyland.company_repay_to_bank();
 
-bool City_list::run_banking_cycle() {
-
-		// bennyland.consumers_bank_business();
-		// bennyland.company_pay_interest();
-		// bennyland.company_repay_to_bank();
-
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> consumers_bank_business();
-            p -> get_city() -> company_pay_interest();
-            p -> get_city() -> company_repay_to_bank();
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->consumers_bank_business();
+            p->get_city()->company_pay_interest();
+            p->get_city()->company_repay_to_bank();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run banking cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_dividend_cycle(double share_of_global_market_dividends) {
+bool City_list::run_dividend_cycle(double share_of_global_market_dividends)
+{
 
-    	//bennyland.company_pay_dividends();
-    	//bennyland.pay_transfers();
+    // bennyland.company_pay_dividends();
+    // bennyland.pay_transfers();
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            
-            //Compnies paying dividend
-            p -> get_city() -> company_pay_dividends();
-            
-            //Distributing global market dividends directly to city
-            if(p->city_->get_enable_intercity_trading()) {
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+
+            // Compnies paying dividend
+            p->get_city()->company_pay_dividends();
+
+            // Distributing global market dividends directly to city
+            if (p->city_->get_enable_intercity_trading())
+            {
                 cout << "Paying dividends to city from global market" << endl;
-                p -> get_city() -> change_capital(share_of_global_market_dividends);
+                p->get_city()->change_capital(share_of_global_market_dividends);
             }
-            //Paying transfers
-            p -> get_city() -> pay_transfers();
+            // Paying transfers
+            p->get_city()->pay_transfers();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run dividend cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_save_cycle() {
+bool City_list::run_save_cycle()
+{
 
     // bennyland.save_money_data();
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> save_money_data();
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->save_money_data();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run save cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::run_adjust_money_and_consumer_cycle() {
+bool City_list::run_adjust_money_and_consumer_cycle()
+{
 
-    	// bennyland.adjust_money();
-    	// bennyland.update_consumer_list();
+    // bennyland.adjust_money();
+    // bennyland.update_consumer_list();
 
-    Element_city * p;
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> adjust_money(); 
-            p -> get_city() -> update_consumer_list();
+    Element_city *p;
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->adjust_money();
+            p->get_city()->update_consumer_list();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run adjust cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
+bool City_list::update_companies_from_database()
+{
 
+    Element_city *p;
 
-
-bool City_list::update_companies_from_database() {
-
-    	
-
-    Element_city * p;
-
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> update_companies_from_database();
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->update_companies_from_database();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run adjust cycle" << endl;
         return false;
     }
     return true;
-    
 }
 
-bool City_list::write_time_data_to_company_database() {
+bool City_list::write_time_data_to_company_database()
+{
 
-    Element_city * p;
+    Element_city *p;
 
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> write_time_data_to_company_database();
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->write_time_data_to_company_database();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to run write company time data cycle" << endl;
         return false;
     }
     return true;
-
-    
 }
 
+bool City_list::update_country_from_database()
+{
 
+    Element_city *p;
 
-bool City_list::update_country_from_database() {
-
-    Element_city * p;
-
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> update_parameters_from_database();
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->update_parameters_from_database();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to update from database" << endl;
         return false;
     }
     return true;
-
-    
 }
 
-bool City_list::save_high_score() {
+bool City_list::save_high_score()
+{
 
-    Element_city * p;
+    Element_city *p;
 
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> save_high_score();
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->save_high_score();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to save high-score" << endl;
         return false;
     }
     return true;
-
-    
 }
-bool City_list::save_consumers() {
+bool City_list::save_consumers()
+{
 
-    Element_city * p;
+    Element_city *p;
 
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> save_consumers();
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->save_consumers();
         }
     }
-    else {
+    else
+    {
         cout << "No countries to save consumers" << endl;
         return false;
     }
     return true;
-
-    
 }
 
-bool City_list::change_market(Market * newMarket) {
+bool City_list::change_market(Market *newMarket)
+{
 
-    Element_city * p;
+    Element_city *p;
 
-    if(list_) {
-        for(p = list_.get(); p; p = p -> next_.get()) {
-            cout << endl << " -- " << p-> get_city() -> get_name() << " -- " << endl;
-            p -> get_city() -> set_market(newMarket);
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            cout << endl
+                 << " -- " << p->get_city()->get_name() << " -- " << endl;
+            p->get_city()->set_market(newMarket);
         }
-
     }
 }

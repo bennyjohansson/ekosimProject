@@ -183,7 +183,7 @@ public:
 
    // Database functions
    void update_interest_parameters();
-   void update_parameters_from_database();
+   void update_parameters_from_database(); // Also includes interest rate parameters (for testing)
 
    list<double> GDP_;
    list<double> growth_;

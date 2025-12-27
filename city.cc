@@ -2218,6 +2218,11 @@ void City::update_parameters_from_database()
     double budgetBalance = 0;
     double incomeTax = 0;
     double inflationTarget = 0;
+    double targetInteresRate = 0;
+    double interestRateMethod = 0;
+    double capital_reserve_ratio = 0;
+    double liquidity_reserve_ratio = 0;
+    double bank_dividend_ratio = 0;
 
     // Use PostgreSQL version
     string stmt = "SELECT * FROM PARAMETERS";
@@ -2273,12 +2278,45 @@ void City::update_parameters_from_database()
                 pay_wage_in_cash_ = std::stoi(records[i][3]);
                 cout << records[i][2] << " set to: " << std::stoi(records[i][3]) << endl;
             }
+            // Interest rate parameters
+            if (records[i][2] == "InterestRateMethod")
+            {
+                interestRateMethod = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "TargetInterestRate")
+            {
+                targetInteresRate = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "LiquidityReserveRatio")
+            {
+                liquidity_reserve_ratio = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "CapitalReserveRatio")
+            {
+                capital_reserve_ratio = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
+            if (records[i][2] == "BankDividendRatio")
+            {
+                bank_dividend_ratio = std::stod(records[i][3]);
+                cout << records[i][2] << " set to: " << std::stod(records[i][3]) << endl;
+            }
         }
 
         cout << endl;
         set_budget_balance(budgetBalance);
         set_income_tax(incomeTax);
         set_inflation_target(inflationTarget);
+
+        // Set interest rate parameters
+        bank_->set_interest_rate_method(interestRateMethod);
+        bank_->set_target_interest(targetInteresRate);
+        bank_->set_capital_reserve_ratio(capital_reserve_ratio);
+        bank_->set_liquidity_reserve_ratio(liquidity_reserve_ratio);
+        bank_->set_dividend_ratio(bank_dividend_ratio);
     }
 }
 

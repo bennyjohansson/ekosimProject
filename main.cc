@@ -68,6 +68,11 @@ int main()
 		int current_cycle = 0;
 		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0, timer7 = 0;
 
+		/*
+		 * Initial parameter update
+		 */
+		bennyworld.update_country_from_database();
+
 		for (int j = 1; j < simulation_cycles; j++)
 		{
 

@@ -851,6 +851,48 @@ void Company::update_from_database(string city_name)
     // cout << "I company update from database investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split << endl;
 }
 
+// Optimized batch update method that takes pre-fetched record
+void Company::update_from_database_batch(const std::vector<std::string> &record, string city_name)
+{
+    double production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
+
+    if (record.empty() || record.size() < 21)
+    {
+        cout << "Invalid record for company " << name_ << " in " << city_name << endl;
+        return;
+    }
+
+    // PostgreSQL company_data columns (0-indexed):
+    // 0:id, 1:city_name, 2:company_name, 3:time_stamp, 4:capital, 5:stock, 6:capacity,
+    // 7:debts, 8:pcskill, 9:pcmot, 10:wage_const, 11:wage_ch, 12:invest, 13:pbr,
+    // 14:decay, 15:prod_parm, 16:prod_fcn, 17:production, 18:employees,
+    // 19:item_efficiency, 20:cap_vs_eff_split, 21:created_at, 22:updated_at
+
+    try
+    {
+        double wage_const = std::stod(record[10]);
+        double wage_change_limit = std::stod(record[11]);
+        double pbr = std::stod(record[13]);
+        double decay = std::stod(record[14]);
+        int production_function = std::stoi(record[16]);
+        double investment_capacity_vs_efficiency_split = std::stod(record[20]);
+
+        // Update company member variables
+        wage_const_ = wage_const;
+        wage_change_limit_ = wage_change_limit;
+        pbr_ = pbr;
+        decay_ = decay;
+        production_parameter_ = production_parameter;
+        production_function_ = production_function;
+        investment_capacity_vs_efficiency_split_ = investment_capacity_vs_efficiency_split;
+    }
+    catch (const std::exception &e)
+    {
+        cout << "ERROR in Company::update_from_database_batch for " << name_ << " in " << city_name << ": " << e.what() << endl;
+        cout << "Record size: " << record.size() << endl;
+    }
+}
+
 // THIS FUNCTION MUST BE RUN AFTER UPDATING THE COMPANY DATA FROM DATABASE
 void Company::save_time_data_to_database(string city_name)
 {
@@ -884,6 +926,34 @@ void Company::save_time_data_to_database(string city_name)
     // company_data.push_back((double)prod_const_motivation_);
 
     insertCompanyTimeData(company_data, city_name, name_);
+}
+
+// Get time data without saving (for batch operations)
+std::vector<double> Company::get_time_data_for_database() const
+{
+    std::vector<double> company_data;
+    int time_stamp = clock_->get_time();
+
+    company_data.push_back((double)time_stamp);
+    company_data.push_back((double)capital_);
+    company_data.push_back((double)stock_);
+    company_data.push_back((double)capacity_);
+    company_data.push_back((double)debts_);
+    company_data.push_back((double)prod_const_skill_);
+    company_data.push_back((double)prod_const_motivation_);
+    company_data.push_back((double)wage_const_);
+    company_data.push_back((double)wage_change_limit_);
+    company_data.push_back((double)invest_);
+    company_data.push_back((double)pbr_);
+    company_data.push_back((double)decay_);
+    company_data.push_back((double)production_parameter_);
+    company_data.push_back((double)production_function_);
+    company_data.push_back((double)current_production_items_);
+    company_data.push_back((double)employees_->get_size());
+    company_data.push_back((double)item_efficiency_);
+    company_data.push_back((double)investment_capacity_vs_efficiency_split_);
+
+    return company_data;
 }
 
 // Checks how the expected income changes by adding consumer

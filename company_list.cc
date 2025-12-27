@@ -4,10 +4,12 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <map>
 
 // #include "consumer.h"
 #include "functions.h"
 #include "company_list.h"
+#include "SQLfunctions.h"
 // #include "element_company.h"
 #include "error_no_return.h"
 
@@ -543,14 +545,49 @@ void Company_list::remove_usless_employees()
 
 void Company_list::update_companies_from_database(string city_name)
 {
+    cout << "[UPDATE] Starting update_companies_from_database for " << city_name << endl;
 
+    // Use batch loading - get all companies' latest data in one query
+    Records all_company_data = getAllCompaniesLatestDataPG(city_name);
+
+    cout << "[UPDATE] Received " << all_company_data.size() << " company records from batch load" << endl;
+
+    if (all_company_data.empty())
+    {
+        cout << "No company data found in database for city " << city_name << endl;
+        return;
+    }
+
+    // Create a map for O(1) lookup by company name
+    std::map<string, Record> company_data_map;
+    for (const auto &record : all_company_data)
+    {
+        if (record.size() > 2)
+        {
+            string company_name = record[2]; // company_name is at index 2
+            company_data_map[company_name] = record;
+        }
+    }
+
+    // Update each company with its data from the map
     Element_company *p;
-
     if (list_)
     {
         for (p = list_.get(); p; p = p->next_.get())
         {
-            (p->get_company())->update_from_database(city_name);
+            Company *company = p->get_company();
+            string company_name = company->get_name();
+
+            auto it = company_data_map.find(company_name);
+            if (it != company_data_map.end())
+            {
+                // Pass the record to company for batch update
+                company->update_from_database_batch(it->second, city_name);
+            }
+            else
+            {
+                cout << "No data found for company " << company_name << " in " << city_name << endl;
+            }
         }
     }
     else
@@ -561,14 +598,27 @@ void Company_list::update_companies_from_database(string city_name)
 
 void Company_list::write_time_data_to_database(string city_name)
 {
-
     Element_company *p;
 
     if (list_)
     {
+        // Collect all company data for batch insert to PostgreSQL
+        vector<tuple<string, vector<double>>> companies_batch;
+
         for (p = list_.get(); p; p = p->next_.get())
         {
-            (p->get_company())->save_time_data_to_database(city_name);
+            Company *company = p->get_company();
+            vector<double> company_data = company->get_time_data_for_database();
+            companies_batch.push_back(make_tuple(company->get_name(), company_data));
+
+            // Also write to SQLite individually for backward compatibility
+            company->save_time_data_to_database(city_name);
+        }
+
+        // Batch insert all companies to PostgreSQL at once (fast)
+        if (!companies_batch.empty())
+        {
+            batchInsertCompanyTimeDataPG(companies_batch, city_name);
         }
     }
     else

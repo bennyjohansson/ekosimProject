@@ -858,12 +858,13 @@ int insertCompanyTimeData(std::vector<double> myData, string city_name, string c
 { // std::vector<int> money
 
     // Use PostgreSQL for company_data (centralized)
-    int pgResult = insertCompanyTimeDataPG(myData, city_name, company_name);
+    // COMMENTED OUT: Now handled by batch insert to avoid duplicate writes
+    // int pgResult = insertCompanyTimeDataPG(myData, city_name, company_name);
 
-    if (pgResult != 0)
-    {
-        cerr << "Warning: Failed to insert company data to PostgreSQL" << endl;
-    }
+    // if (pgResult != 0)
+    // {
+    //     cerr << "Warning: Failed to insert company data to PostgreSQL" << endl;
+    // }
 
     // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(city_name);
@@ -1585,6 +1586,121 @@ int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string
     return 0;
 }
 
+// Batch insert multiple companies' data in a single transaction
+int batchInsertCompanyTimeDataPG(const vector<tuple<string, vector<double>>> &companies_data, string city_name)
+{
+    if (companies_data.empty())
+    {
+        return 0;
+    }
+
+    cout << "[BATCH INSERT] Starting batch insert of " << companies_data.size() << " companies for " << city_name << "..." << endl;
+
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for batch company_data insert: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    // Start transaction for batch insert
+    PGresult *result = PQexec(pgManager.getConnection(), "BEGIN");
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "BEGIN transaction failed: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+    PQclear(result);
+
+    // Build multi-row INSERT statement
+    string sql = "INSERT INTO company_data (city_name, company_name, time_stamp, capital, stock, capacity, "
+                 "debts, pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn, "
+                 "production, employees, item_efficiency, cap_vs_eff_split) VALUES ";
+
+    vector<string> value_rows;
+    for (const auto &company : companies_data)
+    {
+        const string &company_name = std::get<0>(company);
+        const vector<double> &myData = std::get<1>(company);
+
+        string row = "('" + city_name + "', '" + company_name + "', " +
+                     std::to_string((int)round(myData[0])) + ", " +  // time_stamp
+                     std::to_string((int)round(myData[1])) + ", " +  // capital
+                     std::to_string((int)round(myData[2])) + ", " +  // stock
+                     std::to_string((int)round(myData[3])) + ", " +  // capacity
+                     std::to_string((int)round(myData[4])) + ", " +  // debts
+                     std::to_string(myData[5]) + ", " +              // pcskill
+                     std::to_string(myData[6]) + ", " +              // pcmot
+                     std::to_string(myData[7]) + ", " +              // wage_const
+                     std::to_string(myData[8]) + ", " +              // wage_ch
+                     std::to_string((int)round(myData[9])) + ", " +  // invest
+                     std::to_string(myData[10]) + ", " +             // pbr
+                     std::to_string(myData[11]) + ", " +             // decay
+                     std::to_string(myData[12]) + ", " +             // prod_parm
+                     std::to_string((int)round(myData[13])) + ", " + // prod_fcn
+                     std::to_string((int)round(myData[14])) + ", " + // production
+                     std::to_string((int)round(myData[15])) + ", " + // employees
+                     std::to_string(myData[16]) + ", " +             // item_efficiency
+                     std::to_string(myData[17]) + ")";               // cap_vs_eff_split
+
+        value_rows.push_back(row);
+    }
+
+    // Join all rows with commas
+    sql += value_rows[0];
+    for (size_t i = 1; i < value_rows.size(); i++)
+    {
+        sql += ", " + value_rows[i];
+    }
+
+    sql += " ON CONFLICT (city_name, company_name, time_stamp) DO UPDATE SET "
+           "capital = EXCLUDED.capital, "
+           "stock = EXCLUDED.stock, "
+           "capacity = EXCLUDED.capacity, "
+           "debts = EXCLUDED.debts, "
+           "pcskill = EXCLUDED.pcskill, "
+           "pcmot = EXCLUDED.pcmot, "
+           "wage_const = EXCLUDED.wage_const, "
+           "wage_ch = EXCLUDED.wage_ch, "
+           "invest = EXCLUDED.invest, "
+           "pbr = EXCLUDED.pbr, "
+           "decay = EXCLUDED.decay, "
+           "prod_parm = EXCLUDED.prod_parm, "
+           "prod_fcn = EXCLUDED.prod_fcn, "
+           "production = EXCLUDED.production, "
+           "employees = EXCLUDED.employees, "
+           "item_efficiency = EXCLUDED.item_efficiency, "
+           "cap_vs_eff_split = EXCLUDED.cap_vs_eff_split";
+
+    result = PQexec(pgManager.getConnection(), sql.c_str());
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Batch insert company data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        // Rollback transaction
+        PQexec(pgManager.getConnection(), "ROLLBACK");
+        return 1;
+    }
+
+    PQclear(result);
+
+    // Commit transaction
+    result = PQexec(pgManager.getConnection(), "COMMIT");
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "COMMIT transaction failed: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    PQclear(result);
+    cout << "[BATCH INSERT] Successfully inserted " << companies_data.size() << " companies to PostgreSQL for " << city_name << endl;
+    return 0;
+}
+
 // Get company data from PostgreSQL
 Records getCompanyDataPG(string city_name, string company_name, int limit)
 {
@@ -1642,6 +1758,62 @@ Records getCompanyDataPG(string city_name, string company_name, int limit)
     }
 
     return results;
+}
+
+// Batch load all companies' latest data for a city in a single query
+Records getAllCompaniesLatestDataPG(string city_name)
+{
+    Records records;
+    PostgreSQLManager pgManager;
+
+    cout << "[BATCH LOAD] Fetching all companies data for " << city_name << "..." << endl;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for batch company data fetch: " << pgManager.getLastError() << endl;
+        return records;
+    }
+
+    // Get all companies' latest data in one query using DISTINCT ON
+    string sql = "SELECT DISTINCT ON (company_name) "
+                 "id, city_name, company_name, time_stamp, capital, stock, capacity, debts, "
+                 "pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm, "
+                 "prod_fcn, production, employees, item_efficiency, cap_vs_eff_split, "
+                 "created_at, updated_at "
+                 "FROM company_data "
+                 "WHERE city_name = '" +
+                 city_name + "' "
+                             "ORDER BY company_name, time_stamp DESC";
+
+    PGresult *result = pgManager.executeQuery(sql);
+
+    if (result && PQresultStatus(result) == PGRES_TUPLES_OK)
+    {
+        int rows = PQntuples(result);
+        int cols = PQnfields(result);
+
+        for (int i = 0; i < rows; i++)
+        {
+            Record row;
+            for (int j = 0; j < cols; j++)
+            {
+                row.push_back(PQgetvalue(result, i, j));
+            }
+            records.push_back(row);
+        }
+        PQclear(result);
+        cout << "[BATCH LOAD] Successfully loaded " << rows << " companies for " << city_name << endl;
+    }
+    else
+    {
+        if (result)
+        {
+            cerr << "Failed to fetch batch company data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+            PQclear(result);
+        }
+    }
+
+    return records;
 }
 
 // Delete company data from PostgreSQL for a specific city
