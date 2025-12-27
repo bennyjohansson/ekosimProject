@@ -582,6 +582,7 @@ void Company_list::update_companies_from_database(string city_name)
             if (it != company_data_map.end())
             {
                 // Pass the record to company for batch update
+                // production_parameter (prod_parm) is in the record at index 15
                 company->update_from_database_batch(it->second, city_name);
             }
             else

@@ -32,7 +32,7 @@ int main()
 		 */
 
 		World bennyworld("Bennyworld");
-		initiateWorldDB("Bennyworld");
+		// initiateWorldDB("Bennyworld");
 
 		/*
 		 * Adding default country
@@ -66,7 +66,7 @@ int main()
 
 		int simulation_cycles = 100;
 		int current_cycle = 0;
-		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0, timer7 = 0;
+		unsigned int timer0 = 0, timer1 = 0, timer2 = 0, timer3 = 0, timer4 = 0, timer5 = 0, timer6 = 0, timer7 = 0, timer8 = 0, timer9 = 0;
 
 		/*
 		 * Initial parameter update
@@ -172,7 +172,9 @@ int main()
 				 << "UPDATING AND ADDING COMPETITION & CONSUMERS" << endl;
 			cout << "------------------------------" << endl;
 			bennyworld.update_companies_from_database();
+			timer7 = stopwatch();
 			bennyworld.write_time_data_to_company_database();
+			timer8 = stopwatch();
 			bennyworld.update_country_from_database();
 
 			cout << endl
@@ -183,7 +185,7 @@ int main()
 			cout << "Money: " << bennyworld.get_city("Bennyland")->get_capital_sum() << " Change: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL << " Added money: " << bennyworld.get_city("Bennyland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Bennyland")->get_capital_sum() - sum_before_BL - bennyworld.get_city("Bennyland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Bennyland")->get_market()->get_capital() << endl;
 			cout << "Money: " << bennyworld.get_city("Saraland")->get_capital_sum() << " Change: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL << " Added money: " << bennyworld.get_city("Saraland")->get_loans_to_bank() << " diff: " << bennyworld.get_city("Saraland")->get_capital_sum() - sum_before_SL - bennyworld.get_city("Saraland")->get_loans_to_bank() << " Market capital: " << bennyworld.get_city("Saraland")->get_market()->get_capital() << endl;
 
-			timer7 = stopwatch();
+			timer9 = stopwatch();
 
 			// Creating a shared market, need some additional work to function well though
 			if (current_cycle == 501)
@@ -203,8 +205,10 @@ int main()
 			cout << "Bank Business:   " << timer4 / 10000 << endl;
 			cout << "Divs/Transfers:  " << timer5 / 10000 << endl;
 			cout << "Saving Data:     " << timer6 / 10000 << endl;
-			cout << "Update/Comp DB:  " << timer7 / 10000 << endl;
-			cout << "Total:           " << (timer1 + timer2 + timer3 + timer4 + timer5 + timer6 + timer7) / 10000 << endl;
+			cout << "Upd. comp fr DB: " << timer7 / 10000 << endl;
+			cout << "Write time data: " << timer8 / 10000 << endl;
+			cout << "Upd. country DB: " << timer9 / 10000 << endl;
+			cout << "Total:           " << (timer1 + timer2 + timer3 + timer4 + timer5 + timer6 + timer7 + timer8 + timer9) / 10000 << endl;
 
 			/* END OF MAIN LOOP */
 		}

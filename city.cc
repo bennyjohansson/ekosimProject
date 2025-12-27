@@ -2326,9 +2326,6 @@ void City::add_companies_from_database()
     using Record = std::vector<std::string>;
     using Records = std::vector<Record>;
 
-    string full_path = get_city_sql_string(name_);
-    const char *dir = full_path.c_str();
-
     string name = "";
     double capital = 0;
     long stock = 0;
@@ -2343,29 +2340,36 @@ void City::add_companies_from_database()
     double decay = 0;
     int production_function = 0;
 
-    cout << "I City add companies from DB, dir: " << dir << endl;
-    // const char* stmt = "SELECT * FROM PARAMETERS";
-    string stmt = "SELECT * FROM COMPANY_TABLE";
-    // cout << "Test i cuty update interest parameters" << endl;
+    cout << "I City add companies from DB (PostgreSQL) for: " << name_ << endl;
 
-    Records records = select_stmt(stmt, dir);
+    // Use PostgreSQL to get company data with explicit column selection
+    // PostgreSQL company_data columns: id, city_name, company_name, time_stamp, capital, stock, capacity, debts,
+    //                                  pcskill, pcmot, wage_const, wage_ch, invest, pbr, decay, prod_parm,
+    //                                  prod_fcn, production, employees, item_efficiency, cap_vs_eff_split
+    string stmt = "SELECT company_name, capital, stock, capacity, debts, pcskill, pcmot, "
+                  "wage_const, wage_ch, invest, pbr, decay, prod_parm, prod_fcn "
+                  "FROM COMPANY_TABLE WHERE time_stamp = 0";
+    Records records = select_stmt_pg(stmt, name_);
 
     for (int i = 0; i < records.size(); i++)
     {
+        // PostgreSQL result columns (0-indexed):
+        // 0: company_name, 1: capital, 2: stock, 3: capacity, 4: debts, 5: pcskill, 6: pcmot,
+        // 7: wage_const, 8: wage_ch, 9: invest, 10: pbr, 11: decay, 12: prod_parm, 13: prod_fcn
 
-        name = records[i][2];
-        capital = std::stod(records[i][3]);
-        stock = std::stoi(records[i][4]);
-        capacity = std::stod(records[i][5]);
-        debts = std::stod(records[i][6]);
-        p_c_skill = std::stod(records[i][7]);
-        p_c_mot = std::stod(records[i][8]);
-        wage_const = std::stod(records[i][9]);
-        wage_change_limit = std::stod(records[i][10]);
-        invest = std::stod(records[i][11]);
-        pbr = std::stod(records[i][12]);
-        decay = std::stod(records[i][13]);
-        production_function = std::stoi(records[i][15]);
+        name = records[i][0];                            // company_name
+        capital = std::stod(records[i][1]);              // capital
+        stock = std::stoi(records[i][2]);                // stock
+        capacity = std::stod(records[i][3]);             // capacity
+        debts = std::stod(records[i][4]);                // debts
+        p_c_skill = std::stod(records[i][5]);            // pcskill
+        p_c_mot = std::stod(records[i][6]);              // pcmot
+        wage_const = std::stod(records[i][7]);           // wage_const
+        wage_change_limit = std::stod(records[i][8]);    // wage_ch
+        invest = std::stod(records[i][9]);               // invest
+        pbr = std::stod(records[i][10]);                 // pbr
+        decay = std::stod(records[i][11]);               // decay
+        production_function = std::stoi(records[i][13]); // prod_fcn
 
         add_company(new Company(name, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_));
 

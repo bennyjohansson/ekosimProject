@@ -70,32 +70,37 @@ int initiateCityDB(string city_name)
     // string dir = get_sql_string();
     // sqlite3* DB;
 
-    cout << "INITIATING CITY DATABASE" << endl;
+    cout << "INITIATING CITY DATABASE (PostgreSQL only)" << endl;
     cout << "-------------------" << endl;
 
+    // COMMENTED OUT: SQLite database creation - no longer needed
     // Creating the database
-    createDB(dir);
+    // createDB(dir);
 
+    // COMMENTED OUT: SQLite table creation - no longer needed
     // Creating tables
-    createParameterTable(dir);
-    createDataTable(dir);
-    createMoneyTable(dir);
-    createCompanyTable(dir);
-    createConsumerTable(dir);
+    // createParameterTable(dir);
+    // createDataTable(dir);
+    // createMoneyTable(dir);
+    // createCompanyTable(dir);
+    // createConsumerTable(dir);
 
+    // COMMENTED OUT: Legacy MySQL table creation
     // Creating mySQL tables
-    createSQLParameterTable("Bennyland");
+    // createSQLParameterTable("Bennyland");
 
     cout << endl;
 
-    // Deleting old data
+    // Deleting old data (includes both SQLite and PostgreSQL cleanup)
     deleteTheData(dir);
 
     cout << endl;
 
-    // Setting initial parameters
+    // Setting initial parameters (includes PostgreSQL insertParameterPG calls)
     insertParameterData(dir);
-    initiateCompanyTable(dir);
+
+    // COMMENTED OUT: SQLite company initialization - no longer needed
+    // initiateCompanyTable(dir);
 
     // Initialize PostgreSQL company data
     initiateCompanyTablePG(city_name);
@@ -454,10 +459,11 @@ static int insertParameterData(const char *s)
         city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
     }
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // COMMENTED OUT: SQLite database operations disabled
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(s, &DB);
+    // int exit = sqlite3_open(s, &DB);
 
     // productionParameter = 0.002
 
@@ -502,18 +508,21 @@ static int insertParameterData(const char *s)
         insertParameterPG(city_name, "BankDividendRatio", 0.1);
     }
 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
-    // cout << "I SQL Fcn insterparam data, sql: " << sql << endl;
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "Parameter records created successfully" << endl;
-    }
-    sqlite3_close(DB);
+    // COMMENTED OUT: SQLite insert disabled to verify PostgreSQL migration
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // // cout << "I SQL Fcn insterparam data, sql: " << sql << endl;
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error insert" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "Parameter records created successfully" << endl;
+    // }
+    // sqlite3_close(DB);
+
+    cout << "Parameter records created successfully in PostgreSQL" << endl;
 
     /*
      *TESTING NEW mySQL
@@ -2399,7 +2408,7 @@ static int deleteTheData(const char *s)
         city_name = path_str.substr(last_slash + 1, dot_pos - last_slash - 1);
         cout << "Extracted city name: " << city_name << " from path: " << path_str << endl;
 
-        // Delete from PostgreSQL first
+        // Delete from PostgreSQL
         deleteTimeDataPG(city_name);
         deleteMoneyDataPG(city_name);
         deleteCompanyDataPG(city_name);
@@ -2407,76 +2416,77 @@ static int deleteTheData(const char *s)
         deleteConsumerDataPG(city_name);
     }
 
-    sqlite3 *DB;
-    char *messageerror = new char[150];
+    // COMMENTED OUT: SQLite deletes disabled to verify PostgreSQL migration
+    // sqlite3 *DB;
+    // char *messageerror = new char[150];
 
-    int exit = sqlite3_open(s, &DB);
+    // int exit = sqlite3_open(s, &DB);
 
-    string sql = "DELETE FROM PARAMETERS";
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // string sql = "DELETE FROM PARAMETERS";
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error delete PARAMETERS" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "PARAMETERS records deleted successfully" << endl;
-    }
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error delete PARAMETERS" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "PARAMETERS records deleted successfully" << endl;
+    // }
 
-    sql = "DELETE FROM TIME_DATA";
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // sql = "DELETE FROM TIME_DATA";
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error delete TIME_DATA" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "TIME_DATA records deleted successfully" << endl;
-    }
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error delete TIME_DATA" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "TIME_DATA records deleted successfully" << endl;
+    // }
 
-    sql = "DELETE FROM MONEY_DATA";
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // sql = "DELETE FROM MONEY_DATA";
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error delete MONEY_DATA" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "MONEY_DATA records deleted successfully" << endl;
-    }
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error delete MONEY_DATA" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "MONEY_DATA records deleted successfully" << endl;
+    // }
 
-    sql = "DELETE FROM COMPANY_TABLE";
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // sql = "DELETE FROM COMPANY_TABLE";
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error delete COMPANY_TABLE" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "COMPANY_TABLE records deleted successfully" << endl;
-    }
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error delete COMPANY_TABLE" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "COMPANY_TABLE records deleted successfully" << endl;
+    // }
 
-    sql = "DELETE FROM CONSUMER_TABLE";
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
+    // sql = "DELETE FROM CONSUMER_TABLE";
+    // exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageerror);
 
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error delete CONSUMER_TABLE" << endl;
-        sqlite3_free(messageerror);
-    }
-    else
-    {
-        cout << "CONSUMER_TABLE records deleted successfully" << endl;
-    }
-    sqlite3_close(DB);
+    // if (exit != SQLITE_OK)
+    // {
+    //     cerr << "Error delete CONSUMER_TABLE" << endl;
+    //     sqlite3_free(messageerror);
+    // }
+    // else
+    // {
+    //     cout << "CONSUMER_TABLE records deleted successfully" << endl;
+    // }
+    // sqlite3_close(DB);
     return 0;
 }
 

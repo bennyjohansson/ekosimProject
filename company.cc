@@ -854,8 +854,6 @@ void Company::update_from_database(string city_name)
 // Optimized batch update method that takes pre-fetched record
 void Company::update_from_database_batch(const std::vector<std::string> &record, string city_name)
 {
-    double production_parameter = getDatabaseParameter("'ProductionParameter'", city_name);
-
     if (record.empty() || record.size() < 21)
     {
         cout << "Invalid record for company " << name_ << " in " << city_name << endl;
@@ -874,6 +872,7 @@ void Company::update_from_database_batch(const std::vector<std::string> &record,
         double wage_change_limit = std::stod(record[11]);
         double pbr = std::stod(record[13]);
         double decay = std::stod(record[14]);
+        double production_parameter = std::stod(record[15]); // Read from company_data table
         int production_function = std::stoi(record[16]);
         double investment_capacity_vs_efficiency_split = std::stod(record[20]);
 
