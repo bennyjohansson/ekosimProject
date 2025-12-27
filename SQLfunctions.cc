@@ -6,6 +6,13 @@
 #include <cmath>
 #include <fstream>
 #include "SQLfunctions.h"
+
+// Add missing include for libpq-fe.h if PostgreSQLManager.h depends on it
+// #ifdef __APPLE__
+// #include "/usr/local/include/libpq-fe.h"
+// #elif __linux__
+// #include "/usr/include/postgresql/libpq-fe.h"
+// #endif
 #include "PostgreSQLManager.h"
 
 // Amazon linux
@@ -1650,7 +1657,7 @@ int batchInsertCompanyTimeDataPG(const vector<tuple<string, vector<double>>> &co
                      std::to_string((int)round(myData[9])) + ", " +  // invest
                      std::to_string(myData[10]) + ", " +             // pbr
                      std::to_string(myData[11]) + ", " +             // decay
-                     std::to_string(myData[12]) + ", " +             // prod_parm
+                     std::to_string(myData[12]) + ", " +             // prod_param
                      std::to_string((int)round(myData[13])) + ", " + // prod_fcn
                      std::to_string((int)round(myData[14])) + ", " + // production
                      std::to_string((int)round(myData[15])) + ", " + // employees
