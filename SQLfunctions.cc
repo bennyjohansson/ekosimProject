@@ -797,6 +797,9 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
         cerr << "Warning: Failed to insert world data to PostgreSQL" << endl;
     }
 
+    // SQLite is no longer used - all data is in PostgreSQL
+    // Commenting out SQLite world table insertion to prevent crashes
+    /*
     // Keep SQLite write for backward compatibility during migration
     string full_path = get_city_sql_string(world_name);
     // full_path += "Bennyworld.db";
@@ -828,6 +831,9 @@ int insertWorldData(string world_name, string city_name, int consumers, string e
         cout << "World table updated successfully (SQLite)" << endl;
     }
     sqlite3_close(DB);
+    */
+
+    cout << "I insert world data (PostgreSQL only), city: " << city_name << endl;
 
     /*
      *TESTING NEW mySQL
