@@ -2438,7 +2438,7 @@ void City::save_high_score()
     score.push_back(environmental_impact_per_year);
 
     // Write to SQLite (existing functionality)
-    insertHighScore(score, name_, world_name, timenow);
+    // insertHighScore(score, name_, world_name, timenow);
 
     // Also write to PostgreSQL for centralized high scores
     // This enables cross-country leaderboards while maintaining backward compatibility
