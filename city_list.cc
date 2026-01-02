@@ -168,7 +168,8 @@ void City_list::validate_list_integrity()
     }
 
     cout << "Total elements checked: " << count << " (expected: " << size_ << ")" << endl;
-    cout << "========================================" << endl;
+    cout << "========================================" << endl
+         << endl;
 }
 
 void City_list::print_list()

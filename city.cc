@@ -6,7 +6,9 @@
 #include <list>
 #include <fstream>
 #include <cmath>
+
 #include <random>
+#include <map>
 
 #include "SQLfunctions.h"
 #include "functions.h"
@@ -1370,10 +1372,24 @@ void City::update_employees2()
      */
 
     company_list_->remove_usless_employees();
-    cout << "I City update emplyees" << endl;
+
+    // Store initial employment state for each company
+    std::map<string, int> employees_before;
+    int total_employed_before = 0;
+    int num_companies = company_list_->get_size();
+
+    for (int i = 0; i < num_companies; i++)
+    {
+        Company *company = company_list_->get_company_by_index(i);
+        int emp_count = company->get_no_employees();
+        employees_before[company->get_name()] = emp_count;
+        total_employed_before += emp_count;
+    }
 
     // Employees looking for new jobs - distributed approach (1/10 per year instead of all every 10 years)
     int total_consumers = consumers_->get_size();
+    int employees_changed = 0;
+
     if (total_consumers > 0)
     {
         int current_year = clock_->get_time();
@@ -1401,14 +1417,96 @@ void City::update_employees2()
         // Process consumers in this year's range
         while (p && current_position < end_position)
         {
-            company_list_->update_employees2(p->get_consumer());
+            Consumer *consumer = p->get_consumer();
+            string old_employer = consumer->get_employer();
+            bool was_employed = consumer->get_employment_status();
+
+            company_list_->update_employees2(consumer);
+
+            string new_employer = consumer->get_employer();
+            bool is_employed = consumer->get_employment_status();
+
+            // Count if consumer changed employer (not just became employed/unemployed)
+            if (was_employed && is_employed && old_employer != new_employer && old_employer != "" && new_employer != "")
+            {
+                employees_changed++;
+            }
+
             p = p->next_.get();
             current_position++;
         }
-
-        cout << "I City update employees2, processed consumers " << start_position << " to " << (end_position - 1)
-             << " (year " << year_position << " of " << job_change_frequency << " cycle)" << endl;
     }
+
+    // Store final employment state for each company
+    std::map<string, int> employees_after;
+    int total_employed_after = 0;
+
+    for (int i = 0; i < num_companies; i++)
+    {
+        Company *company = company_list_->get_company_by_index(i);
+        int emp_count = company->get_no_employees();
+        employees_after[company->get_name()] = emp_count;
+        total_employed_after += emp_count;
+    }
+
+    // Calculate unemployment rate
+    int unemployed = total_consumers - total_employed_after;
+    double unemployment_rate = (total_consumers > 0) ? (unemployed * 100.0 / total_consumers) : 0.0;
+
+    // Log hiring round summary
+    cout << "\n========== HIRING ROUND SUMMARY FOR " << name_ << " ==========" << endl;
+    cout << "Year: " << clock_->get_time() << " | Total Population: " << total_consumers << endl;
+    cout << "\n"
+         << string(85, '=') << endl;
+    cout << "| " << left << setw(25) << "Company"
+         << "| " << right << setw(12) << "Before"
+         << " | " << setw(12) << "After"
+         << " | " << setw(12) << "Change"
+         << " | " << setw(12) << "% Change" << " |" << endl;
+    cout << string(85, '=') << endl;
+
+    // Display per-company changes
+    for (const auto &entry : employees_before)
+    {
+        string company_name = entry.first;
+        int before = entry.second;
+        int after = employees_after[company_name];
+        int change = after - before;
+        double pct_change = (before > 0) ? (change * 100.0 / before) : 0.0;
+
+        cout << "| " << left << setw(25) << company_name
+             << "| " << right << setw(12) << fixed << setprecision(0) << before
+             << " | " << setw(12) << after
+             << " | " << setw(12) << std::showpos << change << std::noshowpos
+             << " | " << setw(11) << setprecision(1) << pct_change << "% |" << endl;
+    }
+
+    cout << string(85, '=') << endl;
+
+    // Summary statistics
+    cout << "\nSummary Statistics:" << endl;
+    cout << "+" << string(60, '-') << "+" << endl;
+    cout << "| " << left << setw(35) << "Metric"
+         << "| " << right << setw(20) << "Value" << " |" << endl;
+    cout << "+" << string(60, '-') << "+" << endl;
+
+    cout << "| " << left << setw(35) << "Total employed (before)"
+         << "| " << right << setw(20) << fixed << setprecision(0) << total_employed_before << " |" << endl;
+
+    cout << "| " << left << setw(35) << "Total employed (after)"
+         << "| " << right << setw(20) << total_employed_after << " |" << endl;
+
+    cout << "| " << left << setw(35) << "Employees who changed employer"
+         << "| " << right << setw(20) << employees_changed << " |" << endl;
+
+    cout << "| " << left << setw(35) << "Unemployed"
+         << "| " << right << setw(20) << unemployed << " |" << endl;
+
+    cout << "| " << left << setw(35) << "Unemployment rate"
+         << "| " << right << setw(19) << setprecision(2) << unemployment_rate << "% |" << endl;
+
+    cout << "+" << string(60, '-') << "+" << endl
+         << endl;
 }
 
 void City::tick()

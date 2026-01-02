@@ -274,6 +274,8 @@ double Company::get_production()
 
     prod = get_prod(skill_sum, prod_const_skill_, mot_sum, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
+    // cout << "I company get production, production: " << prod << " skill sum: " << skill_sum << " mot sum: " << mot_sum << " employees: " << employees << " prod_const_skill_: " << prod_const_skill_ << " prod_const_motivation_: " << prod_const_motivation_ << " capacity_: " << capacity_ << " produ const skill: " << prod_const_skill_ << " production const motivation_: " << prod_const_motivation_ << endl;
+
     return prod;
 }
 
@@ -585,6 +587,28 @@ void Company::change_item_efficiency(double ch)
     if ((item_efficiency_temp > 0) && (item_efficiency_temp < 1))
     {
         item_efficiency_ += ch;
+    }
+    else if (item_efficiency_temp > 1)
+    {
+        item_efficiency_ = 1;
+        cout << "Item investment > 1, sett to 1" << endl;
+    }
+    else
+    {
+        item_efficiency_ = item_efficiency_min;
+        cout << "Reached min of item investment = 0, setting to  min: " << item_efficiency_min << endl;
+    }
+}
+
+void Company::change_item_efficiency_percentage(double percentage_change)
+{
+    double item_efficiency_temp = 0;
+    double item_efficiency_min = 0.01;
+    item_efficiency_temp = item_efficiency_ * (1 + percentage_change);
+
+    if ((item_efficiency_temp > 0) && (item_efficiency_temp < 1))
+    {
+        item_efficiency_ = item_efficiency_temp;
     }
     else if (item_efficiency_temp > 1)
     {
@@ -1088,9 +1112,48 @@ double Company::produce(string city_name)
     current_production_items_ = production;
     stock_ += production;
     // insertCompanyDatapoint("PRODUCTION", production, clock_ -> get_time(), city_name, name_);
-    cout << name_ << " i company produce, production: " << production << " items needed: " << items_needed << " price out: " << price_out << " price in: " << price_in << endl;
-    cout << name_ << " i Company produce, share of full capacity: " << production / (capacity_ * 3.1415 / 2) << " capacity: " << capacity_ << " employees: " << employees_->get_size() << " for " << name_ << endl;
-    cout << name_ << " i company produce " << "total wages: " << total_wages << " cost of items: " << items_needed * price_out << " estimated revenue: " << production * price_in << " estimated profit: " << production * price_in - total_wages - items_needed * price_out << endl;
+
+    // Log production details in a table format
+    cout << "\n========== PRODUCTION SUMMARY FOR " << name_ << " ==========" << endl;
+    cout << "+" << string(45, '-') << "+" << endl;
+    cout << "| " << left << setw(22) << "Metric"
+         << "| " << right << setw(18) << "Value" << " |" << endl;
+    cout << "+" << string(45, '-') << "+" << endl;
+
+    cout << "| " << left << setw(22) << "Production"
+         << "| " << right << setw(18) << fixed << setprecision(0) << production << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Items needed"
+         << "| " << right << setw(18) << setprecision(0) << items_needed << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Price out"
+         << "| " << right << setw(18) << setprecision(2) << price_out << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Price in"
+         << "| " << right << setw(18) << setprecision(2) << price_in << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Capacity"
+         << "| " << right << setw(18) << setprecision(0) << capacity_ << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Employees"
+         << "| " << right << setw(18) << employees_->get_size() << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Capacity usage"
+         << "| " << right << setw(17) << setprecision(0) << (production / (capacity_ * 3.1415 / 2) * 100) << "% |" << endl;
+
+    cout << "| " << left << setw(22) << "Total wages"
+         << "| " << right << setw(18) << setprecision(0) << total_wages << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Cost of items"
+         << "| " << right << setw(18) << setprecision(0) << (items_needed * price_out) << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Estimated revenue"
+         << "| " << right << setw(18) << setprecision(0) << (production * price_in) << " |" << endl;
+
+    cout << "| " << left << setw(22) << "Estimated profit"
+         << "| " << right << setw(18) << setprecision(0) << (production * price_in - total_wages - items_needed * price_out) << " |" << endl;
+
+    cout << "+" << string(45, '-') << "+" << endl;
 
     return production;
 }
@@ -1112,10 +1175,32 @@ void Company::sell_to_market()
     }
     else
     {
-        cout << "I comp sell to mkt, no items sold, price: " << price << " stock: " << stock_ << endl;
+        cout << "WARNING: No items sold - price is zero. Stock: " << stock_ << endl;
     }
 
-    cout << name_ << " i comp sell to mkt, cost: " << actual_cost << " items: " << actual_items << " and price: " << price << " stock: " << stock_ << endl;
+    // Log market sale details in table format
+    cout << "\n========== MARKET SALE FOR " << name_ << " ==========" << endl;
+    cout << "+" << string(50, '-') << "+" << endl;
+    cout << "| " << left << setw(25) << "Metric"
+         << "| " << right << setw(20) << "Value" << " |" << endl;
+    cout << "+" << string(50, '-') << "+" << endl;
+
+    cout << "| " << left << setw(25) << "Stock before sale"
+         << "| " << right << setw(20) << fixed << setprecision(0) << stock_ << " |" << endl;
+
+    cout << "| " << left << setw(25) << "Items sold"
+         << "| " << right << setw(20) << setprecision(0) << actual_items << " |" << endl;
+
+    cout << "| " << left << setw(25) << "Market price"
+         << "| " << right << setw(20) << setprecision(2) << price << " |" << endl;
+
+    cout << "| " << left << setw(25) << "Revenue received"
+         << "| " << right << setw(20) << setprecision(0) << actual_cost << " |" << endl;
+
+    cout << "| " << left << setw(25) << "Stock after sale"
+         << "| " << right << setw(20) << setprecision(0) << (stock_ - actual_items) << " |" << endl;
+
+    cout << "+" << string(50, '-') << "+" << endl;
 
     change_capital(actual_cost);
     change_stock(-actual_items);
@@ -1177,11 +1262,8 @@ double Company::invest(double FacIncreaseRate_1, double CapIncreaseParam_1, doub
     own_capital_to_invest = cost - loans;
 
     // Paying market for goods
-    cout << "Cost: " << cost << " available capital: " << available_capital << " PBR: " << pbr_ << " Own cap to invest: " << own_capital_to_invest << " loans: " << loans << " total cost: " << cost << " desired items: " << desired_items << " for " << name_ << endl;
     actual_items = get_active_market()->customer_buy_items(own_capital_to_invest + loans);
     actual_amount = actual_items * price_out;
-
-    cout << name_ << " i cmp inv, desired items: " << desired_items << " Act. ites bought: " << actual_items << " Act. Cost: " << actual_amount << " Avail. own cap: " << available_capital << " Des. loans: " << loans << " Avail. bank cap: " << available_bank_financing << " Max it " << max_items << " " << name_ << endl;
 
     if (actual_amount < available_capital)
     {
@@ -1218,17 +1300,104 @@ double Company::invest(double FacIncreaseRate_1, double CapIncreaseParam_1, doub
     factor_change = factor_increase(invested_items_efficiency_factor, prod_const_skill_, prod_const_motivation_, capacity_, FacIncreaseRate_1);
     item_efficiency_change = item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
-    // cout << "I comp invest sk before: " << prod_const_skill_ << " f change: " << factor_change << " cap " << capacity_ << " c change: " << capacity_change << " for " << name_ << endl;
-    // cout << "I comp invest sk before: " << prod_const_skill_ << " and after " << prod_const_skill_ + factor_change << " increase:  " << factor_change << " for " << name_ << endl;
-    // cout << "Item efficiency: " << item_efficiency_ << " change " << item_efficiency_change << endl;
+    // Log investment details and parameter updates in a table format
+    cout << "\n========== INVESTMENT SUMMARY FOR " << name_ << " ==========" << endl;
+
+    // Financial Overview
+    cout << "\nFinancial Overview:" << endl;
+    cout << "+" << string(75, '-') << "+" << endl;
+    cout << "| " << left << setw(30) << "Metric"
+         << "| " << right << setw(40) << "Value" << " |" << endl;
+    cout << "+" << string(75, '-') << "+" << endl;
+
+    cout << "| " << left << setw(30) << "Cost"
+         << "| " << right << setw(40) << fixed << setprecision(0) << cost << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Available capital"
+         << "| " << right << setw(40) << setprecision(0) << available_capital << " |" << endl;
+
+    cout << "| " << left << setw(30) << "PBR"
+         << "| " << right << setw(40) << setprecision(4) << pbr_ << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Own capital to invest"
+         << "| " << right << setw(40) << setprecision(0) << own_capital_to_invest << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Loans"
+         << "| " << right << setw(40) << setprecision(0) << loans << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Available bank financing"
+         << "| " << right << setw(40) << setprecision(0) << available_bank_financing << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Desired items"
+         << "| " << right << setw(40) << setprecision(0) << desired_items << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Actual items bought"
+         << "| " << right << setw(40) << setprecision(0) << actual_items << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Actual cost"
+         << "| " << right << setw(40) << setprecision(0) << actual_amount << " |" << endl;
+
+    cout << "+" << string(75, '-') << "+" << endl;
+
+    // Investment Allocation
+    cout << "\nInvestment Allocation:" << endl;
+    cout << "+" << string(75, '-') << "+" << endl;
+    cout << "| " << left << setw(30) << "Category"
+         << "| " << right << setw(40) << "Items" << " |" << endl;
+    cout << "+" << string(75, '-') << "+" << endl;
+
+    cout << "| " << left << setw(30) << "Capacity investment"
+         << "| " << right << setw(35) << setprecision(0) << invested_items_capacity
+         << " (" << setprecision(1) << (investment_capacity_vs_efficiency_split_ * 100) << "%) |" << endl;
+
+    cout << "| " << left << setw(30) << "Efficiency (items)"
+         << "| " << right << setw(40) << setprecision(0) << invested_items_efficiency_items << " |" << endl;
+
+    cout << "| " << left << setw(30) << "Efficiency (labor)"
+         << "| " << right << setw(40) << setprecision(0) << invested_items_efficiency_factor << " |" << endl;
+
+    cout << "+" << string(75, '-') << "+" << endl;
+
+    // Parameter Updates
+    cout << "\nParameter Updates:" << endl;
+    cout << "+" << string(95, '-') << "+" << endl;
+    cout << "| " << left << setw(22) << "Parameter"
+         << "| " << right << setw(14) << "Before"
+         << " | " << setw(14) << "Change"
+         << " | " << setw(14) << "After"
+         << " | " << setw(10) << "% Change" << " |" << endl;
+    cout << "+" << string(95, '-') << "+" << endl;
+
+    cout << "| " << left << setw(22) << "Capacity"
+         << "| " << right << setw(14) << fixed << setprecision(0) << capacity_
+         << " | " << setw(14) << capacity_change
+         << " | " << setw(14) << (capacity_ + capacity_change)
+         << " | " << setw(9) << setprecision(2) << (capacity_change / capacity_ * 100) << "% |" << endl;
+
+    cout << "| " << left << setw(22) << "Prod const skill"
+         << "| " << right << setw(14) << setprecision(4) << prod_const_skill_
+         << " | " << setw(14) << factor_change
+         << " | " << setw(14) << (prod_const_skill_ + factor_change)
+         << " | " << setw(9) << setprecision(2) << (factor_change / prod_const_skill_ * 100) << "% |" << endl;
+
+    cout << "| " << left << setw(22) << "Prod const motivation"
+         << "| " << right << setw(14) << setprecision(4) << prod_const_motivation_
+         << " | " << setw(14) << factor_change
+         << " | " << setw(14) << (prod_const_motivation_ + factor_change)
+         << " | " << setw(9) << setprecision(2) << (factor_change / prod_const_motivation_ * 100) << "% |" << endl;
+
+    cout << "| " << left << setw(22) << "Item efficiency"
+         << "| " << right << setw(14) << setprecision(4) << item_efficiency_
+         << " | " << setw(14) << (-item_efficiency_change)
+         << " | " << setw(14) << (item_efficiency_ * (1 - item_efficiency_change))
+         << " | " << setw(9) << setprecision(2) << (-item_efficiency_change * 100) << "% |" << endl;
+
+    cout << "+" << string(95, '-') << "+" << endl;
+
     change_prod_const_skill(factor_change);
     change_prod_const_motivation(factor_change);
     change_capacity(capacity_change);
-    change_item_efficiency(-item_efficiency_change);
-
-    cout << left << setw(25) << name_ << " | New capacity: " << setw(12) << capacity_ << " | Own capital: " << setw(10) << own_capital_to_invest << " | Loans: " << setw(10) << loans << " | Total cost: " << setw(10) << cost << " | Available capital: " << setw(10) << available_capital << endl;
-    cout << left << setw(25) << name_ << " | Inv items: " << setw(8) << actual_items << " | Cost: " << setw(10) << actual_amount << " | Cap change: " << setw(10) << capacity_change << " | Factor: " << setw(10) << factor_change << " | Max items: " << setw(8) << max_items << endl;
-    // cout << left << setw(25) << name_ << " | Item efficiency: " << setw(10) << item_efficiency_ << " | Change: " << setw(10) << item_efficiency_change << endl;
+    change_item_efficiency_percentage(-item_efficiency_change);
 
     investments_.push_front(actual_amount);
 
@@ -1312,15 +1481,48 @@ int Company::get_desired_investment(double FacIncreaseRate_1, double CapIncrease
         // Checking which condition that breaks the while loop
         if (NPV < 0)
         {
-            cout << left << setw(25) << name_ << " | BREAK: NPV < 0       | NPV: " << setw(12) << NPV << " | Items: " << setw(8) << invested_items_tot << endl;
+            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(18) << "Decision"
+                 << " | " << setw(18) << "Current NPV"
+                 << " | " << setw(18) << "Previous NPV"
+                 << " | " << setw(16) << "Items" << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(18) << "STOP: NPV < 0"
+                 << " | " << right << setw(18) << fixed << setprecision(0) << NPV
+                 << " | " << setw(18) << setprecision(0) << NPV_old
+                 << " | " << setw(16) << setprecision(0) << invested_items_tot << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
         }
         else if (NPV < NPV_old)
         {
-            cout << left << setw(25) << name_ << " | BREAK: NPV declined  | NPV: " << setw(12) << NPV << " | Old: " << setw(12) << NPV_old << " | Items: " << setw(8) << invested_items_tot << endl;
+            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(18) << "Decision"
+                 << " | " << setw(18) << "Current NPV"
+                 << " | " << setw(18) << "Previous NPV"
+                 << " | " << setw(16) << "Items" << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(18) << "STOP: NPV Declined"
+                 << " | " << right << setw(18) << fixed << setprecision(0) << NPV
+                 << " | " << setw(18) << setprecision(0) << NPV_old
+                 << " | " << setw(16) << setprecision(0) << invested_items_tot << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
         }
         if ((debts_ + borrow) / capital_ - 1 >= max_leverage_)
         {
-            cout << left << setw(25) << name_ << " | BREAK: Max leverage  | Ratio: " << setw(10) << (debts_ + borrow) / capital_ - 1 << " | Max: " << setw(10) << max_leverage_ << " | Items: " << setw(8) << invested_items_tot << endl;
+            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(24) << "Decision"
+                 << " | " << setw(18) << "Leverage Ratio"
+                 << " | " << setw(18) << "Max Leverage"
+                 << " | " << setw(10) << "Items" << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
+            cout << "| " << left << setw(24) << "STOP: Max Leverage"
+                 << " | " << right << setw(18) << fixed << setprecision(4) << ((debts_ + borrow) / capital_ - 1)
+                 << " | " << setw(18) << setprecision(4) << max_leverage_
+                 << " | " << setw(10) << setprecision(0) << invested_items_tot << " |" << endl;
+            cout << "+" << string(80, '-') << "+" << endl;
         }
 
         invested_items_tot += item_increase;
@@ -1585,7 +1787,36 @@ double Company::pay_employees_individual(double income_tax, int pay_wages_in_cas
         // log_transaction(name_, -wage_tot, "Salary", clock_ ->  get_time());
     }
 
-    cout << "I company pay wages: " << wage_tot << " income tax est: " << wage_tot * income_tax << " " << name_ << endl;
+    // Log employee payment details in table format
+    cout << "\n========== EMPLOYEE PAYMENT FOR " << name_ << " ==========" << endl;
+    cout << "+" << string(55, '-') << "+" << endl;
+    cout << "| " << left << setw(28) << "Metric"
+         << "| " << right << setw(22) << "Value" << " |" << endl;
+    cout << "+" << string(55, '-') << "+" << endl;
+
+    cout << "| " << left << setw(28) << "Number of employees"
+         << "| " << right << setw(22) << fixed << setprecision(0) << size << " |" << endl;
+
+    cout << "| " << left << setw(28) << "Total wages"
+         << "| " << right << setw(22) << setprecision(2) << wage_tot << " |" << endl;
+
+    cout << "| " << left << setw(28) << "Wage per employee"
+         << "| " << right << setw(22) << setprecision(2) << wage << " |" << endl;
+
+    cout << "| " << left << setw(28) << "Income tax rate"
+         << "| " << right << setw(21) << setprecision(1) << (income_tax * 100) << "% |" << endl;
+
+    cout << "| " << left << setw(28) << "Estimated income tax"
+         << "| " << right << setw(22) << setprecision(2) << (wage_tot * income_tax) << " |" << endl;
+
+    cout << "| " << left << setw(28) << "Net wages (after tax)"
+         << "| " << right << setw(22) << setprecision(2) << (wage_tot * (1 - income_tax)) << " |" << endl;
+
+    cout << "| " << left << setw(28) << "Payment mode"
+         << "| " << right << setw(22) << (pay_wages_in_cash ? "Cash" : "Non-cash") << " |" << endl;
+
+    cout << "+" << string(55, '-') << "+" << endl;
+
     wages_.push_front(wage);
     employees_no_.push_front(size);
 
