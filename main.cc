@@ -76,12 +76,11 @@ int main()
 		for (int j = 1; j < simulation_cycles; j++)
 		{
 
-			// Debuggng setting capacity on bempa_AB to 900000 at time 50
-			if (bennyworld.get_time() == 5)
+			// Debuggng setting capacity on bempa_AB to 900000 at time 10
+			if (bennyworld.get_time() % 10 == 0)
 			{
-				Company *comp = bennyworld.get_city("Bennyland")->get_company("bempa_AB");
-				comp->set_capacity(900000);
-				cout << "Debugging, setting capacity of bempa_AB to 900000 at time 50" << endl;
+				// Investing in new average companu
+				bennyworld.get_city("Bennyland")->invest_in_new_average_company(1000000);
 			}
 
 			// Timer checkpoint

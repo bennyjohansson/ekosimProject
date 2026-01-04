@@ -68,6 +68,8 @@ public:
     double get_total_wages();
     double get_estimated_wages(double);
     double get_wage_change_limit() const;
+    double get_decay() const;
+    double get_investment_capacity_vs_efficiency_split() const;
     double get_investment_cashflow(double, double, double, double, double, double, double, double);
     int get_desired_investment(double fac_rate, double cap_param, double cap_rate, double item_eff_rate);
 
@@ -121,10 +123,12 @@ public:
 
     void add_employee(Consumer *);
     void remove_employee(Consumer *);
+    void remove_all_employees();
 
     void add_shareholder(Consumer *);
     void add_multiple_shareholders(Element_consumer *);
     void remove_shareholder(Consumer *);
+    void remove_all_shareholders();
 
     void update_company();
     bool update_employees(Consumer *);

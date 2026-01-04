@@ -652,7 +652,7 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
   }
   else
   {
-    consumer->set_employment_status(true);
+    // consumer->set_employment_status(true);
     cout << "The bitch is not employed here, error in remove_consumer in consumer_list" << endl;
   }
 }
@@ -688,6 +688,44 @@ void Consumer_list::remove_shareholder(Consumer *consumer)
   else
   {
     cout << "The consumer is not a shareholder here, error in remove_shareholder in consumer_list" << endl;
+  }
+}
+
+void Consumer_list::remove_all_employees(double capacity)
+{
+  // Remove all employees by iterating through the current size
+  // Using size counter instead of while(list_) to prevent issues
+  int count = size_;
+  for (int i = 0; i < count; i++)
+  {
+    if (list_)
+    {
+      Consumer *consumer = list_->get_consumer();
+      remove_consumer(consumer, capacity);
+    }
+    else
+    {
+      break;
+    }
+  }
+}
+
+void Consumer_list::remove_all_shareholders()
+{
+  // Remove all shareholders by iterating through the current size
+  // Using size counter instead of while(list_) to prevent issues
+  int count = size_;
+  for (int i = 0; i < count; i++)
+  {
+    if (list_)
+    {
+      Consumer *consumer = list_->get_consumer();
+      remove_shareholder(consumer);
+    }
+    else
+    {
+      break;
+    }
   }
 }
 
@@ -912,6 +950,11 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
     return;
   }
 
+  cout << "\n=== DIVIDEND/CHARGE PAYMENT FROM " << party_pay << " ===" << endl;
+  cout << "Amount per shareholder: " << amount << " (negative = charge, positive = dividend)" << endl;
+  cout << "Number of shareholders: " << size_ << endl;
+
+  int processed = 0;
   for (p = list_.get(); p; p = p->next_.get())
   {
     if (p == nullptr)
@@ -926,10 +969,34 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
       cout << "Warning: Found null consumer pointer, skipping dividend payment..." << endl;
       continue;
     }
+
+    double capital_before = consumer->get_capital();
+    double loans_before = consumer->get_loans();
+
     // consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
+
+    double capital_after = consumer->get_capital();
+    double loans_after = consumer->get_loans();
+
+    if (processed < 3 || processed >= size_ - 1)
+    {
+      cout << "  " << consumer->get_name()
+           << " - Capital: " << capital_before << " -> " << capital_after
+           << ", Loans: " << loans_before << " -> " << loans_after << endl;
+    }
+    else if (processed == 3)
+    {
+      cout << "  ... (" << (size_ - 4) << " more shareholders) ..." << endl;
+    }
+
     log_transaction_full(party_pay, consumer->get_name(), amount, "Dividends", consumer->get_time());
+    processed++;
   }
+
+  cout << "Total " << (amount < 0 ? "charged" : "paid") << ": " << (amount * size_) << endl;
+  cout << "===========================================\n"
+       << endl;
 }
 
 void Consumer_list::pay_transfers_log(double amount, string party_pay)

@@ -61,6 +61,7 @@ public:
    Company *get_company(const string &name);
    Consumer *get_random_consumer();
    Element_consumer *get_random_consumers(int number_of_consumers);
+   Element_consumer *get_random_consumers_with_capital(double capital_limit);
 
    Company *get_random_company();
    Consumer *get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
@@ -122,7 +123,9 @@ public:
    void add_company(Company *company);
    void add_company(string name);
    void load_company(string);
+   Company *create_average_company();
    double invest_in_new_company(string, double);
+   double invest_in_new_average_company(double capital_limit);
    void load_launder_parameters();
 
    /*

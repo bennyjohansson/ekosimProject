@@ -245,6 +245,16 @@ double Company::get_wage_change_limit() const
     return wage_change_limit_;
 }
 
+double Company::get_decay() const
+{
+    return decay_;
+}
+
+double Company::get_investment_capacity_vs_efficiency_split() const
+{
+    return investment_capacity_vs_efficiency_split_;
+}
+
 int Company::get_production_function() const
 {
     return production_function_;
@@ -355,6 +365,11 @@ double Company::get_invest() const
 double Company::get_capacity() const
 {
     return capacity_;
+}
+
+double Company::get_pbr()
+{
+    return pbr_;
 }
 
 double Company::get_items_for_production()
@@ -701,6 +716,16 @@ void Company::remove_shareholder(Consumer *consumer)
 {
 
     shareholders_->remove_consumer(consumer, capacity_);
+}
+
+void Company::remove_all_employees()
+{
+    employees_->remove_all_employees(capacity_);
+}
+
+void Company::remove_all_shareholders()
+{
+    shareholders_->remove_all_shareholders();
 }
 
 void Company::update_company()

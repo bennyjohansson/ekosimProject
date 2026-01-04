@@ -331,6 +331,136 @@ double Company_list::get_average_wage_historical(int years) const
     return sum;
 }
 
+double Company_list::get_average_capacity() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_capacity();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_prod_const_skill() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_prod_const_skill();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_prod_const_motivation() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_prod_const_motivation();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_wage_const() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_wage_const();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_wage_change_limit() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_wage_change_limit();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_pbr() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_pbr();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_decay() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_decay();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_production_parameter() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_production_parameter();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_item_efficiency() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_item_efficiency();
+    }
+    return sum / size_;
+}
+
+double Company_list::get_average_investment_capacity_vs_efficiency_split() const
+{
+    if (size_ == 0)
+        return 0.0;
+
+    double sum = 0;
+    for (Element_company *p = list_.get(); p; p = p->next_.get())
+    {
+        sum += p->get_company()->get_investment_capacity_vs_efficiency_split();
+    }
+    return sum / size_;
+}
+
 double Company_list::get_expected_net_flow_to_bank_sum(double fac_rate, double cap_param, double cap_rate, double item_eff_rate) const
 {
     Element_company *p;
@@ -387,14 +517,70 @@ void Company_list::add_company(Company *company)
     }
 }
 
-void Company_list::add_employee(string name, Consumer *consumer)
+void Company_list::remove_company(string name)
 {
-    get_company(name)->add_employee(consumer);
-}
+    // Removing company from the list by name
+    // Also removes all the employees and shareholders
+    // Remaining capital is distributed to shareholders as dividends before removal
 
-/*
- * Functions to update companies
- */
+    if (!list_)
+    {
+        cout << "Company list is empty, cannot remove company" << endl;
+        return;
+    }
+
+    Element_company *current = list_.get();
+    Element_company *prev = nullptr;
+
+    // Search for the company
+    while (current != nullptr && current->get_company()->get_name() != name)
+    {
+        prev = current;
+        current = current->next_.get();
+    }
+
+    // Company not found
+    if (current == nullptr)
+    {
+        cout << "Company '" << name << "' not found in the list" << endl;
+        return;
+    }
+
+    Company *company_to_remove = current->get_company();
+
+    cout << "Removing company: " << name << endl;
+
+    // Step 1: Distribute remaining capital to shareholders as dividends
+    double capital = company_to_remove->get_capital();
+    if (capital > 0)
+    {
+        cout << "  Distributing remaining capital (" << capital << ") to shareholders..." << endl;
+        company_to_remove->pay_dividends_directly(0.0); // 0.0 tax rate for final distribution
+    }
+
+    // Step 2: Remove all employees
+    cout << "  Removing all employees..." << endl;
+    company_to_remove->remove_all_employees();
+
+    // Step 3: Remove all shareholders
+    cout << "  Removing all shareholders..." << endl;
+    company_to_remove->remove_all_shareholders();
+
+    // Step 4: Remove company from list
+    if (prev == nullptr)
+    {
+        // Removing the first element
+        list_ = std::move(current->next_);
+    }
+    else
+    {
+        // Removing from middle or end
+        prev->next_ = std::move(current->next_);
+    }
+
+    size_--;
+    cout << "Company '" << name << "' successfully removed" << endl;
+}
 
 void Company_list::update_companies()
 {
@@ -715,6 +901,7 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
 
     Element_company *p;
     double total_profit = 0;
+    vector<string> companies_to_remove;
 
     if (list_ == nullptr)
     {
@@ -722,6 +909,7 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
         return 0;
     }
 
+    // First pass: pay dividends and collect companies that need removal
     for (p = list_.get(); p; p = p->next_.get())
     {
         if (p->get_company() == nullptr)
@@ -729,7 +917,24 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
             cout << "Warning: Found null company pointer, skipping dividend payment..." << endl;
             continue;
         }
-        total_profit += (p->get_company())->pay_dividends_directly(capital_gains_tax);
+
+        // Check if company capital is less than or equal to 0
+        if (p->get_company()->get_capital() <= 0)
+        {
+            cout << "Company " << p->get_company()->get_name() << " has non-positive capital ("
+                 << p->get_company()->get_capital() << "), marking for removal." << endl;
+            companies_to_remove.push_back(p->get_company()->get_name());
+        }
+        else
+        {
+            total_profit += (p->get_company())->pay_dividends_directly(capital_gains_tax);
+        }
+    }
+
+    // Second pass: remove all marked companies
+    for (const string &company_name : companies_to_remove)
+    {
+        remove_company(company_name);
     }
 
     return total_profit;

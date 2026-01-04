@@ -9,6 +9,7 @@
 
 #include <random>
 #include <map>
+#include <set>
 
 #include "SQLfunctions.h"
 #include "functions.h"
@@ -199,7 +200,7 @@ void City::print_GDP()
     Growth = growth_.begin();
     Investments = investments_.begin();
     Demand = demand_.begin();
-    Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
+    Wages = (company_list_->get_random_company()->get_company())->wages_.begin();
     Price_out = price_out_.begin();
     Excess_demand_items = excess_demand_items_.begin();
     Employed = employed_.begin();
@@ -254,7 +255,7 @@ void City::print_GDP()
         Investments = investments_.begin();
         Growth = growth_.begin();
         Demand = demand_.begin();
-        Wages = (company_list_->get_company("bempa_AB"))->wages_.begin();
+        Wages = (company_list_->get_random_company()->get_company())->wages_.begin();
         Price_out = price_out_.begin();
         Excess_demand_items = excess_demand_items_.begin();
         Employed = employed_.begin();
@@ -354,6 +355,61 @@ Element_consumer *City::get_random_consumers(int number_of_consumers)
             tail = tail->next_.get();
         }
     }
+
+    return head;
+}
+
+Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
+{
+    std::set<Consumer *> selected_consumers; // Track selected consumers to avoid duplicates
+    Element_consumer *head = nullptr;
+    Element_consumer *tail = nullptr;
+    double total_capital = 0.0;
+    int total_consumers = consumers_->get_size();
+    int attempts = 0;
+    int max_attempts = total_consumers * 2; // Safety limit to prevent infinite loop
+
+    while (total_capital < capital_limit && attempts < max_attempts)
+    {
+        Consumer *cons = consumers_->get_random_consumer();
+        attempts++;
+
+        // Check if we've already selected this consumer
+        if (selected_consumers.find(cons) != selected_consumers.end())
+        {
+            continue; // Skip duplicate
+        }
+
+        // Add consumer to selected set
+        selected_consumers.insert(cons);
+
+        // Get consumer's available capital
+        double consumer_wealth = cons->get_capital() + cons->get_loans();
+        total_capital += consumer_wealth;
+
+        // Create new element in linked list
+        Element_consumer *new_element = new Element_consumer(nullptr, cons);
+
+        if (head == nullptr)
+        {
+            head = new_element;
+            tail = new_element;
+        }
+        else
+        {
+            tail->next_ = std::make_unique<Element_consumer>(nullptr, cons);
+            tail = tail->next_.get();
+        }
+
+        // If we've checked all consumers, stop
+        if (selected_consumers.size() >= (size_t)total_consumers)
+        {
+            break;
+        }
+    }
+
+    cout << "I City get_random_consumers_with_capital: Selected " << selected_consumers.size()
+         << " consumers with total wealth: " << total_capital << " (target: " << capital_limit << ")" << endl;
 
     return head;
 }
@@ -733,6 +789,136 @@ void City::add_company(Company *company)
     company_list_->add_company(company);
 }
 
+Company *City::create_average_company()
+{
+    // Generate unique company name by finding the highest existing newco number
+    int highest_number = 0;
+    int num_companies = company_list_->get_size();
+
+    for (int i = 0; i < num_companies; i++)
+    {
+        Company *company = company_list_->get_company_by_index(i);
+        string name = company->get_name();
+
+        // Check if name starts with "newco_"
+        if (name.substr(0, 6) == "newco_")
+        {
+            try
+            {
+                int num = stoi(name.substr(6));
+                if (num > highest_number)
+                {
+                    highest_number = num;
+                }
+            }
+            catch (...)
+            {
+                // If parsing fails, just continue
+            }
+        }
+    }
+
+    string company_name = "newco_" + to_string(highest_number + 1);
+
+    // Log existing companies for diagnostics with high precision
+    cout << "\n========== EXISTING COMPANIES BEFORE AVERAGING ==========" << endl;
+    cout << "Number of companies: " << num_companies << endl;
+    cout << fixed << setprecision(6); // Show 6 decimal places
+    for (int i = 0; i < num_companies; i++)
+    {
+        Company *comp = company_list_->get_company_by_index(i);
+        cout << i + 1 << ". " << comp->get_name()
+             << " - Cap: " << comp->get_capacity()
+             << ", Prod param: " << comp->get_production_parameter()
+             << ", Item eff: " << comp->get_item_efficiency()
+             << ", Decay: " << comp->get_decay()
+             << ", PBR: " << comp->get_pbr() << endl;
+    }
+    cout << "=========================================================\n"
+         << endl;
+    cout << setprecision(2); // Reset to default
+
+    // Get average parameters from existing companies
+    double avg_capacity = company_list_->get_average_capacity();
+    double avg_pcskill = company_list_->get_average_prod_const_skill();
+    double avg_pcmot = company_list_->get_average_prod_const_motivation();
+    double avg_wage_const = company_list_->get_average_wage_const();
+    double avg_pbr = company_list_->get_average_pbr();
+    double avg_decay = company_list_->get_average_decay();
+    double avg_prod_parm = company_list_->get_average_production_parameter();
+    double avg_item_efficiency = company_list_->get_average_item_efficiency();
+    double avg_cap_vs_eff_split = company_list_->get_average_investment_capacity_vs_efficiency_split();
+    double avg_wage_ch = company_list_->get_average_wage_change_limit();
+
+    // Log the calculated averages with high precision
+    cout << "Calculated averages from " << num_companies << " companies:" << endl;
+    cout << fixed << setprecision(6);
+    cout << "  avg_capacity: " << avg_capacity << endl;
+    cout << "  avg_prod_parm: " << avg_prod_parm << endl;
+    cout << "  avg_item_efficiency: " << avg_item_efficiency << endl;
+    cout << "  avg_decay: " << avg_decay << endl;
+    cout << "  avg_pbr: " << avg_pbr << endl;
+    cout << setprecision(2); // Reset
+
+    // Parameters from specification
+    double capital = 0;
+    double stock = 0;
+    int debts = 0;
+    double invest = 1;
+    int prod_fcn = 1;
+
+    // Create the new company with basic parameters
+    Company *new_company = new Company(
+        company_name,
+        name_, // city_name
+        capital,
+        stock,
+        avg_capacity,
+        avg_pcskill,
+        avg_pcmot,
+        avg_wage_const,
+        avg_pbr,
+        market_.get(),
+        global_market_,
+        bank_.get(),
+        clock_);
+
+    // Set additional parameters using setter methods
+    new_company->set_debts(debts);
+    new_company->set_invest(invest);
+    new_company->set_production_function(prod_fcn);
+    new_company->set_production_parameter(avg_prod_parm);
+    new_company->set_item_efficiency(avg_item_efficiency);
+    new_company->set_wage_change_limit(avg_wage_ch);
+
+    cout << "\n========================================" << endl;
+    cout << "CREATED NEW AVERAGE COMPANY: " << company_name << endl;
+    cout << "========================================" << endl;
+    cout << fixed << setprecision(6);
+    cout << "Production Parameters:" << endl;
+    cout << "  Capacity:             " << avg_capacity << endl;
+    cout << "  Production parameter: " << avg_prod_parm << endl;
+    cout << "  Item efficiency:      " << avg_item_efficiency << endl;
+    cout << "  Production function:  " << prod_fcn << endl;
+    cout << "\nLabor Parameters:" << endl;
+    cout << "  Prod const (skill):   " << avg_pcskill << endl;
+    cout << "  Prod const (motiv):   " << avg_pcmot << endl;
+    cout << "  Wage constant:        " << avg_wage_const << endl;
+    cout << "  Wage change limit:    " << avg_wage_ch << endl;
+    cout << "\nFinancial Parameters:" << endl;
+    cout << "  Initial capital:      " << capital << endl;
+    cout << "  Initial stock:        " << stock << endl;
+    cout << "  Initial debts:        " << debts << endl;
+    cout << "  PBR (price markup):   " << avg_pbr << endl;
+    cout << "  Decay rate:           " << avg_decay << endl;
+    cout << "  Investment split:     " << avg_cap_vs_eff_split << endl;
+    cout << "========================================\n"
+         << endl;
+    cout << setprecision(2); // Reset to default
+
+    return new_company;
+}
+
 void City::add_company(string name)
 {
     Company *company = new Company(name, market_.get(), global_market_, clock_);
@@ -765,6 +951,99 @@ double City::invest_in_new_company(string nameactual, double capital)
     company_list_->get_company(nameactual)->info();
 
     return capital;
+}
+
+double City::invest_in_new_average_company(double capital_limit)
+{
+    // Step 1: Create the average company (not yet added to company list)
+    Company *new_company = create_average_company();
+    string company_name = new_company->get_name();
+    double share_of_capita_to_invest = 0.5;
+
+    cout << "I City invest_in_new_average_company: Created company " << company_name << endl;
+
+    // Step 2: Get random consumers with sufficient capital
+    Element_consumer *shareholders = get_random_consumers_with_capital(capital_limit / share_of_capita_to_invest);
+
+    if (shareholders == nullptr)
+    {
+        cout << "I City invest_in_new_average_company: No shareholders found, deleting company" << endl;
+        delete new_company;
+        return 0.0;
+    }
+
+    // Step 3: Calculate actual investment amount
+    double total_shareholder_wealth = 0.0;
+    int shareholder_count = 0;
+    Element_consumer *p = shareholders;
+
+    while (p != nullptr)
+    {
+        Consumer *cons = p->get_consumer();
+        total_shareholder_wealth += cons->get_capital() + cons->get_loans();
+        shareholder_count++;
+        p = p->next_.get();
+    }
+
+    double actual_investment = fmin(capital_limit, total_shareholder_wealth * share_of_capita_to_invest);
+    double amount_per_shareholder = actual_investment / shareholder_count;
+
+    cout << "\nShareholder Investment Details:" << endl;
+    cout << "  Total shareholders:    " << shareholder_count << endl;
+    cout << "  Total investment:      " << actual_investment << endl;
+    cout << "  Per shareholder:       " << amount_per_shareholder << endl;
+    cout << "  Total wealth:          " << total_shareholder_wealth << endl;
+    cout << "  Capital limit:         " << capital_limit << endl;
+
+    // Log individual shareholders
+    cout << "\nShareholder List:" << endl;
+    p = shareholders;
+    int idx = 1;
+    while (p != nullptr)
+    {
+        Consumer *cons = p->get_consumer();
+        cout << "  " << idx << ". " << cons->get_name()
+             << " - Capital: " << cons->get_capital()
+             << ", Loans: " << cons->get_loans() << endl;
+        p = p->next_.get();
+        idx++;
+    }
+
+    // Step 4: Create temporary Consumer_list for payment
+    Consumer_list temp_shareholders(name_);
+    p = shareholders;
+
+    while (p != nullptr)
+    {
+        temp_shareholders.add_last(p->get_consumer());
+        p = p->next_.get();
+    }
+
+    // Step 5: Charge shareholders using "reverse dividend" (negative payment)
+    // This transfers capital from shareholders to the company
+    temp_shareholders.pay_dividends_log(-amount_per_shareholder, company_name);
+
+    // Adding the capital to the new company using the add_capital function
+    new_company->change_capital(actual_investment);
+
+    // Step 6: Add company to the city's company list (only after successful funding)
+    company_list_->add_company(new_company);
+
+    // Step 7: Add shareholders to the company
+    new_company->add_multiple_shareholders(shareholders);
+
+    cout << "\n========================================" << endl;
+    cout << "COMPANY INVESTMENT SUCCESSFUL" << endl;
+    cout << "========================================" << endl;
+    cout << "Company: " << company_name << endl;
+    cout << "Total funding: " << actual_investment << endl;
+    cout << "Number of shareholders: " << shareholder_count << endl;
+    cout << "Company added to city: " << name_ << endl;
+    cout << "Shareholders registered with company" << endl;
+    cout << "========================================\n"
+         << endl;
+
+    return actual_investment;
 }
 
 void City::load_company(string nameactual)
@@ -851,8 +1130,25 @@ void City::load_company(string nameactual)
     // cout << " name " << name << " capital " << capital << " stock " << stock << " capacity " << capacity << " mot " << p_c_mot << " skill " << p_c_skill << " wage_const " << wage_const << " pbr " << pbr << " wcl " << wage_change_limit << " decay " << decay << endl;
     // pbr = 0.3;
     wage_const = 0.7;
-    cout << "I city load company - fixing pbr to " << pbr << "and wage const to " << wage_const << endl;
-    add_company(new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_));
+    cout << "I city load company - fixing pbr to " << pbr << " and wage const to " << wage_const << endl;
+    cout << "I city load company - loaded decay: " << decay << ", production_function: " << production_function << endl;
+
+    Company *loaded_company = new Company(nameactual, name_, capital, stock, capacity, p_c_skill, p_c_mot, wage_const, pbr, market_.get(), global_market_, bank_.get(), clock_);
+
+    // Apply the loaded parameters that aren't in the constructor
+    // If decay is 0, use a sensible default
+    if (decay == 0.0)
+    {
+        decay = 0.005; // Default decay rate
+        cout << "I city load company - decay was 0, setting default: " << decay << endl;
+    }
+    loaded_company->set_production_function(production_function);
+
+    // Note: production_parameter is not loaded from file, keeping constructor default of 0.001
+    // If you want to load it, add it to the file format and read it above
+    cout << "I city load company - final values: decay=" << decay << ", prod_func=" << production_function << ", prod_param=" << loaded_company->get_production_parameter() << endl;
+
+    add_company(loaded_company);
 }
 
 void City::load_launder_parameters()
@@ -1831,7 +2127,7 @@ void City::adjust_money()
     Price_out = price_out_.begin();
     Items = GDP_.begin();
 
-    Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
+    Wages = ((company_list_->get_random_company()->get_company())->wages_.begin());
 
     total_money = get_capital_sum();
     bank_money = bank_->get_capital();
@@ -1867,7 +2163,7 @@ void City::adjust_money()
     // Function 3
     // OLD CODE - REMOVE!
     wages_a = *Wages;
-    Wages = ((company_list_->get_company("bempa_AB"))->wages_.begin());
+    Wages = ((company_list_->get_random_company()->get_company())->wages_.begin());
 
     sum = 0;
     for (i = 0; i < 4; i++)

@@ -42,6 +42,16 @@ public:
   int get_environmental_impact_sum() const;
   double get_average_wage() const;
   double get_average_wage_historical(int years) const;
+  double get_average_capacity() const;
+  double get_average_prod_const_skill() const;
+  double get_average_prod_const_motivation() const;
+  double get_average_wage_const() const;
+  double get_average_wage_change_limit() const;
+  double get_average_pbr() const;
+  double get_average_decay() const;
+  double get_average_production_parameter() const;
+  double get_average_item_efficiency() const;
+  double get_average_investment_capacity_vs_efficiency_split() const;
 
   double get_expected_net_flow_to_bank_sum(double, double, double, double) const;
   double get_items_for_production_sum() const;
@@ -56,6 +66,7 @@ public:
    */
 
   void add_company(Company *company);
+  void remove_company(string name);
   void add_employee(string name, Consumer *conumer);
 
   /*

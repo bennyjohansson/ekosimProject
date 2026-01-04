@@ -77,6 +77,8 @@ class Consumer_list {
 
       void remove_consumer(Consumer *, double);
       void remove_shareholder(Consumer *);
+      void remove_all_employees(double);
+      void remove_all_shareholders();
 
       /*
        * Functions to update and operate on the list
