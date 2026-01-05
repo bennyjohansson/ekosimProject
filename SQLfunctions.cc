@@ -2249,6 +2249,64 @@ Records getConsumerDataPG(string city_name, string consumer_name)
     return records;
 }
 
+/**
+ * Insert a simulation event into PostgreSQL
+ * Used to track significant events like company creation, bankruptcies, banking crises, etc.
+ */
+int insertSimulationEvent(string city_name, string event_type, string severity,
+                          string description, string event_data, int simulation_time)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for insertSimulationEvent" << endl;
+        return 1;
+    }
+
+    string sql = R"(
+        INSERT INTO simulation_events 
+        (city_name, event_type, severity, description, event_data, simulation_time)
+        VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+    )";
+
+    // Ensure event_data is valid JSON (default to empty object if empty)
+    if (event_data.empty())
+    {
+        event_data = "{}";
+    }
+
+    string simulation_time_str = to_string(simulation_time);
+
+    const char *paramValues[] = {
+        city_name.c_str(),
+        event_type.c_str(),
+        severity.c_str(),
+        description.c_str(),
+        event_data.c_str(),
+        simulation_time_str.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    6,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to insert simulation event (" << event_type << ") for " << city_name
+             << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    PQclear(result);
+    return 0;
+}
+
 int deleteConsumerDataPG(string city_name)
 {
     PostgreSQLManager pgManager;
@@ -2280,6 +2338,41 @@ int deleteConsumerDataPG(string city_name)
     }
 
     cout << "CONSUMER_DATA deleted successfully from PostgreSQL for city: " << city_name << endl;
+    PQclear(result);
+    return 0;
+}
+
+int deleteSimulationEventsPG(string city_name)
+{
+    PostgreSQLManager pgManager;
+
+    if (!pgManager.connect())
+    {
+        cerr << "Failed to connect to PostgreSQL for simulation_events delete: " << pgManager.getLastError() << endl;
+        return 1;
+    }
+
+    string sql = "DELETE FROM simulation_events WHERE city_name = $1";
+
+    const char *paramValues[1] = {city_name.c_str()};
+
+    PGresult *result = PQexecParams(pgManager.getConnection(),
+                                    sql.c_str(),
+                                    1,
+                                    NULL,
+                                    paramValues,
+                                    NULL,
+                                    NULL,
+                                    0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        cerr << "Failed to delete simulation_events for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        PQclear(result);
+        return 1;
+    }
+
+    cout << "SIMULATION_EVENTS deleted successfully from PostgreSQL for city: " << city_name << endl;
     PQclear(result);
     return 0;
 }
@@ -2427,6 +2520,7 @@ static int deleteTheData(const char *s)
         deleteCompanyDataPG(city_name);
         deleteParametersPG(city_name);
         deleteConsumerDataPG(city_name);
+        deleteSimulationEventsPG(city_name);
     }
 
     // COMMENTED OUT: SQLite deletes disabled to verify PostgreSQL migration

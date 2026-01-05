@@ -61,6 +61,7 @@ Company::Company(string name, Market *market, Market *global_market, Clock *cloc
                                                                                      capacity_(3000),
                                                                                      clock_(clock),
                                                                                      enable_intercity_trading_(false),
+                                                                                     founding_time_(clock ? clock->get_time() : 0),
                                                                                      employees_(new Consumer_list("Employees")),
                                                                                      shareholders_(new Consumer_list("Shareholders"))
 {
@@ -127,6 +128,7 @@ Company::Company(string name, string city_name, double capital, double stock, do
                                                                                                                                                                                                                                                bank_(bank),
                                                                                                                                                                                                                                                clock_(clock),
                                                                                                                                                                                                                                                enable_intercity_trading_(false),
+                                                                                                                                                                                                                                               founding_time_(clock ? clock->get_time() : 0),
                                                                                                                                                                                                                                                employees_(new Consumer_list("Employees")),
                                                                                                                                                                                                                                                shareholders_(new Consumer_list("Shareholders"))
 {
@@ -287,6 +289,11 @@ double Company::get_production()
     // cout << "I company get production, production: " << prod << " skill sum: " << skill_sum << " mot sum: " << mot_sum << " employees: " << employees << " prod_const_skill_: " << prod_const_skill_ << " prod_const_motivation_: " << prod_const_motivation_ << " capacity_: " << capacity_ << " produ const skill: " << prod_const_skill_ << " production const motivation_: " << prod_const_motivation_ << endl;
 
     return prod;
+}
+
+int Company::get_time() const
+{
+    return clock_->get_time();
 }
 
 // double Company::get_production() {
@@ -1943,6 +1950,17 @@ double Company::pay_dividends_directly(double capital_gains_tax)
     int number_of_shareholders = 0;
     double dividend_per_shareholder = 0;
     double tax = 0;
+
+    // Age-based dividend moratorium: skip dividends for companies younger than 3 years (36 months)
+    const int DIVIDEND_MORATORIUM_MONTHS = 3;
+    int company_age = clock_->get_time() - founding_time_;
+
+    if (company_age < DIVIDEND_MORATORIUM_MONTHS)
+    {
+        cout << "Company " << name_ << " is too young for dividends (age: " << company_age
+             << " months, minimum: " << DIVIDEND_MORATORIUM_MONTHS << " months). Retaining capital for growth." << endl;
+        return 0;
+    }
 
     // cout << "DEBUG: Starting pay_dividends_directly for company: " << name_ << endl;
 

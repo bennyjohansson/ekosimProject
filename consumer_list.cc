@@ -939,7 +939,7 @@ void Consumer_list::pay_dividends(double amount)
   }
 }
 
-void Consumer_list::pay_dividends_log(double amount, string party_pay)
+double Consumer_list::pay_dividends_log(double amount, string party_pay)
 {
 
   Element_consumer *p;
@@ -947,7 +947,7 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
   if (list_ == nullptr)
   {
     cout << "Warning: Consumer list is null, skipping dividend payments" << endl;
-    return;
+    return 0.0;
   }
 
   cout << "\n=== DIVIDEND/CHARGE PAYMENT FROM " << party_pay << " ===" << endl;
@@ -955,6 +955,8 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
   cout << "Number of shareholders: " << size_ << endl;
 
   int processed = 0;
+  double actual_total = 0.0;
+
   for (p = list_.get(); p; p = p->next_.get())
   {
     if (p == nullptr)
@@ -975,6 +977,7 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
 
     // consumer -> change_capital(amount);
     consumer->accept_deposit(amount);
+    actual_total += amount;
 
     double capital_after = consumer->get_capital();
     double loans_after = consumer->get_loans();
@@ -994,9 +997,11 @@ void Consumer_list::pay_dividends_log(double amount, string party_pay)
     processed++;
   }
 
-  cout << "Total " << (amount < 0 ? "charged" : "paid") << ": " << (amount * size_) << endl;
+  cout << "Total " << (amount < 0 ? "charged" : "paid") << ": " << actual_total << endl;
   cout << "===========================================\n"
        << endl;
+
+  return actual_total;
 }
 
 void Consumer_list::pay_transfers_log(double amount, string party_pay)

@@ -903,6 +903,17 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
     double total_profit = 0;
     vector<string> companies_to_remove;
 
+    // Store company info before removal for event logging
+    struct CompanyInfo
+    {
+        string name;
+        double capital;
+        int employees;
+        double debts;
+        int simulation_time;
+    };
+    vector<CompanyInfo> bankrupt_companies;
+
     if (list_ == nullptr)
     {
         cout << "Warning: Company list is null, skipping dividend payments" << endl;
@@ -921,9 +932,20 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
         // Check if company capital is less than or equal to 0
         if (p->get_company()->get_capital() <= 0)
         {
-            cout << "Company " << p->get_company()->get_name() << " has non-positive capital ("
-                 << p->get_company()->get_capital() << "), marking for removal." << endl;
-            companies_to_remove.push_back(p->get_company()->get_name());
+            Company *company = p->get_company();
+            cout << "Company " << company->get_name() << " has non-positive capital ("
+                 << company->get_capital() << "), marking for removal." << endl;
+
+            // Store company info for event logging
+            CompanyInfo info;
+            info.name = company->get_name();
+            info.capital = company->get_capital();
+            info.employees = company->get_no_employees();
+            info.debts = company->get_debts();
+            info.simulation_time = 0; // Will get from first company in list that has valid clock
+            bankrupt_companies.push_back(info);
+
+            companies_to_remove.push_back(company->get_name());
         }
         else
         {
@@ -931,9 +953,37 @@ double Company_list::pay_dividends_directly(double capital_gains_tax)
         }
     }
 
-    // Second pass: remove all marked companies
-    for (const string &company_name : companies_to_remove)
+    // Second pass: remove all marked companies and log events
+    for (size_t i = 0; i < companies_to_remove.size(); i++)
     {
+        const string &company_name = companies_to_remove[i];
+        const CompanyInfo &info = bankrupt_companies[i];
+
+        // Get simulation time from a valid company in the list
+        int sim_time = 0;
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            if (p->get_company() != nullptr)
+            {
+                sim_time = p->get_company()->get_time();
+                break;
+            }
+        }
+
+        // Log bankruptcy event
+        string description = "Company '" + info.name + "' went bankrupt with " +
+                             to_string(info.employees) + " employees, capital: " +
+                             to_string((int)info.capital) + ", debts: " +
+                             to_string((int)info.debts);
+
+        string event_data = "{\"company_name\":\"" + info.name +
+                            "\",\"employees\":" + to_string(info.employees) +
+                            ",\"capital\":" + to_string(info.capital) +
+                            ",\"debts\":" + to_string(info.debts) + "}";
+
+        insertSimulationEvent(name_, "COMPANY_BANKRUPT", "WARNING",
+                              description, event_data, sim_time);
+
         remove_company(company_name);
     }
 

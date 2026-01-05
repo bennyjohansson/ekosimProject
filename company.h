@@ -72,6 +72,7 @@ public:
     double get_investment_capacity_vs_efficiency_split() const;
     double get_investment_cashflow(double, double, double, double, double, double, double, double);
     int get_desired_investment(double fac_rate, double cap_param, double cap_rate, double item_eff_rate);
+    int get_time() const;
 
     double get_desired_loans(double fac_rate, double cap_param, double cap_rate, double item_eff_rate);
     double get_expected_net_flow_to_bank(double fac_rate, double cap_param, double cap_rate, double item_eff_rate);
@@ -189,6 +190,7 @@ private:
     double decay_;
     double max_leverage_;
     bool enable_intercity_trading_;
+    int founding_time_; // Simulation time when company was founded
 
     Consumer_list *employees_;
     Consumer_list *shareholders_;

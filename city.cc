@@ -365,9 +365,11 @@ Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
     Element_consumer *head = nullptr;
     Element_consumer *tail = nullptr;
     double total_capital = 0.0;
+    double min_capital = 1000.0; // Minimum wealth required to be an investor
     int total_consumers = consumers_->get_size();
     int attempts = 0;
     int max_attempts = total_consumers * 2; // Safety limit to prevent infinite loop
+    int skipped_insufficient_capital = 0;
 
     while (total_capital < capital_limit && attempts < max_attempts)
     {
@@ -380,11 +382,18 @@ Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
             continue; // Skip duplicate
         }
 
-        // Add consumer to selected set
-        selected_consumers.insert(cons);
-
         // Get consumer's available capital
         double consumer_wealth = cons->get_capital() + cons->get_loans();
+
+        // Check if consumer has sufficient capital to be an investor
+        if (consumer_wealth < min_capital)
+        {
+            skipped_insufficient_capital++;
+            continue; // Skip consumer with insufficient capital
+        }
+
+        // Add consumer to selected set
+        selected_consumers.insert(cons);
         total_capital += consumer_wealth;
 
         // Create new element in linked list
@@ -409,7 +418,8 @@ Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
     }
 
     cout << "I City get_random_consumers_with_capital: Selected " << selected_consumers.size()
-         << " consumers with total wealth: " << total_capital << " (target: " << capital_limit << ")" << endl;
+         << " consumers with total wealth: " << total_capital << " (target: " << capital_limit << ")"
+         << " | Skipped " << skipped_insufficient_capital << " consumers with wealth < " << min_capital << endl;
 
     return head;
 }
@@ -1021,7 +1031,12 @@ double City::invest_in_new_average_company(double capital_limit)
 
     // Step 5: Charge shareholders using "reverse dividend" (negative payment)
     // This transfers capital from shareholders to the company
-    temp_shareholders.pay_dividends_log(-amount_per_shareholder, company_name);
+    double actual_amount_withdrawn = temp_shareholders.pay_dividends_log(-amount_per_shareholder, company_name);
+
+    // Converting to absolute value since it was negative
+    actual_investment = -actual_amount_withdrawn;
+
+    cout << "\nActual amount withdrawn from shareholders: " << actual_investment << endl;
 
     // Adding the capital to the new company using the add_capital function
     new_company->change_capital(actual_investment);
@@ -1031,6 +1046,16 @@ double City::invest_in_new_average_company(double capital_limit)
 
     // Step 7: Add shareholders to the company
     new_company->add_multiple_shareholders(shareholders);
+
+    // Step 8: Log the event to the database
+    string event_description = "New company '" + company_name + "' created with " +
+                               to_string(shareholder_count) + " shareholders and funding of " +
+                               to_string((int)actual_investment);
+    string event_data = "{\"company_name\":\"" + company_name +
+                        "\",\"shareholders\":" + to_string(shareholder_count) +
+                        ",\"funding\":" + to_string((int)actual_investment) + "}";
+
+    insertSimulationEvent(name_, "COMPANY_CREATED", "INFO", event_description, event_data, clock_->get_time());
 
     cout << "\n========================================" << endl;
     cout << "COMPANY INVESTMENT SUCCESSFUL" << endl;

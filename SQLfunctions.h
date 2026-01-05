@@ -75,9 +75,14 @@ int insertConsumerDataPG(string city_name, string consumer_name, string employer
                          double income, double dividends, double transfers);
 Records getConsumerDataPG(string city_name, string consumer_name);
 int deleteConsumerDataPG(string city_name);
+int deleteSimulationEventsPG(string city_name);
 
 // PostgreSQL COMPANY_DATA initialization
 int initiateCompanyTablePG(string city_name);
+
+// PostgreSQL SIMULATION_EVENTS functions
+int insertSimulationEvent(string city_name, string event_type, string severity,
+                          string description, string event_data, int simulation_time);
 
 static int updateData(const char *s);
 static int updateParameter(const char *s, string, double);
