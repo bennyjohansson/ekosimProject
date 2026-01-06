@@ -77,7 +77,7 @@ int main()
 		{
 
 			// Debuggng setting capacity on bempa_AB to 900000 at time 10
-			if (bennyworld.get_time() % 10 == 0)
+			if (bennyworld.get_time() % 30 == 0)
 			{
 				// Investing in new average companu
 				bennyworld.get_city("Bennyland")->invest_in_new_average_company(1000000);

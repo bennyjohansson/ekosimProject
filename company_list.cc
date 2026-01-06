@@ -729,6 +729,50 @@ void Company_list::remove_usless_employees()
     }
 }
 
+void Company_list::calculate_desired_employees_for_all()
+{
+    Element_company *p;
+
+    cout << "\n=== CALCULATING DESIRED EMPLOYEES FOR ALL COMPANIES ===" << endl;
+
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            (p->get_company())->calculate_desired_employees();
+        }
+    }
+    else
+    {
+        cout << "No companies in company list" << endl;
+    }
+
+    cout << "=== DESIRED EMPLOYEE CALCULATION COMPLETE ===" << endl
+         << endl;
+}
+
+void Company_list::adjust_wages_for_all_companies()
+{
+    Element_company *p;
+
+    cout << "\n=== ADJUSTING WAGES BASED ON HIRING SUCCESS ===" << endl;
+
+    if (list_)
+    {
+        for (p = list_.get(); p; p = p->next_.get())
+        {
+            (p->get_company())->adjust_wage_based_on_hiring_gap();
+        }
+    }
+    else
+    {
+        cout << "No companies in company list" << endl;
+    }
+
+    cout << "=== WAGE ADJUSTMENT COMPLETE ===" << endl
+         << endl;
+}
+
 void Company_list::update_companies_from_database(string city_name)
 {
     cout << "[UPDATE] Starting update_companies_from_database for " << city_name << endl;

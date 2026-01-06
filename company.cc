@@ -62,6 +62,9 @@ Company::Company(string name, Market *market, Market *global_market, Clock *cloc
                                                                                      clock_(clock),
                                                                                      enable_intercity_trading_(false),
                                                                                      founding_time_(clock ? clock->get_time() : 0),
+                                                                                     desired_employee_count_(0),
+                                                                                     actual_hired_this_cycle_(0),
+                                                                                     employees_at_cycle_start_(0),
                                                                                      employees_(new Consumer_list("Employees")),
                                                                                      shareholders_(new Consumer_list("Shareholders"))
 {
@@ -765,6 +768,7 @@ bool Company::update_employees(Consumer *opt)
                 {
                     // cout << "Company " << name_ << " hired " << opt->get_name() << " from " << opt->get_employer() << " at wage:"<< get_average_wage() << endl;
                     add_employee(opt);
+                    actual_hired_this_cycle_++;
                 }
             }
             catch (std::exception a)
@@ -1012,6 +1016,53 @@ std::vector<double> Company::get_time_data_for_database() const
 }
 
 // Checks how the expected income changes by adding consumer
+double Company::contribution_adding_multiple(Consumer *consumer, int number_of_employees)
+{
+    double skill = 0;
+    double mot = 0;
+    double skill_sum = 0;
+    double mot_sum = 0;
+    int size = 0;
+    double prod_before = 0;
+    double prod_after = 0;
+    double price = 0;
+    double price_out = 0;
+    double wage = 0;
+    double contribution = 0;
+    double delta_sales = 0;
+    double material_cost_delta = 0;
+
+    skill = number_of_employees * consumer->get_skill();
+    mot = number_of_employees * consumer->get_motivation();
+    skill_sum = number_of_employees * employees_->get_skill_sum();
+    mot_sum = number_of_employees * employees_->get_motivation_sum();
+    size = employees_->get_size();
+    price = get_active_market()->get_price_in();
+    price_out = get_active_market()->get_price_out();
+
+    //  cout << "I company contribution adding"<< endl << "skill och mot" << skill << "  " << mot << "  " << "tabort"<< endl;
+
+    prod_before = get_production();
+    prod_after = get_prod(skill_sum + skill, prod_const_skill_, mot_sum + mot, prod_const_motivation_, capacity_, production_function_, production_parameter_);
+
+    list<double>::iterator theIterator;
+    theIterator = wages_.begin();
+    wage = *theIterator * number_of_employees;
+
+    // contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
+
+    delta_sales = (prod_after - prod_before) * price;
+    material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
+    contribution = delta_sales - wage - material_cost_delta;
+
+    // cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
+
+    // cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
+
+    return contribution;
+}
+
+// Checks how the expected income changes by adding a single consumer
 double Company::contribution_adding(Consumer *consumer)
 {
     double skill = 0;
@@ -1036,36 +1087,22 @@ double Company::contribution_adding(Consumer *consumer)
     price = get_active_market()->get_price_in();
     price_out = get_active_market()->get_price_out();
 
-    //  cout << "I company contribution adding"<< endl << "skill och mot" << skill << "  " << mot << "  " << "tabort"<< endl;
-
     prod_before = get_production();
     prod_after = get_prod(skill_sum + skill, prod_const_skill_, mot_sum + mot, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
-    /*
-     * This estimates the wage, but will not be the correct one...
-     * Might as well use the previous wage to estimate...
-     */
-
-    //  if (size != 0) {
-    //  wage = get_total_wages()/size;
-    // }
-    // else {
-    //  wage = get_total_wages();
-    //}
-
-    list<double>::iterator theIterator;
-    theIterator = wages_.begin();
-    wage = *theIterator;
-
-    // contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
+    // Estimate wage based on current average
+    if (size != 0)
+    {
+        wage = get_total_wages() / size;
+    }
+    else
+    {
+        wage = 0;
+    }
 
     delta_sales = (prod_after - prod_before) * price;
     material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
     contribution = delta_sales - wage - material_cost_delta;
-
-    // cout << "I comp contrib adding for " << name_ << " sales_loss: " << delta_sales << " Wages: " << wage << " material_cost: " << material_cost_delta << "  Contribution: " << contribution << endl;
-
-    // cout << "I comp contrib adding"  << "Prod bef: " << prod_before << "  Prod after: " << prod_after  << "Wages: " << wage << "  Contribution: " << contribution << endl;
 
     return contribution;
 }
@@ -2085,3 +2122,138 @@ int Company::buy_items_for_production()
 // prod_const_skill_ *= 1 + 0.5*investment/limit;
 
 //}
+
+/*
+ * Wage dynamics methods
+ * These methods implement dynamic wage adjustment based on hiring success
+ */
+
+void Company::calculate_desired_employees()
+{
+    // Store current employee count at cycle start
+    employees_at_cycle_start_ = employees_->get_size();
+
+    // Reset actual hired counter
+    actual_hired_this_cycle_ = 0;
+
+    int current_employees = employees_->get_size();
+
+    // If no employees, use baseline values for average employee
+    double avg_skill = 50.0;
+    double avg_motivation = 50.0;
+
+    if (current_employees > 0)
+    {
+        avg_skill = employees_->get_skill_sum() / current_employees;
+        avg_motivation = employees_->get_motivation_sum() / current_employees;
+    }
+
+    // Find optimal employee count by testing contribution
+    int test_employees = 1;
+    double contribution = 0;
+    int optimal_count = current_employees; // Start with current count
+
+    // Calculate contribution based on average employee stats directly
+    // without creating a temporary Consumer object
+    while (test_employees <= 50) // Cap at 50 additional employees to avoid infinite loops
+    {
+        // Calculate contribution manually using average skill and motivation
+        double skill_sum = employees_->get_skill_sum();
+        double mot_sum = employees_->get_motivation_sum();
+        double price = get_active_market()->get_price_in();
+        double price_out = get_active_market()->get_price_out();
+
+        double prod_before = get_production();
+        double prod_after = get_prod(skill_sum + avg_skill * test_employees, prod_const_skill_,
+                                     mot_sum + avg_motivation * test_employees, prod_const_motivation_,
+                                     capacity_, production_function_, production_parameter_);
+
+        double delta_sales = (prod_after - prod_before) * price;
+        double material_cost_delta = (item_cost(prod_after, item_efficiency_) - item_cost(prod_before, item_efficiency_)) * price_out;
+
+        list<double>::iterator theIterator = wages_.begin();
+        double wage = (wages_.size() > 0) ? *theIterator * test_employees : 0;
+
+        contribution = delta_sales - wage - material_cost_delta;
+
+        if (contribution > 0.01) // Positive contribution threshold
+        {
+            optimal_count = current_employees + test_employees;
+            test_employees++;
+        }
+        else
+        {
+            break; // Stop when contribution becomes negative
+        }
+    }
+
+    desired_employee_count_ = optimal_count;
+
+    cout << "Company " << name_ << " calculated desired employees: " << desired_employee_count_
+         << " (current: " << current_employees << ", avg_skill: " << avg_skill
+         << ", avg_motivation: " << avg_motivation << ")" << endl;
+}
+
+void Company::increment_actual_hired()
+{
+    actual_hired_this_cycle_++;
+}
+
+void Company::adjust_wage_based_on_hiring_gap()
+{
+    int current_employees = employees_->get_size();
+    int employees_added = current_employees - employees_at_cycle_start_;
+
+    // Calculate hiring gap: how many employees we wanted but didn't get
+    int hiring_gap = desired_employee_count_ - current_employees;
+
+    // Only adjust if we wanted to hire but failed to hire enough
+    if (hiring_gap > 0 && desired_employee_count_ > employees_at_cycle_start_)
+    {
+        // Calculate adjustment factor (5% per employee gap, relative to desired hires)
+        double adjustment_factor = 0.1;
+        int desired_new_hires = desired_employee_count_ - employees_at_cycle_start_;
+
+        if (desired_new_hires > 0)
+        {
+            double gap_ratio = static_cast<double>(hiring_gap) / desired_new_hires;
+            double wage_increase = adjustment_factor * gap_ratio;
+
+            // Apply the increase
+            double old_wage_const = wage_const_;
+            wage_const_ *= (1.0 + wage_increase);
+
+            // Apply bounds: 0 <= wage_const_ <= 1
+            if (wage_const_ > 1.0)
+            {
+                wage_const_ = 1.0;
+            }
+            if (wage_const_ < 0.0)
+            {
+                wage_const_ = 0.0;
+            }
+
+            cout << "Company " << name_ << " wage adjustment:" << endl;
+            cout << "  Desired employees: " << desired_employee_count_ << endl;
+            cout << "  Current employees: " << current_employees << endl;
+            cout << "  Hiring gap: " << hiring_gap << endl;
+            cout << "  Desired new hires: " << desired_new_hires << endl;
+            cout << "  Actual hired: " << actual_hired_this_cycle_ << endl;
+            cout << "  Gap ratio: " << fixed << setprecision(3) << gap_ratio << endl;
+            cout << "  Wage increase: " << (wage_increase * 100) << "%" << endl;
+            cout << "  wage_const: " << old_wage_const << " -> " << wage_const_ << endl;
+        }
+    }
+    else if (hiring_gap <= 0)
+    {
+        cout << "Company " << name_ << " no wage adjustment needed (desired: "
+             << desired_employee_count_ << ", current: " << current_employees << ")" << endl;
+    }
+}
+
+void Company::reset_hiring_tracking()
+{
+    desired_employee_count_ = 0;
+    actual_hired_this_cycle_ = 0;
+    employees_at_cycle_start_ = 0;
+}

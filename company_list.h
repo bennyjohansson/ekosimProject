@@ -85,6 +85,10 @@ public:
   void update_companies_from_database(string city_name);
   void write_time_data_to_database(string city_name);
 
+  // Wage dynamics methods
+  void calculate_desired_employees_for_all();
+  void adjust_wages_for_all_companies();
+
   /*
    * Functions to operate on the companies
    */

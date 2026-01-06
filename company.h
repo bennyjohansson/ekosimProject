@@ -135,10 +135,17 @@ public:
     bool update_employees(Consumer *);
     void remove_usless_employees();
     void update_from_database(string city_name);
+
+    // Wage dynamics based on hiring success
+    void calculate_desired_employees();
+    void increment_actual_hired();
+    void adjust_wage_based_on_hiring_gap();
+    void reset_hiring_tracking();
     void update_from_database_batch(const std::vector<std::string> &record, string city_name);
     void save_time_data_to_database(string city_name);
     std::vector<double> get_time_data_for_database() const;
     double contribution_adding(Consumer *);
+    double contribution_adding_multiple(Consumer *, int);
     double contribution_removing(Consumer *);
 
     double produce(string);
@@ -191,6 +198,11 @@ private:
     double max_leverage_;
     bool enable_intercity_trading_;
     int founding_time_; // Simulation time when company was founded
+
+    // Wage dynamics tracking
+    int desired_employee_count_;   // Optimal employee count calculated this cycle
+    int actual_hired_this_cycle_;  // Number of employees actually hired this cycle
+    int employees_at_cycle_start_; // Employee count at start of hiring cycle
 
     Consumer_list *employees_;
     Consumer_list *shareholders_;

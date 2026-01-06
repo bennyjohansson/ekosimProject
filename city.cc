@@ -1694,6 +1694,12 @@ void City::update_employees2()
 
     company_list_->remove_usless_employees();
 
+    /*
+     * Calculate desired employee count for all companies before hiring starts
+     * This allows us to track hiring success and adjust wages accordingly
+     */
+    company_list_->calculate_desired_employees_for_all();
+
     // Store initial employment state for each company
     std::map<string, int> employees_before;
     int total_employed_before = 0;
@@ -1828,6 +1834,12 @@ void City::update_employees2()
 
     cout << "+" << string(60, '-') << "+" << endl
          << endl;
+
+    /*
+     * After all hiring is complete, adjust wages based on hiring success
+     * Companies that failed to hire enough will increase wages
+     */
+    company_list_->adjust_wages_for_all_companies();
 }
 
 void City::tick()
@@ -2898,15 +2910,23 @@ double City::calculate_CAGR(int end_time)
     string stmt1 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(start_time1);
     string stmt2 = "SELECT * FROM TIME_DATA WHERE TIME = " + std::to_string(end_time);
 
+    cout << "=== CAGR CALCULATION DEBUG for " << name_ << " ===" << endl;
+    cout << "Query 1: " << stmt1 << endl;
+    cout << "Query 2: " << stmt2 << endl;
+
     // Query PostgreSQL with automatic city_name filtering
     Records records_start = select_stmt_pg(stmt1, name_);
     Records records_end = select_stmt_pg(stmt2, name_);
+
+    cout << "Start records size: " << records_start.size() << endl;
+    cout << "End records size: " << records_end.size() << endl;
 
     try
     {
         if (not(records_start.empty()) && records_start[0].size() > 2)
         {
-            start_GDP_real = std::stod(records_start[0][2]);
+            start_GDP_real = std::stod(records_start[0][3]);
+            cout << "Start GDP retrieved: " << start_GDP_real << " (from column index 3)" << endl;
         }
         else
         {
@@ -2924,7 +2944,8 @@ double City::calculate_CAGR(int end_time)
     {
         if (not(records_end.empty()) && records_end[0].size() > 2)
         {
-            end_GDP_real = std::stod(records_end[0][2]);
+            end_GDP_real = std::stod(records_end[0][3]);
+            cout << "End GDP retrieved: " << end_GDP_real << " (from column index 3)" << endl;
         }
         else
         {
@@ -2954,7 +2975,15 @@ double City::calculate_CAGR(int end_time)
     delta_time = end_time - start_time1;
     CAGR = pow(end_GDP_real / start_GDP_real, 1.0 / delta_time) - 1.0;
 
-    cout << "CAGR calculated for " << name_ << ": " << CAGR << " (GDP: " << start_GDP_real << " -> " << end_GDP_real << " over " << delta_time << " periods)" << endl;
+    cout << "CAGR CALCULATION:" << endl;
+    cout << "  Start time: " << start_time1 << ", End time: " << end_time << endl;
+    cout << "  Start GDP: " << start_GDP_real << endl;
+    cout << "  End GDP: " << end_GDP_real << endl;
+    cout << "  Delta time: " << delta_time << endl;
+    cout << "  Ratio: " << (end_GDP_real / start_GDP_real) << endl;
+    cout << "  Exponent: " << (1.0 / delta_time) << endl;
+    cout << "  CAGR result: " << CAGR << endl;
+    cout << "=== END CAGR DEBUG ===" << endl;
 
     return CAGR;
 }
