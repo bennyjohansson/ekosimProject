@@ -39,3 +39,8 @@ octave-core
 
 #Ignore CSV export files
 *.csv
+
+/test_stability_lifecycle
+/test_stability_investment
+/test_stability_postgres
+/test_stability_*.dSYM/

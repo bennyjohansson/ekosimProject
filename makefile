@@ -12,6 +12,12 @@ OBJECTS_O = world.o city.o consumer.o city_list.o consumer_list.o functions.o co
 main : main.cc $(OBJECTS_O)
 	$(CCC) $(CXXFLAGS) main.cc $(OBJECTS_O) $(LDFLAGS) -o main		
 
+.PHONY: stability-tests
+stability-tests: test_stability_lifecycle test_stability_investment test_stability_postgres
+
+test_stability_%: tests/stability_%.cc $(OBJECTS_O)
+	$(CCC) $(CXXFLAGS) -I. $< $(OBJECTS_O) $(LDFLAGS) -o $@
+
 main.o : main.cc
 	$(CCC) $(CXXFLAGS) -c main.cc
 

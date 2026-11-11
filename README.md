@@ -119,3 +119,24 @@ uncommitted work on that connection. A failed consumer write rolls back that
 city's whole snapshot. The simulator reports failed snapshots and continues
 with the next world run. It does not retry individual statements or an
 ambiguous commit.
+
+Investment evaluates up to 256 candidate quantities using the existing
+10,000-item step, starting with four items. The last candidate may be smaller
+when stock or financing is limited. The company selects the last feasible
+quantity whose net present value did not decline. Invalid inputs or a negative
+first net present value produce a zero investment. Loan cost calculations
+accept terms up to 1,200 monthly payments.
+
+Build the simulator and the stability regressions with:
+
+```sh
+make -B main stability-tests
+```
+
+Run `./test_stability_investment` for investment cases. Run
+`./test_stability_lifecycle` and `./test_stability_postgres` with
+`POSTGRES_*` set for a disposable database. The PostgreSQL regression creates
+and drops its own `consumer_data` table and requires that table to be absent
+at startup. Test an unavailable endpoint with
+`POSTGRES_PORT=1 POSTGRES_CONNECT_TIMEOUT_MS=150 ./test_stability_postgres --unavailable`
+when the configured host has nothing listening on port 1.
