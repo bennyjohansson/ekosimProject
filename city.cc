@@ -19,19 +19,21 @@
 
 using namespace std;
 
-City::City() : name_("bennyland"),
+City::City() : owned_clock_(std::make_unique<Clock>()),
+               name_("bennyland"),
                consumers_(std::make_unique<Consumer_list>("bennyland")),
                company_list_(std::make_unique<Company_list>("bennyland")),
                // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
                market_(std::make_unique<Market>()),
                global_market_(nullptr),
                bank_(std::make_unique<Bank>("BENNYBANK", 0.02, 3)),
-               clock_(new Clock()),
+               clock_(owned_clock_.get()),
                enable_intercity_trading_(false)
 {
 }
 
-City::City(string name) : name_(name),
+City::City(string name) : owned_clock_(std::make_unique<Clock>()),
+                          name_(name),
                           consumers_(std::make_unique<Consumer_list>(name)),
                           company_list_(std::make_unique<Company_list>(name)),
                           // labour_market_(std::make_unique<Consumer_list>("LABOUR MARKET")),
@@ -39,7 +41,7 @@ City::City(string name) : name_(name),
                           market_(std::make_unique<Market>()),
                           global_market_(nullptr),
                           bank_(std::make_unique<Bank>("BENNYBANK", 0.05, 3)),
-                          clock_(new Clock()),
+                          clock_(owned_clock_.get()),
                           flash_counter_(0),
                           shareToSteal_(0.95),
                           laundry_factor_(0.95),
@@ -350,37 +352,28 @@ Consumer *City::get_random_consumer()
     return consumers_->get_random_consumer();
 }
 
-Element_consumer *City::get_random_consumers(int number_of_consumers)
+std::unique_ptr<Element_consumer> City::get_random_consumers(int number_of_consumers)
 {
 
-    Element_consumer *head = nullptr;
+    std::unique_ptr<Element_consumer> head;
     Element_consumer *tail = nullptr;
 
     for (int i = 0; i < number_of_consumers; i++)
     {
         Consumer *cons = consumers_->get_random_consumer();
 
-        Element_consumer *new_element = new Element_consumer(nullptr, cons);
-
-        if (head == nullptr)
-        {
-            head = new_element;
-            tail = new_element;
-        }
-        else
-        {
-            tail->next_ = std::make_unique<Element_consumer>(nullptr, cons);
-            tail = tail->next_.get();
-        }
+        auto& link = tail ? tail->next_ : head;
+        link = std::make_unique<Element_consumer>(nullptr, cons);
+        tail = link.get();
     }
 
     return head;
 }
 
-Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
+std::unique_ptr<Element_consumer> City::get_random_consumers_with_capital(double capital_limit)
 {
     std::set<Consumer *> selected_consumers; // Track selected consumers to avoid duplicates
-    Element_consumer *head = nullptr;
+    std::unique_ptr<Element_consumer> head;
     Element_consumer *tail = nullptr;
     double total_capital = 0.0;
     double min_capital = 1000.0; // Minimum wealth required to be an investor
@@ -415,18 +408,9 @@ Element_consumer *City::get_random_consumers_with_capital(double capital_limit)
         total_capital += consumer_wealth;
 
         // Create new element in linked list
-        Element_consumer *new_element = new Element_consumer(nullptr, cons);
-
-        if (head == nullptr)
-        {
-            head = new_element;
-            tail = new_element;
-        }
-        else
-        {
-            tail->next_ = std::make_unique<Element_consumer>(nullptr, cons);
-            tail = tail->next_.get();
-        }
+        auto& link = tail ? tail->next_ : head;
+        link = std::make_unique<Element_consumer>(nullptr, cons);
+        tail = link.get();
 
         // If we've checked all consumers, stop
         if (selected_consumers.size() >= (size_t)total_consumers)
@@ -733,6 +717,8 @@ void City::set_enable_intercity_trading(bool enable)
 
 void City::add_consumer(Consumer *consumer)
 {
+    std::unique_ptr<Consumer> owned(consumer);
+    owned_consumers_.push_back(std::move(owned));
     consumers_->add_first(consumer);
 }
 
@@ -803,9 +789,9 @@ void City::add_random_shareholders(int number_of_shareholders)
     {
         Company *company = company_list_->get_company_by_index(i);
 
-        Element_consumer *new_shareholders = get_random_consumers(number_of_shareholders);
+        auto new_shareholders = get_random_consumers(number_of_shareholders);
 
-        company->add_multiple_shareholders(new_shareholders);
+        company->add_multiple_shareholders(new_shareholders.get());
 
         // company -> print_shareholders();
 
@@ -985,26 +971,26 @@ double City::invest_in_new_company(string nameactual, double capital)
 double City::invest_in_new_average_company(double capital_limit)
 {
     // Step 1: Create the average company (not yet added to company list)
-    Company *new_company = create_average_company();
+    std::unique_ptr<Company> company(create_average_company());
+    Company* new_company = company.get();
     string company_name = new_company->get_name();
     double share_of_capita_to_invest = 0.5;
 
     cout << "I City invest_in_new_average_company: Created company " << company_name << endl;
 
     // Step 2: Get random consumers with sufficient capital
-    Element_consumer *shareholders = get_random_consumers_with_capital(capital_limit / share_of_capita_to_invest);
+    auto shareholders = get_random_consumers_with_capital(capital_limit / share_of_capita_to_invest);
 
     if (shareholders == nullptr)
     {
         cout << "I City invest_in_new_average_company: No shareholders found, deleting company" << endl;
-        delete new_company;
         return 0.0;
     }
 
     // Step 3: Calculate actual investment amount
     double total_shareholder_wealth = 0.0;
     int shareholder_count = 0;
-    Element_consumer *p = shareholders;
+    Element_consumer *p = shareholders.get();
 
     while (p != nullptr)
     {
@@ -1026,7 +1012,7 @@ double City::invest_in_new_average_company(double capital_limit)
 
     // Log individual shareholders
     cout << "\nShareholder List:" << endl;
-    p = shareholders;
+    p = shareholders.get();
     int idx = 1;
     while (p != nullptr)
     {
@@ -1040,7 +1026,7 @@ double City::invest_in_new_average_company(double capital_limit)
 
     // Step 4: Create temporary Consumer_list for payment
     Consumer_list temp_shareholders(name_);
-    p = shareholders;
+    p = shareholders.get();
 
     while (p != nullptr)
     {
@@ -1061,10 +1047,10 @@ double City::invest_in_new_average_company(double capital_limit)
     new_company->change_capital(actual_investment);
 
     // Step 6: Add company to the city's company list (only after successful funding)
-    company_list_->add_company(new_company);
+    company_list_->add_company(company.release());
 
     // Step 7: Add shareholders to the company
-    new_company->add_multiple_shareholders(shareholders);
+    new_company->add_multiple_shareholders(shareholders.get());
 
     // Step 8: Log the event to the database
     string event_description = "New company '" + company_name + "' created with " +

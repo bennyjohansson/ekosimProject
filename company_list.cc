@@ -504,17 +504,11 @@ double Company_list::get_planned_production_sum() const
 
 void Company_list::add_company(Company *company)
 {
-    Element_company *p;
-    size_++;
-
-    if (list_)
-    {
-        list_ = std::make_unique<Element_company>(std::move(list_), company);
-    }
-    else
-    {
-        list_ = std::make_unique<Element_company>(nullptr, company);
-    }
+    std::unique_ptr<Company> owned(company);
+    auto node = std::make_unique<Element_company>(nullptr, std::move(owned));
+    node->next_ = std::move(list_);
+    list_ = std::move(node);
+    ++size_;
 }
 
 void Company_list::remove_company(string name)
@@ -567,16 +561,9 @@ void Company_list::remove_company(string name)
     company_to_remove->remove_all_shareholders();
 
     // Step 4: Remove company from list
-    if (prev == nullptr)
-    {
-        // Removing the first element
-        list_ = std::move(current->next_);
-    }
-    else
-    {
-        // Removing from middle or end
-        prev->next_ = std::move(current->next_);
-    }
+    auto& link = prev ? prev->next_ : list_;
+    auto removed = std::move(link);
+    link = std::move(removed->next_);
 
     size_--;
     cout << "Company '" << name << "' successfully removed" << endl;

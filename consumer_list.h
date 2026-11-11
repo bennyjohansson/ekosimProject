@@ -16,6 +16,7 @@ using namespace std;
 class Consumer_list
 {
 public:
+   ~Consumer_list();
    Consumer_list();
    Consumer_list(string name_string);
 

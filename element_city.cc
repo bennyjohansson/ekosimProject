@@ -18,8 +18,8 @@ Element_city::Element_city() :
   city_(nullptr)
 {}
 
-Element_city::Element_city(std::unique_ptr<Element_city> n, City *c) :
-  next_(std::move(n)), city_(c)
+Element_city::Element_city(std::unique_ptr<Element_city> n, std::unique_ptr<City> c) :
+  next_(std::move(n)), city_(std::move(c))
 {}
 
 /*
@@ -34,5 +34,5 @@ string Element_city::get_name() const {
 }
 
 City* Element_city::get_city() const {
-    return city_;
+    return city_.get();
 }

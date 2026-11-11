@@ -13,10 +13,10 @@ using namespace std;
 class Element_city {
 public:
 	std::unique_ptr<Element_city> next_;
-	City *city_;  // Non-owning pointer - City is owned by the list
+	std::unique_ptr<City> city_;
 
 	Element_city();
-	Element_city(std::unique_ptr<Element_city> n, City *c);
+	Element_city(std::unique_ptr<Element_city> n, std::unique_ptr<City> c);
 
 	string get_name() const;
 	City * get_city() const;

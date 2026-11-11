@@ -14,10 +14,10 @@ using namespace std;
 class Element_company {
 public:
 	std::unique_ptr<Element_company> next_;
-	Company *company_;  // Non-owning pointer - Company is owned by the list
+	std::unique_ptr<Company> company_;
 
 	Element_company();
-	Element_company(std::unique_ptr<Element_company> n, Company *c);
+	Element_company(std::unique_ptr<Element_company> n, std::unique_ptr<Company> c);
 
 	string get_name() const;
 	Company * get_company() const;

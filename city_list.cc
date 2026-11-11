@@ -22,7 +22,7 @@ using namespace std;
 // name_(name)
 // {}
 
-City_list::City_list(string name, Clock *clock, Market *global_market) : list_(std::make_unique<Element_city>(nullptr, new City("Bennyland", clock, global_market))),
+City_list::City_list(string name, Clock *clock, Market *global_market) : list_(std::make_unique<Element_city>(nullptr, std::make_unique<City>("Bennyland", clock, global_market))),
                                                                          size_(1),
                                                                          name_(name)
 {
@@ -101,17 +101,11 @@ double City_list::get_added_capital_sum() const
 
 void City_list::add_city(City *city)
 {
-    // Element_city * p;
-    size_++;
-
-    if (list_)
-    {
-        list_ = std::make_unique<Element_city>(std::move(list_), city);
-    }
-    else
-    {
-        list_ = std::make_unique<Element_city>(nullptr, city);
-    }
+    std::unique_ptr<City> owned(city);
+    auto node = std::make_unique<Element_city>(nullptr, std::move(owned));
+    node->next_ = std::move(list_);
+    list_ = std::move(node);
+    ++size_;
 }
 
 /*

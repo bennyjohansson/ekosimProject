@@ -3,9 +3,8 @@
 #include <cassert>
 #include <cstdlib>
 
-int main()
+void test_bankruptcy_and_reporting()
 {
-    std::srand(42);
     World world("stability regression");
     City& city = *world.get_city("Bennyland");
     city.add_random_consumers(20);
@@ -36,4 +35,32 @@ int main()
     assert(city.GDP_.size() == 12);
     assert(city.get_loans_to_bank() == 0);
     world.print_GDP();
+}
+
+int main()
+{
+    std::srand(42);
+    test_bankruptcy_and_reporting();
+
+    for (int reset = 0; reset < 20; ++reset)
+    {
+        World world("reset regression");
+        world.add_city(new City("second", world.get_clock(), world.get_global_market()));
+        for (const char* name : {"Bennyland", "second"})
+        {
+            City& city = *world.get_city(name);
+            city.add_random_consumers(3000);
+            city.add_capital_owners(0.3);
+            city.add_company("Bankrupt");
+            city.add_company("Survivor");
+            city.add_random_shareholders(20);
+            Company* bankrupt = city.get_company("Bankrupt");
+            Consumer* employee = city.get_random_consumer();
+            bankrupt->add_employee(employee);
+            bankrupt->set_capital(0);
+        }
+        assert(world.run_dividend_cycle());
+        assert(world.get_city("Bennyland")->get_no_companies() == 1);
+        assert(world.get_city("second")->get_no_companies() == 1);
+    }
 }

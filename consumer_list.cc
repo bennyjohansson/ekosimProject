@@ -26,6 +26,15 @@ Consumer_list::Consumer_list(string name_string) : name_(name_string),
 {
 }
 
+Consumer_list::~Consumer_list()
+{
+  while (list_)
+  {
+    auto node = std::move(list_);
+    list_ = std::move(node->next_);
+  }
+}
+
 /*
  * Info-functions
  */
@@ -454,8 +463,9 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
                                               double mot_we, double capacity, int production_function, double production_parameter)
 {
   Element_consumer *p;
-  auto best_temp = std::make_unique<Element_consumer>(nullptr, new Consumer(0, 0, 0, 0));
-  Element_consumer *best = best_temp.get();
+  Consumer best_candidate(0, 0, 0, 0);
+  Element_consumer best_temp(nullptr, &best_candidate);
+  Element_consumer *best = &best_temp;
   best->set_employment_status(true);
 
   if (!list_)
@@ -478,7 +488,7 @@ Consumer *Consumer_list::get_optimal_consumer(double skill_we,
     }
   }
 
-  if (best == best_temp.get())
+  if (best == &best_temp)
   {
     throw no_return_error("No optimal consumer");
   }
@@ -490,8 +500,9 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
 {
 
   Element_consumer *p;
-  auto worst_temp = std::make_unique<Element_consumer>(nullptr, new Consumer(3, 3, 3, 3));
-  Element_consumer *wors = worst_temp.get();
+  Consumer worst_candidate(3, 3, 3, 3);
+  Element_consumer worst_temp(nullptr, &worst_candidate);
+  Element_consumer *wors = &worst_temp;
   wors->get_consumer()->set_employment_status(true);
 
   if (!list_)
@@ -510,7 +521,7 @@ Consumer *Consumer_list::get_usless_employee(double skill, double mot, double ca
     }
   }
 
-  if (wors == worst_temp.get())
+  if (wors == &worst_temp)
   {
     throw no_return_error("No usless consumer");
   }
@@ -587,29 +598,15 @@ void Consumer_list::add_last(Consumer *cons)
 
 void Consumer_list::add_multiple_last(Element_consumer *list)
 {
-  int list_length = 0;
-  Element_consumer *temp = list;
-  while (temp != nullptr)
-  {
-    list_length++;
-    temp = temp->next_.get();
-  }
-  size_ += list_length;
+  auto* link = &list_;
+  while (*link)
+    link = &(*link)->next_;
 
-  Element_consumer *p;
-
-  if (list_)
+  for (auto* source = list; source; source = source->next_.get())
   {
-    for (p = list_.get(); p->next_; p = p->next_.get())
-    {
-    }
-    // Convert raw pointer to unique_ptr and attach to the chain
-    p->next_ = std::unique_ptr<Element_consumer>(list);
-  }
-  else
-  {
-    // Convert raw pointer to unique_ptr and make it the head of the list
-    list_ = std::unique_ptr<Element_consumer>(list);
+    *link = std::make_unique<Element_consumer>(nullptr, source->get_consumer());
+    link = &(*link)->next_;
+    ++size_;
   }
 }
 
@@ -623,7 +620,8 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
   if (list_ && list_->get_consumer() == consumer)
   {
 
-    list_ = std::move(p->next_);
+    auto removed = std::move(list_);
+    list_ = std::move(removed->next_);
     size_--;
     consumer->set_employment_status(false);
     consumer->set_employer("");
@@ -644,7 +642,8 @@ void Consumer_list::remove_consumer(Consumer *consumer, double capacity)
         p->get_consumer()->set_employer("");
 
         size_--;
-        q->next_ = std::move(p->next_);
+        auto removed = std::move(q->next_);
+        q->next_ = std::move(removed->next_);
         break; // Exit loop after removal
       }
       q = p; // Move q to current p for next iteration
@@ -665,7 +664,8 @@ void Consumer_list::remove_shareholder(Consumer *consumer)
   // Check that the list is not empty and if the first consumer is the one to remove
   if (list_ && list_->get_consumer() == consumer)
   {
-    list_ = std::move(p->next_);
+    auto removed = std::move(list_);
+    list_ = std::move(removed->next_);
     size_--;
   }
 
@@ -679,7 +679,8 @@ void Consumer_list::remove_shareholder(Consumer *consumer)
       if (p->get_consumer() == consumer)
       {
         size_--;
-        q->next_ = std::move(p->next_);
+        auto removed = std::move(q->next_);
+        q->next_ = std::move(removed->next_);
         break; // Exit loop after removal
       }
       q = p; // Move q to current p for next iteration
