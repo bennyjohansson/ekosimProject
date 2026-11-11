@@ -97,3 +97,25 @@ Economic parameters are stored in the PostgreSQL `parameters` table and can be m
 
 - [EkoWeb](../EkoWeb/README.md) - API server and web frontend
 - [EkoSim-Infrastructure](../EkoSim-Infrastructure/README.md) - Docker orchestration
+
+## Stability behavior
+
+The GDP report uses the city's recorded wage totals for each cycle and displays
+zero for missing samples. GDP growth is zero until there is a nonzero prior GDP
+sample. Wage history averages the samples available within the requested
+window. The simulator skips wage-based monetary adjustments until it has
+positive current and historical wages and the initial ten cycles have passed.
+
+PostgreSQL waits default to 5,000 ms per connection attempt and 10,000 ms per
+statement. Set `POSTGRES_CONNECT_TIMEOUT_MS` and
+`POSTGRES_STATEMENT_TIMEOUT_MS` to positive integers up to 3,600,000 to
+override them. The connection deadline covers socket polling and the PostgreSQL
+handshake. Hostname lookup uses the system resolver. Set
+`POSTGRES_HOSTADDR` to a numeric address to avoid that lookup.
+
+The server and client both enforce the statement limit. The client closes the
+connection if the server stops responding. PostgreSQL then rolls back any
+uncommitted work on that connection. A failed consumer write rolls back that
+city's whole snapshot. The simulator reports failed snapshots and continues
+with the next world run. It does not retry individual statements or an
+ambiguous commit.
