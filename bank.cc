@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <limits>
 #include <iomanip>
 #include <cstring>
 #include <vector>
@@ -102,27 +104,26 @@ double Bank::get_payback_time() const {
 }
 
 double Bank::get_loan_cost(double loan) {
-    double monthly_amount = 0;
-    double remains = 0;
-    double sum = 0;
-    int t = 0;  
-    remains = loan;
-    
-    monthly_amount = loan/(payback_time_*12);
-    
-    while(remains > 0) {
-        
-        if(remains < monthly_amount) {
-            monthly_amount = remains;
-        }
-        //   cout << "Hej i bank loan_cost " << monthly_amount << endl;
-        sum += (monthly_amount + interest_rate_*remains)/pow((1 + interest_rate_), t);
-        
-        remains -= monthly_amount;
+    if (loan == 0)
+        return 0;
+
+    constexpr int max_months = 1200;
+    const double months = payback_time_ * 12;
+    if (!std::isfinite(loan) || loan < 0 || !std::isfinite(months) ||
+        months <= 0 || months > max_months)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    const int payments = static_cast<int>(std::ceil(months));
+    const double monthly_amount = loan / months;
+    double remaining = loan;
+    double total = 0;
+    for (int i = 0; i < payments && remaining > 0; ++i)
+    {
+        const double principal = i + 1 == payments ? remaining : std::min(monthly_amount, remaining);
+        total += principal + interest_rate_ * remaining;
+        remaining -= principal;
     }
-    
-    return sum;
-    
+    return total;
 }
 
 double Bank::get_sum_to_borrow() {

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -6,6 +7,7 @@
 #include <cmath>
 #include <cstring>
 #include <list>
+#include <limits>
 
 // #include "consumer.h"
 #include "company.h"
@@ -58,6 +60,7 @@ Company::Company(string name, Market *market, Market *global_market, Clock *cloc
                                                                                      wage_change_limit_(0.1),
                                                                                      market_(market),
                                                                                      global_market_(global_market),
+                                                                                     bank_(nullptr),
                                                                                      capacity_(3000),
                                                                                      clock_(clock),
                                                                                      enable_intercity_trading_(false),
@@ -426,6 +429,8 @@ double Company::get_desired_loans(double fac_rate, double cap_param, double cap_
 
     capital_to_invest = capital_ * pbr_;
     desired_investment = get_desired_investment(fac_rate, cap_param, cap_rate, item_eff_rate);
+    if (desired_investment == 0)
+        return 0;
     price_out = get_active_market()->get_price_out();
 
     desired_loans = fmax(0, desired_investment * price_out - capital_to_invest);
@@ -1305,7 +1310,12 @@ double Company::invest(double FacIncreaseRate_1, double CapIncreaseParam_1, doub
     price_out = get_active_market()->get_price_out();
 
     // Getting the desired investment for the company (after max leverage) and available items
-    desired_items = fmax(0, get_desired_investment(FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate));
+    desired_items = get_desired_investment(FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate);
+    if (desired_items == 0)
+    {
+        investments_.push_front(0);
+        return 0;
+    }
 
     // Calculating cost of the desired investment and available capital
     cost = desired_items * price_out;
@@ -1473,169 +1483,67 @@ double Company::invest(double FacIncreaseRate_1, double CapIncreaseParam_1, doub
 
 int Company::get_desired_investment(double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1, double ItemEfficiencyRate)
 {
-    // Investments in different type of things
-    int invested_items_tot = 0;
-    int invested_items_capacity = 0;
-    int invested_items_efficiency_factor = 0;
-    int invested_items_efficiency_items = 0;
-    int max_items_in_market = 0;
+    constexpr int initial_items = 4;
+    constexpr int item_step = 10000;
+    constexpr int max_evaluations = 256;
+    constexpr int max_search_items = initial_items + (max_evaluations - 1) * item_step;
 
-    double item_increase = 0;
-    double price_out = 0;
-    double cost_of_investment = 0;
-    double NPV = 0;
-    double NPV_old = 0;
-    double discounted_cashflows = 0;
-    double borrow = 0;
+    Market* market = get_active_market();
+    if (!market || !bank_)
+        return 0;
 
-    // Parameters settging investment split between capacity and efficiency
-    //  double investment_capacity_vs_efficiency_split = 0.5;
-    //  double investment_item_vs_factor_split = 0.5;
+    const double price = market->get_price_out();
+    const double stock = market->get_items();
+    const double interest = bank_->get_interest();
+    const auto positive = [](double value) { return std::isfinite(value) && value > 0; };
+    const auto nonnegative = [](double value) { return std::isfinite(value) && value >= 0; };
+    const auto fraction = [&](double value) { return nonnegative(value) && value <= 1; };
+    if (!positive(price) || !positive(stock) || !positive(capital_) || !positive(capacity_) ||
+        !nonnegative(market->get_price_in()) || !nonnegative(debts_) || !fraction(pbr_) ||
+        !std::isfinite(max_leverage_) || !std::isfinite(interest) || interest <= -1 ||
+        !fraction(investment_capacity_vs_efficiency_split_) ||
+        !fraction(investment_item_vs_factor_split_) ||
+        !nonnegative(FacIncreaseRate_1) || !nonnegative(CapIncreaseParam_1) ||
+        !nonnegative(CapIncreaseRate_1) || !nonnegative(ItemEfficiencyRate))
+        return 0;
 
-    // Items ivested and increase
-    item_increase = 10000;
-    invested_items_tot = 4;
+    const double own_cash = capital_ * pbr_;
+    const double bank_credit = bank_->get_max_customer_borrow();
+    if (!nonnegative(bank_credit))
+        return 0;
 
-    price_out = get_active_market()->get_price_out();
-    max_items_in_market = get_active_market()->get_items();
-
-    // cout << name_ << " capacity vs eff eplit: " << investment_capacity_vs_efficiency_split_ << " item vs factor split: " << investment_item_vs_factor_split_ << endl;
-
-    while (NPV >= 0 && NPV >= NPV_old && (debts_ + borrow) / capital_ - 1 < max_leverage_)
+    // Clamp before converting stock or purchasing power to an integer.
+    const double budget = own_cash + bank_credit;
+    const int limit = static_cast<int>(std::min({stock, budget / price,
+                                                 static_cast<double>(max_search_items)}));
+    int best_items = 0;
+    double best_npv = 0;
+    for (int items = std::min(initial_items, limit); items > 0;)
     {
-        // First split of invested items between capacity and efficiency
-        invested_items_capacity = invested_items_tot * investment_capacity_vs_efficiency_split_;
+        const double cost = items * price;
+        const double borrow = std::max(0.0, cost - own_cash);
+        const double leverage = (debts_ + borrow) / capital_ - 1;
+        if (!std::isfinite(cost) || borrow > bank_credit || leverage >= max_leverage_)
+            break;
 
-        // Second split of invested items between item and labour efficiency
-        invested_items_efficiency_items = (invested_items_tot - invested_items_capacity) * investment_item_vs_factor_split_;
-        invested_items_efficiency_factor = (invested_items_tot - invested_items_capacity) * (1 - investment_item_vs_factor_split_);
+        const int capacity_items = items * investment_capacity_vs_efficiency_split_;
+        const int remaining = items - capacity_items;
+        const int efficiency_items = remaining * investment_item_vs_factor_split_;
+        const int factor_items = remaining * (1 - investment_item_vs_factor_split_);
+        const double npv = get_investment_cashflow(capacity_items, efficiency_items, factor_items,
+                                                  borrow, FacIncreaseRate_1, CapIncreaseParam_1,
+                                                  CapIncreaseRate_1, ItemEfficiencyRate) - cost;
+        if (!std::isfinite(npv) || npv < best_npv)
+            break;
 
-        // cout << "Invested tot: " << invested_items_tot << " invested cap: " << invested_items_capacity << " invested item_item" <<invested_items_efficiency_items << " invesested items_lab" << invested_items_efficiency_factor << endl;
-
-        // Cost of investment
-        cost_of_investment = price_out * invested_items_tot;
-
-        // If not sufficient own capital for investment, borrow money
-        if (cost_of_investment > capital_ * pbr_)
-        {
-            borrow = cost_of_investment - capital_ * pbr_;
-        }
-
-        // calculating NPV of investment
-        // Printing all the input into the function for debugging
-        // if(name_ == "bempa_AB"){
-        //     cout << "Calculating NPV for: " << name_ << endl;
-        //     cout << " -invested_items_capacity: " << invested_items_capacity << endl;
-        //     cout << " -invested_items_efficiency_items: " << invested_items_efficiency_items << endl;
-        //     cout << " -invested_items_efficiency_factor: " << invested_items_efficiency_factor << endl;
-        //     cout << " -borrow: " << borrow << endl;
-        //     cout << " -FacIncreaseRate_1: " << FacIncreaseRate_1 << endl;
-        //     cout << " -CapIncreaseParam_1: " << CapIncreaseParam_1 << endl;
-        //     cout << " -CapIncreaseRate_1: " << CapIncreaseRate_1 << endl;
-        //     cout << " -ItemEfficiencyRate: " << ItemEfficiencyRate << endl;
-        //     cout << " -Prod const skill and motivation" << prod_const_skill_ << "  " << prod_const_motivation_ << endl;
-        //     cout << " -Capacity: " << capacity_ << endl;
-        //     cout << " -investment_item_vs_factor_split_: " << investment_item_vs_factor_split_ << endl;
-        //     cout << " -investment_capacity_vs_efficiency_split_: " << investment_capacity_vs_efficiency_split_ << endl;
-        // }
-        discounted_cashflows = get_investment_cashflow(invested_items_capacity, invested_items_efficiency_items, invested_items_efficiency_factor, borrow, FacIncreaseRate_1, CapIncreaseParam_1, CapIncreaseRate_1, ItemEfficiencyRate); // items NET PRESENT VALUE OF FUTURE CASHFLOWS
-
-        NPV_old = NPV;
-        NPV = discounted_cashflows - cost_of_investment;
-
-        // cout << name_ << " i comp des inv new items: " << invested_items_tot << " income (NPV): " << NPV << " cost: " << cost_of_investment << "  debt: " << debts_   << "  Loans: " << borrow  << endl;
-
-        // Checking which condition that breaks the while loop
-        if (NPV < 0)
-        {
-            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(18) << "Decision"
-                 << " | " << setw(18) << "Current NPV"
-                 << " | " << setw(18) << "Previous NPV"
-                 << " | " << setw(16) << "Items" << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(18) << "STOP: NPV < 0"
-                 << " | " << right << setw(18) << fixed << setprecision(0) << NPV
-                 << " | " << setw(18) << setprecision(0) << NPV_old
-                 << " | " << setw(16) << setprecision(0) << invested_items_tot << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-        }
-        else if (NPV < NPV_old)
-        {
-            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(18) << "Decision"
-                 << " | " << setw(18) << "Current NPV"
-                 << " | " << setw(18) << "Previous NPV"
-                 << " | " << setw(16) << "Items" << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(18) << "STOP: NPV Declined"
-                 << " | " << right << setw(18) << fixed << setprecision(0) << NPV
-                 << " | " << setw(18) << setprecision(0) << NPV_old
-                 << " | " << setw(16) << setprecision(0) << invested_items_tot << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-        }
-        if ((debts_ + borrow) / capital_ - 1 >= max_leverage_)
-        {
-            cout << "\n--- Investment Decision Analysis for " << name_ << " ---" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(24) << "Decision"
-                 << " | " << setw(18) << "Leverage Ratio"
-                 << " | " << setw(18) << "Max Leverage"
-                 << " | " << setw(10) << "Items" << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-            cout << "| " << left << setw(24) << "STOP: Max Leverage"
-                 << " | " << right << setw(18) << fixed << setprecision(4) << ((debts_ + borrow) / capital_ - 1)
-                 << " | " << setw(18) << setprecision(4) << max_leverage_
-                 << " | " << setw(10) << setprecision(0) << invested_items_tot << " |" << endl;
-            cout << "+" << string(80, '-') << "+" << endl;
-        }
-
-        invested_items_tot += item_increase;
-        // if(invested_items_tot >= max_items_in_market){
-        //     cout << left << setw(25) << name_ << " | BREAK: Market limit  | Want: " << setw(8) << invested_items_tot << " | Available: " << setw(8) << max_items_in_market << endl;
-        // }
+        best_items = items;
+        best_npv = npv;
+        if (items == limit)
+            break;
+        items = std::min(items + item_step, limit);
     }
-
-    // Adjusting for one extra loop increment after the last valid NPV calculation
-    invested_items_tot = max(0.0, invested_items_tot - item_increase);
-
-    return invested_items_tot;
+    return best_items;
 }
-
-// double Company::get_investment() {
-//
-//     double max_items = 0;
-//     double items_temp = 10;
-//     double items = 0;
-//     double cost = 0;
-//     double income = 0;
-//     double price_out = 0;
-//     double value = 0;
-//     double capacity_change = 0;
-//     double loans = 0;
-//     bool increase = true;
-//
-//     price_out = market_ -> get_price_out();
-//     max_items = market_ -> get_items();
-//
-//     while(items_temp < max_items && cost < capital_*pbr_ && (debts_ + loans)/capital_ - 1 < max_leverage_) {
-//
-//         cout << "I company get investments: NOT TO BE USED!!" << (debts_ + loans)/capital_ - 1 << endl;
-//
-//         cost = price_out * items_temp;
-//
-//         income = get_investment_get_expected_net_flow_to_bankitems_temp, loans);
-//
-//
-//         items_temp += 10;
-//
-//     }
-//     items = items_temp;
-//     return items;
-//
-// }
 
 double Company::get_investment_cashflow(double invested_items_capacity, double invested_items_efficiency_items, double invested_items_efficiency_factor, double loans, double FacIncreaseRate_1, double CapIncreaseParam_1, double CapIncreaseRate_1, double ItemEfficiencyRate)
 {
@@ -1692,6 +1600,9 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
     item_efficiency_change = item_efficiency_increase(invested_items_efficiency_items, ItemEfficiencyRate, item_efficiency_);
 
     loan_cost = bank_->get_loan_cost(loans);
+    if (!std::isfinite(new_capacity) || !std::isfinite(factor_change) ||
+        !std::isfinite(item_efficiency_change) || !std::isfinite(loan_cost))
+        return std::numeric_limits<double>::quiet_NaN();
 
     while (new_capacity >= zero_limit && t < 60)
     { //&& new_capacity > 0.1*capacity_initial_increase t< 20 was initially
