@@ -177,137 +177,73 @@ void City::print_employees(string company)
 
 void City::print_GDP()
 {
-
-    const int SPACE = 15;
-    bool save_to_file = false;
-
-    list<double>::iterator GDP;
-    list<double>::iterator Growth;
-    list<double>::iterator Investments;
-    list<double>::iterator Demand;
-    list<double>::iterator Price_out;
-    list<double>::iterator Excess_demand_items;
-    list<double>::iterator Employed;
-    auto Wages = wage_history_.begin();
-    list<double>::iterator Time;
-    list<double>::iterator Consumer_capital;
-    list<double>::iterator Company_capital;
-    list<double>::iterator Market_capital;
-    list<double>::iterator Bank_capital;
-    list<double>::iterator Total_capital;
-
-    list<double>::iterator Interest_rate;
-
-    GDP = GDP_.begin();
-    Time = time_.begin();
-    Growth = growth_.begin();
-    const auto investment_end = investments_.end();
-    Investments = investments_.begin();
-    Demand = demand_.begin();
-    Wages = wage_history_.begin();
-    Price_out = price_out_.begin();
-    Excess_demand_items = excess_demand_items_.begin();
-    Employed = employed_.begin();
-    Consumer_capital = consumer_capital_.begin();
-    Company_capital = company_capital_.begin();
-    Market_capital = market_capital_.begin();
-    Bank_capital = bank_capital_.begin();
-    Total_capital = total_capital_.begin();
-    Interest_rate = interest_rate_.begin();
-
-    /*
-     * Printing output to screen
-     */
-    cout << name_
-         << endl
-         << "-----------------------------------------------------" << endl
-         << setw(SPACE - 10) << "Time" << setw(SPACE - 1) << "GDP" << setw(SPACE - 2) << "Growth" << setw(SPACE) << "Demand"
-         << setw(SPACE) << "Wages" << setw(SPACE) << "Price out" << setw(SPACE) << "Employed"
-         << setw(SPACE + 4) << "Consumer_capital" << setw(SPACE + 4) << "Company_cap" << setw(SPACE) << "Invested cap"
-         << setw(SPACE) << "Bank cap" << endl;
-
-    for (GDP; GDP != GDP_.end(); GDP++)
-    {
-
-        cout << setw(SPACE - 10) << *Time << setw(SPACE - 1) << *GDP << setw(SPACE - 2) << *Growth << setw(SPACE)
-             << *Demand << setw(SPACE) << (Wages == wage_history_.end() ? 0.0 : *Wages) << setw(SPACE)
-             << *Price_out << setw(SPACE) << *Employed << setw(SPACE + 4)
-             << (Consumer_capital == consumer_capital_.end() ? 0.0 : *Consumer_capital) << setw(SPACE + 4) << (Company_capital == company_capital_.end() ? 0.0 : *Company_capital) << setw(SPACE)
-             << (Investments == investment_end || *Price_out <= 0 ? 0.0 : *Investments / *Price_out) << setw(SPACE) << (Bank_capital == bank_capital_.end() ? 0.0 : *Bank_capital) << endl;
-
-        Time++;
-        Demand++;
-        Growth++;
-        if (Wages != wage_history_.end())
-            ++Wages;
-        Price_out++;
-        if (Excess_demand_items != excess_demand_items_.end())
-            ++Excess_demand_items;
-        Employed++;
-        if (Consumer_capital != consumer_capital_.end())
-            ++Consumer_capital;
-        if (Company_capital != company_capital_.end())
-            ++Company_capital;
-        if (Investments != investment_end)
-            ++Investments;
-        if (Bank_capital != bank_capital_.end())
-            ++Bank_capital;
-    }
-
-    /*
-     * Printing to file gdp.txt
-     */
+    const int width = 15;
+    const bool save_to_file = false;
+    ofstream file;
     if (save_to_file)
     {
-        ofstream file("gdp.txt");
-        GDP = GDP_.begin();
-        Time = time_.begin();
-        Investments = investments_.begin();
-        Consumer_capital = consumer_capital_.begin();
-        Company_capital = company_capital_.begin();
-        Growth = growth_.begin();
-        Demand = demand_.begin();
-        Wages = wage_history_.begin();
-        Price_out = price_out_.begin();
-        Excess_demand_items = excess_demand_items_.begin();
-        Employed = employed_.begin();
-        Interest_rate = interest_rate_.begin();
-        Market_capital = market_capital_.begin();
-        Bank_capital = bank_capital_.begin();
-        Total_capital = total_capital_.begin();
-        Interest_rate = interest_rate_.begin();
+        file.open("gdp.txt");
+        file << "#time1 gdp2 growth3 demand4 wages5 price6 employed7 consumer_capital8 "
+             << "company_capital9 interest_rate10 investments11 market_capital12 bank_capital13 total_capital14\n";
+    }
 
-        file << "#time1 gdp2 growth3 demand4 wages5 price6 employed7 company_capital8 consumer_capital9 interest_rate10 investments11 market_capital12 bank_capital13 total_capital14" << endl;
-        for (GDP = GDP_.begin(); GDP != GDP_.end(); GDP++)
+    // The series are collected in different phases. Display zero for missing samples.
+    const auto samples = [](const list<double>& history) {
+        return [next = history.begin(), end = history.end()]() mutable {
+            return next == end ? 0.0 : *next++;
+        };
+    };
+    auto time = samples(time_);
+    auto growth = samples(growth_);
+    auto demand = samples(demand_);
+    auto wage = samples(wage_history_);
+    auto price = samples(price_out_);
+    auto employed = samples(employed_);
+    auto consumer_capital = samples(consumer_capital_);
+    auto company_capital = samples(company_capital_);
+    auto investment = samples(investments_);
+    auto bank_capital = samples(bank_capital_);
+    auto interest = samples(interest_rate_);
+    auto market_capital = samples(market_capital_);
+    auto total_capital = samples(total_capital_);
+
+    cout << name_ << endl
+         << "-----------------------------------------------------" << endl
+         << setw(width - 10) << "Time" << setw(width - 1) << "GDP"
+         << setw(width - 2) << "Growth" << setw(width) << "Demand"
+         << setw(width) << "Wages" << setw(width) << "Price out" << setw(width) << "Employed"
+         << setw(width + 4) << "Consumer_capital" << setw(width + 4) << "Company_cap"
+         << setw(width) << "Invested cap" << setw(width) << "Bank cap" << endl;
+
+    for (double gdp : GDP_)
+    {
+        const double period = time();
+        const double period_growth = growth();
+        const double period_demand = demand();
+        const double period_wage = wage();
+        const double period_price = price();
+        const double period_employed = employed();
+        const double consumer_money = consumer_capital();
+        const double company_money = company_capital();
+        const double investment_money = investment();
+        const double bank_money = bank_capital();
+        const double invested_items = period_price > 0 ? investment_money / period_price : 0.0;
+
+        cout << setw(width - 10) << period << setw(width - 1) << gdp
+             << setw(width - 2) << period_growth << setw(width) << period_demand
+             << setw(width) << period_wage << setw(width) << period_price
+             << setw(width) << period_employed << setw(width + 4) << consumer_money
+             << setw(width + 4) << company_money << setw(width) << invested_items
+             << setw(width) << bank_money << endl;
+
+        if (file.is_open())
         {
-            file << *Time << " " << *GDP << " " << *Growth << " " << *Demand
-                 << " " << (Wages == wage_history_.end() ? 0.0 : *Wages) << " " << *Price_out << " " << *Employed
-                 << " " << (Consumer_capital == consumer_capital_.end() ? 0.0 : *Consumer_capital) << " " << (Company_capital == company_capital_.end() ? 0.0 : *Company_capital) << " " << 10 * (*Interest_rate) << " "
-                 << (Investments == investment_end ? 0.0 : *Investments) << " " << (Market_capital == market_capital_.end() ? 0.0 : *Market_capital) << " " << (Bank_capital == bank_capital_.end() ? 0.0 : *Bank_capital) << " " << (Total_capital == total_capital_.end() ? 0.0 : *Total_capital) << endl;
-            Time++;
-            Demand++;
-            Growth++;
-            if (Wages != wage_history_.end())
-            ++Wages;
-            Price_out++;
-            if (Excess_demand_items != excess_demand_items_.end())
-            ++Excess_demand_items;
-            Employed++;
-            if (Consumer_capital != consumer_capital_.end())
-            ++Consumer_capital;
-            if (Company_capital != company_capital_.end())
-            ++Company_capital;
-            if (Market_capital != market_capital_.end())
-            ++Market_capital;
-            if (Bank_capital != bank_capital_.end())
-            ++Bank_capital;
-            if (Total_capital != total_capital_.end())
-            ++Total_capital;
-            Interest_rate++;
-            if (Investments != investment_end)
-            ++Investments;
+            file << period << ' ' << gdp << ' ' << period_growth << ' ' << period_demand
+                 << ' ' << period_wage << ' ' << period_price << ' ' << period_employed
+                 << ' ' << consumer_money << ' ' << company_money << ' ' << 10 * interest()
+                 << ' ' << investment_money << ' ' << market_capital() << ' ' << bank_money
+                 << ' ' << total_capital() << '\n';
         }
-        file.close();
     }
 }
 

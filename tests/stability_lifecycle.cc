@@ -10,7 +10,13 @@ void test_bankruptcy_and_reporting()
     city.add_random_consumers(20);
     city.update_parameters_from_database();
     city.add_company("Bankrupt");
-    city.get_company("Bankrupt")->set_capital(0);
+    Company& bankrupt = *city.get_company("Bankrupt");
+    assert(bankrupt.get_average_wage() == 0);
+    assert(bankrupt.get_average_wage_historical(6) == 0);
+    bankrupt.wages_.push_front(3);
+    bankrupt.wages_.push_front(5);
+    assert(bankrupt.get_average_wage_historical(6) == 4);
+    bankrupt.set_capital(0);
     city.adjust_money();
     city.print_GDP();
 
