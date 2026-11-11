@@ -209,6 +209,7 @@ public:
 
 private:
    string name_;
+   list<double> wage_history_;
 
    std::unique_ptr<Consumer_list> consumers_;
    // std::unique_ptr<Consumer_list> labour_market_;
@@ -219,12 +220,12 @@ private:
    std::unique_ptr<Bank> bank_;
    Clock *clock_; // Keep as raw pointer - may be shared resource
    int flash_counter_;
-   double loans_to_bank_;
+   double loans_to_bank_ = 0;
    double vat_;
    double income_tax_;
    double capital_gains_tax_;
    double budget_balance_;
-   double inflation_target_;
+   double inflation_target_ = 0;
    double capital_;
    bool enable_intercity_trading_;
 

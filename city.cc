@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>
@@ -185,7 +186,7 @@ void City::print_GDP()
     list<double>::iterator Price_out;
     list<double>::iterator Excess_demand_items;
     list<double>::iterator Employed;
-    list<double>::iterator Wages;
+    auto Wages = wage_history_.begin();
     list<double>::iterator Time;
     list<double>::iterator Consumer_capital;
     list<double>::iterator Company_capital;
@@ -198,9 +199,10 @@ void City::print_GDP()
     GDP = GDP_.begin();
     Time = time_.begin();
     Growth = growth_.begin();
+    const auto investment_end = investments_.end();
     Investments = investments_.begin();
     Demand = demand_.begin();
-    Wages = (company_list_->get_random_company()->get_company())->wages_.begin();
+    Wages = wage_history_.begin();
     Price_out = price_out_.begin();
     Excess_demand_items = excess_demand_items_.begin();
     Employed = employed_.begin();
@@ -226,22 +228,28 @@ void City::print_GDP()
     {
 
         cout << setw(SPACE - 10) << *Time << setw(SPACE - 1) << *GDP << setw(SPACE - 2) << *Growth << setw(SPACE)
-             << *Demand << setw(SPACE) << *Wages << setw(SPACE)
+             << *Demand << setw(SPACE) << (Wages == wage_history_.end() ? 0.0 : *Wages) << setw(SPACE)
              << *Price_out << setw(SPACE) << *Employed << setw(SPACE + 4)
-             << *Consumer_capital << setw(SPACE + 4) << *Company_capital << setw(SPACE)
-             << *Investments / (*Price_out) << setw(SPACE) << *Bank_capital << endl;
+             << (Consumer_capital == consumer_capital_.end() ? 0.0 : *Consumer_capital) << setw(SPACE + 4) << (Company_capital == company_capital_.end() ? 0.0 : *Company_capital) << setw(SPACE)
+             << (Investments == investment_end || *Price_out <= 0 ? 0.0 : *Investments / *Price_out) << setw(SPACE) << (Bank_capital == bank_capital_.end() ? 0.0 : *Bank_capital) << endl;
 
         Time++;
         Demand++;
         Growth++;
-        Wages++;
+        if (Wages != wage_history_.end())
+            ++Wages;
         Price_out++;
-        Excess_demand_items++;
+        if (Excess_demand_items != excess_demand_items_.end())
+            ++Excess_demand_items;
         Employed++;
-        Consumer_capital++;
-        Company_capital++;
-        Investments++;
-        Bank_capital++;
+        if (Consumer_capital != consumer_capital_.end())
+            ++Consumer_capital;
+        if (Company_capital != company_capital_.end())
+            ++Company_capital;
+        if (Investments != investment_end)
+            ++Investments;
+        if (Bank_capital != bank_capital_.end())
+            ++Bank_capital;
     }
 
     /*
@@ -253,9 +261,11 @@ void City::print_GDP()
         GDP = GDP_.begin();
         Time = time_.begin();
         Investments = investments_.begin();
+        Consumer_capital = consumer_capital_.begin();
+        Company_capital = company_capital_.begin();
         Growth = growth_.begin();
         Demand = demand_.begin();
-        Wages = (company_list_->get_random_company()->get_company())->wages_.begin();
+        Wages = wage_history_.begin();
         Price_out = price_out_.begin();
         Excess_demand_items = excess_demand_items_.begin();
         Employed = employed_.begin();
@@ -269,23 +279,31 @@ void City::print_GDP()
         for (GDP = GDP_.begin(); GDP != GDP_.end(); GDP++)
         {
             file << *Time << " " << *GDP << " " << *Growth << " " << *Demand
-                 << " " << *Wages << " " << *Price_out << " " << *Employed
-                 << " " << *Consumer_capital << " " << *Company_capital << " " << 10 * (*Interest_rate) << " "
-                 << *Investments << " " << *Market_capital << " " << *Bank_capital << " " << *Total_capital << endl;
+                 << " " << (Wages == wage_history_.end() ? 0.0 : *Wages) << " " << *Price_out << " " << *Employed
+                 << " " << (Consumer_capital == consumer_capital_.end() ? 0.0 : *Consumer_capital) << " " << (Company_capital == company_capital_.end() ? 0.0 : *Company_capital) << " " << 10 * (*Interest_rate) << " "
+                 << (Investments == investment_end ? 0.0 : *Investments) << " " << (Market_capital == market_capital_.end() ? 0.0 : *Market_capital) << " " << (Bank_capital == bank_capital_.end() ? 0.0 : *Bank_capital) << " " << (Total_capital == total_capital_.end() ? 0.0 : *Total_capital) << endl;
             Time++;
             Demand++;
             Growth++;
-            Wages++;
+            if (Wages != wage_history_.end())
+            ++Wages;
             Price_out++;
-            Excess_demand_items++;
+            if (Excess_demand_items != excess_demand_items_.end())
+            ++Excess_demand_items;
             Employed++;
-            Consumer_capital++;
-            Company_capital++;
-            Market_capital++;
-            Bank_capital++;
-            Total_capital++;
+            if (Consumer_capital != consumer_capital_.end())
+            ++Consumer_capital;
+            if (Company_capital != company_capital_.end())
+            ++Company_capital;
+            if (Market_capital != market_capital_.end())
+            ++Market_capital;
+            if (Bank_capital != bank_capital_.end())
+            ++Bank_capital;
+            if (Total_capital != total_capital_.end())
+            ++Total_capital;
             Interest_rate++;
-            Investments++;
+            if (Investments != investment_end)
+            ++Investments;
         }
         file.close();
     }
@@ -504,7 +522,8 @@ Company *City::get_company(const string &name)
 
 Company *City::get_random_company()
 {
-    return company_list_->get_random_company()->get_company();
+    const auto* entry = company_list_->get_random_company();
+    return entry ? entry->get_company() : nullptr;
 }
 
 Consumer *City::get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter)
@@ -1644,7 +1663,10 @@ void City::update_employees()
      * there might be other conusmers more optimal for them...
      */
 
-    name = get_random_company()->get_name();
+    Company* company = get_random_company();
+    if (!company)
+        return;
+    name = company->get_name();
     cout << "Name: " << name << endl;
     skill = get_company(name)->get_prod_const_skill();
     mot = get_company(name)->get_prod_const_motivation();
@@ -1884,14 +1906,14 @@ void City::save_data()
     size = consumers_->get_size();
     employed = consumers_->get_employed();
     unemployed = consumers_->get_unemployed();
-    unemployment = unemployed / size;
+    unemployment = size > 0 ? unemployed / size : 0;
     wages = company_list_->get_average_wage(); //*((company_list_->get_company("bempa_AB"))->wages_.begin());
     nominal_gdp = price_out * item;
     GDP = GDP_.begin();
     time = clock_->get_time();
-    investments = *investments_.begin();
+    investments = investments_.empty() ? 0.0 : investments_.front();
 
-    if (*GDP != 0)
+    if (GDP != GDP_.end() && *GDP != 0)
     {
         growth = (item - *GDP) / (*GDP);
     }
@@ -1900,7 +1922,7 @@ void City::save_data()
         growth = 0;
     }
 
-    cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployed / size << " size: " << size << endl;
+    cout << "I city save data, employed: " << employed << " unemployed: " << unemployed << " unemployment: " << unemployment << " size: " << size << endl;
     // file2 << time << " " << item << " " << growth << " " << demand << " " << price_out << " "
     //<< employed << " " << wages << " " << 100*interest_rate << " " << investments << " " << nominal_gdp << endl;
 
@@ -1928,6 +1950,7 @@ void City::save_data()
     }
 
     GDP_.push_front(item);
+    wage_history_.push_front(wages);
     growth_.push_front(growth);
     demand_.push_front(demand);
     price_out_.push_front(price_out);
@@ -2122,187 +2145,21 @@ void City::invest(bool invest)
 void City::adjust_money()
 {
 
-    double money_change = 0;
-    double total_money = 0;
-    double average_price = 0;
-    double average_items = 0;
-    double average_wage = 0;
-    double money_change_factor = 0;
-    double bank_money = 0;
-    double inflation = 0;
-    double item_inflation = 0;
-    double scale_factor = 0.5; // 0.5
-    double target_inflation = 0;
-
-    double MAX_CHANGE_FACTOR = 0.6;
-
-    /*
-     *
-     * Use function select to select money function
-     *
-     */
-
-    int function_select = 3; // 3
-    int payment_function_select = 1;
-
-    int i = 0;
-    int number_of_companies = 0;
-    int average_history = 6;
-    double items_a = 0;
-    double price_a = 0;
-    double wages_a = 0;
-    double average_wage_now = 0;
-    double average_wage_historical = 0;
-
-    double sum = 0;
-    double sum_items = 0;
-
-    list<double>::iterator Price_out;
-    list<double>::iterator Items;
-    list<double>::iterator Wages;
-
-    Price_out = price_out_.begin();
-    Items = GDP_.begin();
-
-    Wages = ((company_list_->get_random_company()->get_company())->wages_.begin());
-
-    total_money = get_capital_sum();
-    bank_money = bank_->get_capital();
-
-    // Function 1
-
-    items_a = *Items;
-    Items = GDP_.begin();
-
-    for (i = 0; i < 4; i++)
-    {
-        sum_items += *Items;
-        Items++;
-        // cout << i << " i and items"<<  *Items << endl;
-    }
-
-    average_items = sum_items / i;
-
-    // Function 2
-
-    price_a = *Price_out;
-    Price_out = price_out_.begin();
-
-    sum = 0;
-    for (i = 0; i < 5; i++)
-    {
-        sum += *Price_out;
-        Price_out++;
-    }
-
-    average_price = sum / i;
-
-    // Function 3
-    // OLD CODE - REMOVE!
-    wages_a = *Wages;
-    Wages = ((company_list_->get_random_company()->get_company())->wages_.begin());
-
-    sum = 0;
-    for (i = 0; i < 4; i++)
-    {
-        sum += *Wages;
-        Wages++;
-    }
-
-    average_wage = sum / i;
-    // average_wage = company_list_ -> get_average_wage();
-
-    // cout << "I city adjust money, money change function " << function_select << endl;
-
-    switch (function_select)
-    {
-    case 1:
-        item_inflation = (1 - average_items / items_a);
-        inflation = -item_inflation;
-        break;
-
-    case 2:
-
-        inflation = price_a / average_price - 1;
-
-        break;
-
-    case 3:
-
-        // Checking for 0 average wage
-
-        average_wage_now = company_list_.get()->get_average_wage();
-        average_wage_historical = company_list_.get()->get_average_wage_historical(average_history);
-
-        cout << "I City adjust money, using wage inflation, average now = " << average_wage_now << " average historical = " << average_wage_historical << endl;
-        if (average_wage_historical != 0)
-        {
-            inflation = average_wage_now / average_wage_historical - 1;
-        }
-        else
-        {
-            average_wage_historical = 1; // To avoid division by zero
-            inflation = average_wage_now / average_wage_historical - 1;
-            cout << "Warning: Average wage historical is zero, setting to 1 to avoid division by zero" << endl;
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    money_change_factor = -inflation + inflation_target_;
-
-    if (money_change_factor > MAX_CHANGE_FACTOR)
-    {
-        money_change_factor = MAX_CHANGE_FACTOR;
-        cout << "I City adjust money, reaching max change factor" << endl;
-    }
-    else if (-money_change_factor > MAX_CHANGE_FACTOR)
-    {
-        money_change_factor = -MAX_CHANGE_FACTOR;
-        cout << "I City adjust money, reaching max change factor" << endl;
-    }
-
     if (clock_->get_time() < 10)
-    {
-        money_change_factor = 0;
-    }
+        return;
 
-    money_change = total_money * money_change_factor * scale_factor;
+    const double wage = company_list_->get_average_wage();
+    const double historical_wage = company_list_->get_average_wage_historical(6);
+    // Suspend the wage-based adjustment until both measurements are available.
+    if (!std::isfinite(wage) || !std::isfinite(historical_wage) ||
+        wage <= 0 || historical_wage <= 0)
+        return;
 
-    cout << "I city adj. money, inflation: " << inflation << " target: " << inflation_target_ << " money ch %: " << money_change / total_money << " Total money " << total_money << " Money change " << money_change << endl;
-    // money_change = (1-average_items/items_a)*total_money;
-
-    // if(price_a > average_price) {
-    //     money_change = (1-average_price/price_a)*total_money;
-    // }
-
-    /*
-     *What happends if we increase the money without any reason?!!?
-     */
-    /*
-    if(clock_ -> get_time() == 200) {
-
-        money_change = -10000000;
-        cout << "In city adjust money increasing money at time 200" << endl;
-    }
-    */
-
-    switch (payment_function_select)
-    {
-
-    case 0:
-        bank_->change_capital(std::round(money_change));
-        bank_->change_liquidity(std::round(money_change));
-        loans_to_bank_ += std::round(money_change);
-
-        break;
-    case 1:
-        change_capital(std::round(money_change));
-        loans_to_bank_ += std::round(money_change);
-        break;
-    }
+    const double inflation = wage / historical_wage - 1;
+    const double factor = std::clamp(inflation_target_ - inflation, -0.6, 0.6);
+    const double money_change = std::round(get_capital_sum() * factor * 0.5);
+    change_capital(money_change);
+    loans_to_bank_ += money_change;
 }
 
 void City::pay_company_employees()

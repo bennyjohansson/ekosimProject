@@ -1045,9 +1045,7 @@ double Company::contribution_adding_multiple(Consumer *consumer, int number_of_e
     prod_before = get_production();
     prod_after = get_prod(skill_sum + skill, prod_const_skill_, mot_sum + mot, prod_const_motivation_, capacity_, production_function_, production_parameter_);
 
-    list<double>::iterator theIterator;
-    theIterator = wages_.begin();
-    wage = *theIterator * number_of_employees;
+    wage = get_average_wage() * number_of_employees;
 
     // contribution = (prod_after - prod_before)*price   - wage + (item_cost(prod_after) - item_cost(prod_before))*price_out;
 
@@ -1727,33 +1725,19 @@ double Company::get_investment_cashflow(double invested_items_capacity, double i
 double Company::get_average_wage()
 {
 
-    double average_wage = 0;
-
-    list<double>::iterator theIterator;
-    theIterator = wages_.begin();
-
-    average_wage = *theIterator;
-
-    return average_wage;
+    return wages_.empty() ? 0.0 : wages_.front();
 }
 
 double Company::get_average_wage_historical(int years)
 {
-
-    double average_wage = 0;
-
-    list<double>::iterator theIterator;
-    theIterator = wages_.begin();
-    // Looping over the last "years" number of wages
-    for (int i = 0; i < years && theIterator != wages_.end(); ++i, ++theIterator)
+    double total = 0;
+    int samples = 0;
+    for (auto wage = wages_.begin(); samples < years && wage != wages_.end(); ++wage)
     {
-        average_wage += *theIterator;
+        total += *wage;
+        ++samples;
     }
-
-    // Dividing by number of years to get average
-    average_wage /= years;
-
-    return average_wage;
+    return samples > 0 ? total / samples : 0.0;
 }
 
 double Company::get_total_wages()
@@ -1777,8 +1761,6 @@ double Company::get_total_wages()
         production = get_production();
     }
 
-    list<double>::iterator theIterator;
-    theIterator = wages_.begin();
     wages = (production * price - get_items_for_production() * price_out) * wage_const_;
 
     if (wages <= 0)
@@ -1794,15 +1776,15 @@ double Company::get_total_wages()
      * 'wage_change_limit_'
      */
 
-    if (clock_->get_time() > 30)
+    if (clock_->get_time() > 30 && size > 0 && !wages_.empty())
     {
-        if (wages / size > *theIterator * (1 + wage_change_limit_up))
+        if (wages / size > wages_.front() * (1 + wage_change_limit_up))
         {
-            wages = *theIterator * (1 + wage_change_limit_up) * size;
+            wages = wages_.front() * (1 + wage_change_limit_up) * size;
         }
-        if (wages / size < *theIterator * (1 - wage_change_limit_down))
+        if (wages / size < wages_.front() * (1 - wage_change_limit_down))
         {
-            wages = *theIterator * (1 - wage_change_limit_down) * size;
+            wages = wages_.front() * (1 - wage_change_limit_down) * size;
         }
     }
 
