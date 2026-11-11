@@ -218,10 +218,8 @@ int main()
 		cout << endl
 			 << "SAVING CONSUMERS" << endl;
 		cout << "------------------------------" << endl;
-		if (1)
-		{
-			bennyworld.save_consumers();
-		}
+		if (!bennyworld.save_consumers())
+			cerr << "One or more city consumer snapshots failed" << endl;
 
 		/*
 		 * UPDATING HIGH-SCORE

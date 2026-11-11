@@ -667,24 +667,13 @@ bool City_list::save_high_score()
 }
 bool City_list::save_consumers()
 {
-
-    Element_city *p;
-
-    if (list_)
+    bool saved = list_ != nullptr;
+    for (auto* city = list_.get(); city; city = city->next_.get())
     {
-        for (p = list_.get(); p; p = p->next_.get())
-        {
-            cout << endl
-                 << " -- " << p->get_city()->get_name() << " -- " << endl;
-            p->get_city()->save_consumers();
-        }
+        if (!city->get_city()->save_consumers())
+            saved = false;
     }
-    else
-    {
-        cout << "No countries to save consumers" << endl;
-        return false;
-    }
-    return true;
+    return saved;
 }
 
 bool City_list::change_market(Market *newMarket)

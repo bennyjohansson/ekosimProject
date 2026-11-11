@@ -1116,7 +1116,7 @@ double Consumer_list::pay_all_dividends_log(double amount_company, double amount
   return 0;
 }
 
-void Consumer_list::save_consumers()
+bool Consumer_list::save_consumers()
 {
   // Batch insert for PostgreSQL (much faster than individual inserts)
   vector<tuple<string, string, string, int, double, double, double, double, double, double, double, double, double, double, double>> consumer_batch;
@@ -1149,9 +1149,5 @@ void Consumer_list::save_consumers()
     // consumer->save_to_database();
   }
 
-  // Batch insert to PostgreSQL
-  if (!consumer_batch.empty() && !name_.empty())
-  {
-    batchInsertConsumerDataPG(consumer_batch, name_);
-  }
+  return batchInsertConsumerDataPG(consumer_batch, name_) == 0;
 }

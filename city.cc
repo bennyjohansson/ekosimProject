@@ -2939,17 +2939,9 @@ double City::calculate_Palma_ratio()
     return Palma_ratio;
 }
 
-void City::save_consumers()
+bool City::save_consumers()
 {
-
-    if (consumers_)
-    {
-
-        consumers_->save_consumers();
-
-        // Export CONSUMER_TABLE to CSV file
-        // export_consumers_to_csv();
-    }
+    return consumers_->save_consumers();
 }
 
 void City::export_consumers_to_csv()

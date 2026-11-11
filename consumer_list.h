@@ -98,7 +98,7 @@ public:
    double pay_dividends_log(double, string);
    double pay_all_dividends_log(double, double, double);
    void pay_transfers_log(double, string);
-   void save_consumers();
+   bool save_consumers();
 
 protected:
    string name_;

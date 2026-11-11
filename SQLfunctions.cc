@@ -2013,16 +2013,11 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
         return 1;
     }
 
-    // Begin transaction
-    PGresult *beginResult = pgManager.executeQuery("BEGIN");
-    if (!beginResult || PQresultStatus(beginResult) != PGRES_COMMAND_OK)
+    if (!pgManager.executeCommand("BEGIN"))
     {
-        cerr << "Failed to begin transaction for batch insert" << endl;
-        if (beginResult)
-            PQclear(beginResult);
+        cerr << "Failed to begin consumer snapshot for " << city_name << endl;
         return 1;
     }
-    PQclear(beginResult);
 
     string sql = "INSERT INTO consumer_data (city_name, consumer_name, employer, items, "
                  "capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, "
@@ -2035,9 +2030,6 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
                  "savewill = EXCLUDED.savewill, borrowwill = EXCLUDED.borrowwill, "
                  "income = EXCLUDED.income, dividends = EXCLUDED.dividends, transfers = EXCLUDED.transfers, "
                  "updated_at = CURRENT_TIMESTAMP";
-
-    int success_count = 0;
-    int fail_count = 0;
 
     for (const auto &consumer : consumers)
     {
@@ -2077,44 +2069,28 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
             dividends_str.c_str(),
             transfers_str.c_str()};
 
-        PGresult *result = PQexecParams(pgManager.getConnection(),
-                                        sql.c_str(),
-                                        15,
-                                        NULL,
-                                        paramValues,
-                                        NULL,
-                                        NULL,
-                                        0);
+        std::unique_ptr<PGresult, decltype(&PQclear)> result(
+            PQexecParams(pgManager.getConnection(), sql.c_str(), 15, nullptr,
+                         paramValues, nullptr, nullptr, 0), &PQclear);
 
-        if (PQresultStatus(result) != PGRES_COMMAND_OK)
+        if (!result || PQresultStatus(result.get()) != PGRES_COMMAND_OK)
         {
-            cerr << "Failed to insert consumer " << consumer_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
-            PQclear(result);
-            fail_count++;
+            cerr << "Failed to write consumer " << consumer_name << " in snapshot for "
+                 << city_name << ": " << pgManager.getLastError() << endl;
+            pgManager.executeCommand("ROLLBACK");
+            return 1;
         }
-        else
-        {
-            success_count++;
-        }
-
-        if (result)
-            PQclear(result);
     }
 
-    // Commit transaction
-    PGresult *commitResult = pgManager.executeQuery("COMMIT");
-    if (!commitResult || PQresultStatus(commitResult) != PGRES_COMMAND_OK)
+    if (!pgManager.executeCommand("COMMIT"))
     {
-        cerr << "Failed to commit transaction, rolling back" << endl;
-        pgManager.executeQuery("ROLLBACK");
-        if (commitResult)
-            PQclear(commitResult);
+        cerr << "Failed to commit consumer snapshot for " << city_name << endl;
+        pgManager.executeCommand("ROLLBACK");
         return 1;
     }
-    PQclear(commitResult);
 
-    cout << "Batch inserted " << success_count << " consumers to PostgreSQL (" << fail_count << " failed)" << endl;
-    return fail_count > 0 ? 1 : 0;
+    cout << "Batch inserted " << consumers.size() << " consumers to PostgreSQL" << endl;
+    return 0;
 }
 
 int insertConsumerDataPG(string city_name, string consumer_name, string employer,
