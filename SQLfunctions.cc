@@ -320,32 +320,23 @@ Records select_stmt_pg(string sql, string city_name)
 Records select_stmt(string stmt, const char *s) // const char*
 {
     Records records;
-    char *errmsg = new char[250]; //
-    sqlite3 *DB;
-
-    try
+    sqlite3 *database = nullptr;
+    const int open_status = sqlite3_open(s, &database);
+    std::unique_ptr<sqlite3, decltype(&sqlite3_close)> connection(database, &sqlite3_close);
+    if (open_status != SQLITE_OK)
     {
-        int exit = 0;
-        exit = sqlite3_open(s, &DB);
-
-        char *messaggeError = new char[150];
-        exit = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
-        // int ret = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
-        if (exit != SQLITE_OK)
-        {
-            std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]" << endl;
-            sqlite3_free(errmsg);
-        }
-        else
-        {
-            // cout << "Parameter-table created successfully" << endl;
-        }
-        sqlite3_close(DB);
+        cerr << "Failed to open SQLite database " << s << ": "
+             << (database ? sqlite3_errmsg(database) : sqlite3_errstr(open_status)) << endl;
+        return records;
     }
-    catch (const exception &e)
-    {
 
-        cerr << e.what();
+    char *message = nullptr;
+    const int status = sqlite3_exec(database, stmt.c_str(), select_callback, &records, &message);
+    std::unique_ptr<char, decltype(&sqlite3_free)> error(message, &sqlite3_free);
+    if (status != SQLITE_OK)
+    {
+        cerr << "Error in SQLite select statement " << stmt << ": "
+             << (message ? message : sqlite3_errmsg(database)) << endl;
     }
     return records;
 }

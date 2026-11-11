@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <iomanip>
 #include <cstring>
 #include <string>
@@ -27,6 +28,12 @@ int main()
 
 	while (1)
 	{
+		if (testPostgreSQLConnection() != 0)
+		{
+			cerr << "Cannot start a simulation world without PostgreSQL. Check the POSTGRES_* settings." << endl;
+			return EXIT_FAILURE;
+		}
+
 		/*
 		 * Creating bennyworld
 		 */
