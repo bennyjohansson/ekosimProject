@@ -1,8 +1,11 @@
 # Modern C++ compiler settings
 CCC = clang++
-# Support both macOS (postgresql@14) and Linux (standard locations)
-CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2 -I/usr/local/include/postgresql@14 -I/usr/include/postgresql
-LDFLAGS = -lsqlite3 -L/usr/local/lib/postgresql@14 -L/usr/lib -lpq
+# Homebrew installs libpq outside the compiler's default search paths.
+PG_CONFIG ?= $(or $(firstword $(wildcard /opt/homebrew/opt/libpq/bin/pg_config /usr/local/opt/libpq/bin/pg_config)),pg_config)
+LIBPQ_INCLUDEDIR := $(shell $(PG_CONFIG) --includedir 2>/dev/null)
+LIBPQ_LIBDIR := $(shell $(PG_CONFIG) --libdir 2>/dev/null)
+CXXFLAGS = -std=c++20 -Wall -Wextra -g -O2 $(if $(LIBPQ_INCLUDEDIR),-I$(LIBPQ_INCLUDEDIR),-I/usr/local/include/postgresql@14 -I/usr/include/postgresql)
+LDFLAGS = -lsqlite3 $(if $(LIBPQ_LIBDIR),-L$(LIBPQ_LIBDIR),-L/usr/local/lib/postgresql@14) -lpq
 
 # Debug build flags (uncomment for debugging)
 # CXXFLAGS = -std=c++20 -Wall -Wextra -g -O0 -DDEBUG
