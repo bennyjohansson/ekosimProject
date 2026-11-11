@@ -1,5 +1,5 @@
 #include "PostgreSQLManager.h"
-#include "SQLfunctions.h"
+#include <SQLfunctions.h>
 
 #include <cassert>
 #include <chrono>
