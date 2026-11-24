@@ -1,4 +1,6 @@
-#include <iostream> 
+#include <iostream>
+#include <algorithm>
+#include <limits>
 #include <iomanip>
 #include <string>
 #include <cmath>
@@ -158,9 +160,13 @@ int Market::customer_buy_items(double money) {
 	int items_available = 0;
 	double purchase_amount = 0;
 	
-	items_wanted = floor(money/price_out_);
-	
-	items_available = items_;
+	if (!std::isfinite(money) || money <= 0 || !std::isfinite(price_out_) ||
+        price_out_ <= 0 || !std::isfinite(items_) || items_ <= 0)
+        return 0;
+
+    const double max_items = std::numeric_limits<int>::max();
+    items_wanted = static_cast<int>(std::min(std::floor(money / price_out_), max_items));
+    items_available = static_cast<int>(std::min(items_, max_items));
 	
 	items_sold = fmax(0,fmin(items_wanted, items_available));
 	purchase_amount = items_sold*price_out_;

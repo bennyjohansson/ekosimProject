@@ -97,3 +97,46 @@ Economic parameters are stored in the PostgreSQL `parameters` table and can be m
 
 - [EkoWeb](../EkoWeb/README.md) - API server and web frontend
 - [EkoSim-Infrastructure](../EkoSim-Infrastructure/README.md) - Docker orchestration
+
+## Stability behavior
+
+The GDP report uses the city's recorded wage totals for each cycle and displays
+zero for missing samples. GDP growth is zero until there is a nonzero prior GDP
+sample. Wage history averages the samples available within the requested
+window. The simulator skips wage-based monetary adjustments until it has
+positive current and historical wages and the initial ten cycles have passed.
+
+PostgreSQL waits default to 5,000 ms per connection attempt and 10,000 ms per
+statement. Set `POSTGRES_CONNECT_TIMEOUT_MS` and
+`POSTGRES_STATEMENT_TIMEOUT_MS` to positive integers up to 3,600,000 to
+override them. The connection deadline covers socket polling and the PostgreSQL
+handshake. Hostname lookup uses the system resolver. Set
+`POSTGRES_HOSTADDR` to a numeric address to avoid that lookup.
+
+The server and client both enforce the statement limit. The client closes the
+connection if the server stops responding. PostgreSQL then rolls back any
+uncommitted work on that connection. A failed consumer write rolls back that
+city's whole snapshot. The simulator reports failed snapshots and continues
+with the next world run. It does not retry individual statements or an
+ambiguous commit.
+
+Investment evaluates up to 256 candidate quantities using the existing
+10,000-item step, starting with four items. The last candidate may be smaller
+when stock or financing is limited. The company selects the last feasible
+quantity whose net present value did not decline. Invalid inputs or a negative
+first net present value produce a zero investment. Loan cost calculations
+accept terms up to 1,200 monthly payments.
+
+Build the simulator and the stability regressions with:
+
+```sh
+make -B main stability-tests
+```
+
+Run `./test_stability_investment` for investment cases. Run
+`./test_stability_lifecycle` and `./test_stability_postgres` with
+`POSTGRES_*` set for a disposable database. The PostgreSQL regression creates
+and drops its own `consumer_data` table and requires that table to be absent
+at startup. Test an unavailable endpoint with
+`POSTGRES_PORT=1 POSTGRES_CONNECT_TIMEOUT_MS=150 ./test_stability_postgres --unavailable`
+when the configured host has nothing listening on port 1.

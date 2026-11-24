@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <sqlite3.h>
 #include <stdio.h>
 #include <vector>
@@ -307,7 +308,7 @@ Records select_stmt_pg(string sql, string city_name)
     {
         if (result)
         {
-            cerr << "Failed to execute select query: " << PQerrorMessage(pgManager.getConnection()) << endl;
+            cerr << "Failed to execute select query: " << pgManager.getLastError() << endl;
             cerr << "SQL: " << pg_sql << endl;
             PQclear(result);
         }
@@ -320,32 +321,23 @@ Records select_stmt_pg(string sql, string city_name)
 Records select_stmt(string stmt, const char *s) // const char*
 {
     Records records;
-    char *errmsg = new char[250]; //
-    sqlite3 *DB;
-
-    try
+    sqlite3 *database = nullptr;
+    const int open_status = sqlite3_open(s, &database);
+    std::unique_ptr<sqlite3, decltype(&sqlite3_close)> connection(database, &sqlite3_close);
+    if (open_status != SQLITE_OK)
     {
-        int exit = 0;
-        exit = sqlite3_open(s, &DB);
-
-        char *messaggeError = new char[150];
-        exit = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
-        // int ret = sqlite3_exec(DB, stmt.c_str(), select_callback, &records, &errmsg);
-        if (exit != SQLITE_OK)
-        {
-            std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]" << endl;
-            sqlite3_free(errmsg);
-        }
-        else
-        {
-            // cout << "Parameter-table created successfully" << endl;
-        }
-        sqlite3_close(DB);
+        cerr << "Failed to open SQLite database " << s << ": "
+             << (database ? sqlite3_errmsg(database) : sqlite3_errstr(open_status)) << endl;
+        return records;
     }
-    catch (const exception &e)
-    {
 
-        cerr << e.what();
+    char *message = nullptr;
+    const int status = sqlite3_exec(database, stmt.c_str(), select_callback, &records, &message);
+    std::unique_ptr<char, decltype(&sqlite3_free)> error(message, &sqlite3_free);
+    if (status != SQLITE_OK)
+    {
+        cerr << "Error in SQLite select statement " << stmt << ": "
+             << (message ? message : sqlite3_errmsg(database)) << endl;
     }
     return records;
 }
@@ -1244,18 +1236,11 @@ int insertTimeDataPG(std::vector<double> myData, string city_name)
         paramValues[i] = values[i].c_str();
     }
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    13,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 13, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "I insert time data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "I insert time data (PostgreSQL) ERROR: " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1289,14 +1274,7 @@ Records getTimeDataPG(string city_name, int limit)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) == PGRES_TUPLES_OK)
     {
@@ -1316,7 +1294,7 @@ Records getTimeDataPG(string city_name, int limit)
     }
     else
     {
-        cerr << "Failed to fetch time_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to fetch time_data: " << pgManager.getLastError() << endl;
         PQclear(result);
     }
 
@@ -1338,18 +1316,11 @@ int deleteTimeDataPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete time_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete time_data for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1411,18 +1382,11 @@ int insertMoneyDataPG(std::vector<int> money, string city_name)
         paramValues[i] = values[i].c_str();
     }
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    14,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 14, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "I insert money data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "I insert money data (PostgreSQL) ERROR: " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1457,14 +1421,7 @@ Records getMoneyDataPG(string city_name, int limit)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) == PGRES_TUPLES_OK)
     {
@@ -1484,7 +1441,7 @@ Records getMoneyDataPG(string city_name, int limit)
     }
     else
     {
-        cerr << "Failed to fetch money_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to fetch money_data: " << pgManager.getLastError() << endl;
         PQclear(result);
     }
 
@@ -1506,18 +1463,11 @@ int deleteMoneyDataPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete money_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete money_data for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1590,18 +1540,11 @@ int insertCompanyTimeDataPG(std::vector<double> myData, string city_name, string
         paramValues[i] = values[i].c_str();
     }
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    20,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 20, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "I insert company data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "I insert company data (PostgreSQL) ERROR: " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1630,10 +1573,10 @@ int batchInsertCompanyTimeDataPG(const vector<tuple<string, vector<double>>> &co
     }
 
     // Start transaction for batch insert
-    PGresult *result = PQexec(pgManager.getConnection(), "BEGIN");
+    PGresult *result = pgManager.executeQuery("BEGIN");
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "BEGIN transaction failed: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "BEGIN transaction failed: " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1699,25 +1642,26 @@ int batchInsertCompanyTimeDataPG(const vector<tuple<string, vector<double>>> &co
            "item_efficiency = EXCLUDED.item_efficiency, "
            "cap_vs_eff_split = EXCLUDED.cap_vs_eff_split";
 
-    result = PQexec(pgManager.getConnection(), sql.c_str());
+    result = pgManager.executeQuery(sql.c_str());
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Batch insert company data (PostgreSQL) ERROR: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Batch insert company data (PostgreSQL) ERROR: " << pgManager.getLastError() << endl;
         PQclear(result);
         // Rollback transaction
-        PQexec(pgManager.getConnection(), "ROLLBACK");
+        pgManager.executeCommand("ROLLBACK");
         return 1;
     }
 
     PQclear(result);
 
     // Commit transaction
-    result = PQexec(pgManager.getConnection(), "COMMIT");
+    result = pgManager.executeQuery("COMMIT");
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "COMMIT transaction failed: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "COMMIT transaction failed: " << pgManager.getLastError() << endl;
         PQclear(result);
+        pgManager.executeCommand("ROLLBACK");
         return 1;
     }
 
@@ -1751,14 +1695,7 @@ Records getCompanyDataPG(string city_name, string company_name, int limit)
 
     const char *paramValues[2] = {city_name.c_str(), company_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    2,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 2, paramValues);
 
     if (PQresultStatus(result) == PGRES_TUPLES_OK)
     {
@@ -1778,7 +1715,7 @@ Records getCompanyDataPG(string city_name, string company_name, int limit)
     }
     else
     {
-        cerr << "Failed to fetch company_data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to fetch company_data: " << pgManager.getLastError() << endl;
         PQclear(result);
     }
 
@@ -1833,7 +1770,7 @@ Records getAllCompaniesLatestDataPG(string city_name)
     {
         if (result)
         {
-            cerr << "Failed to fetch batch company data: " << PQerrorMessage(pgManager.getConnection()) << endl;
+            cerr << "Failed to fetch batch company data: " << pgManager.getLastError() << endl;
             PQclear(result);
         }
     }
@@ -1856,18 +1793,11 @@ int deleteCompanyDataPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete company_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete company_data for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1900,18 +1830,11 @@ int insertParameterPG(string city_name, string parameter, double value)
         parameter.c_str(),
         value_str.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    3,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 3, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to insert parameter " << parameter << " for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to insert parameter " << parameter << " for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -1936,18 +1859,11 @@ double getParameterPG(string city_name, string parameter)
         city_name.c_str(),
         parameter.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    2,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 2, paramValues);
 
     if (PQresultStatus(result) != PGRES_TUPLES_OK)
     {
-        cerr << "Failed to get parameter " << parameter << " for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to get parameter " << parameter << " for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return -1;
     }
@@ -1976,18 +1892,11 @@ int deleteParametersPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete parameters for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete parameters for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -2013,16 +1922,11 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
         return 1;
     }
 
-    // Begin transaction
-    PGresult *beginResult = pgManager.executeQuery("BEGIN");
-    if (!beginResult || PQresultStatus(beginResult) != PGRES_COMMAND_OK)
+    if (!pgManager.executeCommand("BEGIN"))
     {
-        cerr << "Failed to begin transaction for batch insert" << endl;
-        if (beginResult)
-            PQclear(beginResult);
+        cerr << "Failed to begin consumer snapshot for " << city_name << endl;
         return 1;
     }
-    PQclear(beginResult);
 
     string sql = "INSERT INTO consumer_data (city_name, consumer_name, employer, items, "
                  "capital, deposits, debts, skill, mot, spendwill, savewill, borrowwill, "
@@ -2035,9 +1939,6 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
                  "savewill = EXCLUDED.savewill, borrowwill = EXCLUDED.borrowwill, "
                  "income = EXCLUDED.income, dividends = EXCLUDED.dividends, transfers = EXCLUDED.transfers, "
                  "updated_at = CURRENT_TIMESTAMP";
-
-    int success_count = 0;
-    int fail_count = 0;
 
     for (const auto &consumer : consumers)
     {
@@ -2077,44 +1978,27 @@ int batchInsertConsumerDataPG(const vector<tuple<string, string, string, int, do
             dividends_str.c_str(),
             transfers_str.c_str()};
 
-        PGresult *result = PQexecParams(pgManager.getConnection(),
-                                        sql.c_str(),
-                                        15,
-                                        NULL,
-                                        paramValues,
-                                        NULL,
-                                        NULL,
-                                        0);
+        std::unique_ptr<PGresult, decltype(&PQclear)> result(
+            pgManager.executeParams(sql.c_str(), 15, paramValues), &PQclear);
 
-        if (PQresultStatus(result) != PGRES_COMMAND_OK)
+        if (!result || PQresultStatus(result.get()) != PGRES_COMMAND_OK)
         {
-            cerr << "Failed to insert consumer " << consumer_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
-            PQclear(result);
-            fail_count++;
+            cerr << "Failed to write consumer " << consumer_name << " in snapshot for "
+                 << city_name << ": " << pgManager.getLastError() << endl;
+            pgManager.executeCommand("ROLLBACK");
+            return 1;
         }
-        else
-        {
-            success_count++;
-        }
-
-        if (result)
-            PQclear(result);
     }
 
-    // Commit transaction
-    PGresult *commitResult = pgManager.executeQuery("COMMIT");
-    if (!commitResult || PQresultStatus(commitResult) != PGRES_COMMAND_OK)
+    if (!pgManager.executeCommand("COMMIT"))
     {
-        cerr << "Failed to commit transaction, rolling back" << endl;
-        pgManager.executeQuery("ROLLBACK");
-        if (commitResult)
-            PQclear(commitResult);
+        cerr << "Failed to commit consumer snapshot for " << city_name << endl;
+        pgManager.executeCommand("ROLLBACK");
         return 1;
     }
-    PQclear(commitResult);
 
-    cout << "Batch inserted " << success_count << " consumers to PostgreSQL (" << fail_count << " failed)" << endl;
-    return fail_count > 0 ? 1 : 0;
+    cout << "Batch inserted " << consumers.size() << " consumers to PostgreSQL" << endl;
+    return 0;
 }
 
 int insertConsumerDataPG(string city_name, string consumer_name, string employer,
@@ -2172,18 +2056,11 @@ int insertConsumerDataPG(string city_name, string consumer_name, string employer
         dividends_str.c_str(),
         transfers_str.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    15,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 15, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to insert consumer_data for " << consumer_name << " in " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to insert consumer_data for " << consumer_name << " in " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -2218,18 +2095,11 @@ Records getConsumerDataPG(string city_name, string consumer_name)
 
     int numParams = consumer_name.empty() ? 1 : 2;
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    numParams,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql, numParams, paramValues);
 
     if (PQresultStatus(result) != PGRES_TUPLES_OK)
     {
-        cerr << "Failed to get consumer_data for " << consumer_name << " in " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to get consumer_data for " << consumer_name << " in " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return records;
     }
@@ -2286,19 +2156,12 @@ int insertSimulationEvent(string city_name, string event_type, string severity,
         event_data.c_str(),
         simulation_time_str.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    6,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 6, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
         cerr << "Failed to insert simulation event (" << event_type << ") for " << city_name
-             << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+             << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -2321,18 +2184,11 @@ int deleteConsumerDataPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete consumer_data for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete consumer_data for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }
@@ -2356,18 +2212,11 @@ int deleteSimulationEventsPG(string city_name)
 
     const char *paramValues[1] = {city_name.c_str()};
 
-    PGresult *result = PQexecParams(pgManager.getConnection(),
-                                    sql.c_str(),
-                                    1,
-                                    NULL,
-                                    paramValues,
-                                    NULL,
-                                    NULL,
-                                    0);
+    PGresult *result = pgManager.executeParams(sql.c_str(), 1, paramValues);
 
     if (PQresultStatus(result) != PGRES_COMMAND_OK)
     {
-        cerr << "Failed to delete simulation_events for " << city_name << ": " << PQerrorMessage(pgManager.getConnection()) << endl;
+        cerr << "Failed to delete simulation_events for " << city_name << ": " << pgManager.getLastError() << endl;
         PQclear(result);
         return 1;
     }

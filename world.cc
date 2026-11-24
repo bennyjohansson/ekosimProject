@@ -9,16 +9,13 @@
 using namespace std;
 
 World::World(string name) : name_(name),
-							clock_(new Clock()),
-							global_market_(new Market("Global Market")),
-							cities_(std::make_unique<City_list>("CITIES", clock_, global_market_))
+							clock_(std::make_unique<Clock>()),
+							global_market_(std::make_unique<Market>("Global Market")),
+							cities_(std::make_unique<City_list>("CITIES", clock_.get(), global_market_.get()))
 {
 }
 
-World::~World()
-{
-	delete global_market_;
-}
+World::~World() = default;
 
 void World::add_city(City *city)
 {
@@ -29,7 +26,7 @@ void World::add_city(City *city)
 void World::add_city(string city_name, string email)
 {
 
-	City *myCity = new City(city_name, clock_, global_market_);
+	auto myCity = std::make_unique<City>(city_name, clock_.get(), global_market_.get());
 	int size = 0;
 	size = myCity->get_no_consumers();
 	double share_capital_owners = 0.3;
@@ -53,7 +50,7 @@ void World::add_city(string city_name, string email)
 
 	myCity->add_random_shareholders(number_of_shareholders);
 
-	cities_->add_city(myCity);
+	cities_->add_city(myCity.release());
 }
 
 void World::print_cities()
@@ -76,7 +73,7 @@ int World::get_time() const
 Clock *World::get_clock() const
 {
 
-	return clock_;
+	return clock_.get();
 }
 
 City *World::get_city(const string &name) const
@@ -88,7 +85,7 @@ City *World::get_city(const string &name) const
 Market *World::get_global_market() const
 {
 
-	return global_market_;
+	return global_market_.get();
 }
 
 void World::tick()

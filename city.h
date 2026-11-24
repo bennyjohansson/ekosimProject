@@ -60,8 +60,8 @@ public:
    double get_loans_to_bank();
    Company *get_company(const string &name);
    Consumer *get_random_consumer();
-   Element_consumer *get_random_consumers(int number_of_consumers);
-   Element_consumer *get_random_consumers_with_capital(double capital_limit);
+   std::unique_ptr<Element_consumer> get_random_consumers(int number_of_consumers);
+   std::unique_ptr<Element_consumer> get_random_consumers_with_capital(double capital_limit);
 
    Company *get_random_company();
    Consumer *get_optimal_consumer(double mot_we, double skill_we, int production_function, double production_parameter);
@@ -179,7 +179,7 @@ public:
    void update_companies_from_database();
    void write_time_data_to_company_database();
    void save_high_score();
-   void save_consumers();
+   bool save_consumers();
    void export_consumers_to_csv();
    double calculate_CAGR(int);
    double calculate_Palma_ratio();
@@ -208,7 +208,10 @@ public:
    list<double> interest_rate_;
 
 private:
+   std::unique_ptr<Clock> owned_clock_;
+   std::vector<std::unique_ptr<Consumer>> owned_consumers_;
    string name_;
+   list<double> wage_history_;
 
    std::unique_ptr<Consumer_list> consumers_;
    // std::unique_ptr<Consumer_list> labour_market_;
@@ -217,14 +220,14 @@ private:
    std::unique_ptr<Market> market_;
    Market *global_market_; // Pointer to global market (owned by World)
    std::unique_ptr<Bank> bank_;
-   Clock *clock_; // Keep as raw pointer - may be shared resource
+   Clock *clock_; // Borrows from the world or owned_clock_
    int flash_counter_;
-   double loans_to_bank_;
+   double loans_to_bank_ = 0;
    double vat_;
    double income_tax_;
    double capital_gains_tax_;
    double budget_balance_;
-   double inflation_target_;
+   double inflation_target_ = 0;
    double capital_;
    bool enable_intercity_trading_;
 

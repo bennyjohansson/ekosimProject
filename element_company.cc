@@ -18,8 +18,8 @@ Element_company::Element_company() :
   company_(nullptr)
 {}
 
-Element_company::Element_company(std::unique_ptr<Element_company> n, Company *c) :
-  next_(std::move(n)), company_(c)
+Element_company::Element_company(std::unique_ptr<Element_company> n, std::unique_ptr<Company> c) :
+  next_(std::move(n)), company_(std::move(c))
 {}
 
 /*
@@ -31,6 +31,6 @@ string Element_company::get_name() const {
 }
 
 Company* Element_company::get_company() const {
-  return company_;
+  return company_.get();
 }
 

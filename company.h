@@ -204,8 +204,8 @@ private:
     int actual_hired_this_cycle_;  // Number of employees actually hired this cycle
     int employees_at_cycle_start_; // Employee count at start of hiring cycle
 
-    Consumer_list *employees_;
-    Consumer_list *shareholders_;
+    std::unique_ptr<Consumer_list> employees_;
+    std::unique_ptr<Consumer_list> shareholders_;
     Market *market_;
     Market *global_market_; // Pointer to global market (owned by World)
     Bank *bank_;
